@@ -12,6 +12,7 @@ public class TeleOpTest extends LinearOpMode {
 @Override
     public void runOpMode()
 {
+    //example
     left = hardwareMap.dcMotor.get("left"); //sets value to left motor
     right = hardwareMap.dcMotor.get("right"); //sets value to right motor
 
