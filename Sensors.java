@@ -7,12 +7,11 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous (name = "AutonomousTest")
+@Autonomous (name = "Sensors")
 public class Sensors extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
     private DistanceSensor range;
-    public double stopBot = 0;
 @Override
     public void runOpMode() {
     left = hardwareMap.dcMotor.get("left"); //set left drive motor
@@ -28,8 +27,7 @@ public class Sensors extends LinearOpMode {
         telemetry.addData("Range in Meters: ", range.getDistance(DistanceUnit.METER));
         telemetry.addData("Range in MM: ", range.getDistance(DistanceUnit.MM));
         telemetry.update();
-
-    }
-    }
+        }
+}
 
 }
