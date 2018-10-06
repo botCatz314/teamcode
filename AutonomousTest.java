@@ -18,6 +18,9 @@ public class AutonomousTest extends LinearOpMode {
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets right motor to run without encoder
 
     waitForStart();
+    left.setPower(1);
+    right.setPower(1);
+
 }
 
 
