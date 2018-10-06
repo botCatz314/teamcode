@@ -9,8 +9,7 @@ public class AutonomousTest extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
 @Override
-    public void runOpMode()
-{
+    public void runOpMode() {
     left = hardwareMap.dcMotor.get("left"); //set left drive motor
     right = hardwareMap.dcMotor.get("right"); //set right drive motor
 
@@ -18,11 +17,12 @@ public class AutonomousTest extends LinearOpMode {
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets right motor to run without encoder
 
     waitForStart();
-    left.setPower(1);
-    right.setPower(1);
-
+    MoveRobot(1, 1);
 }
-
+    private void MoveRobot(double leftPower, double rightPower){
+    right.setPower(rightPower);
+    left.setPower(leftPower);
+    }
 
 
 
