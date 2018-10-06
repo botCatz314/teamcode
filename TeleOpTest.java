@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @TeleOp(name = "TeleOp Test", group = "Default")
@@ -14,6 +15,7 @@ public class TeleOpTest extends LinearOpMode {
 {
     left = hardwareMap.dcMotor.get("left"); //sets value to left motor
     right = hardwareMap.dcMotor.get("right"); //sets value to right motor
+    left.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
     while (opModeIsActive())
