@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous (name = "AutonomousTest")
+@Autonomous (name = "AutonomousTestt")
 public class Ezras_atonamous extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
@@ -18,12 +18,24 @@ public class Ezras_atonamous extends LinearOpMode {
 
     waitForStart();
     MoveRobot(-1, 1); //left need to be negetive to go foreward.
-    sleep(2000);
+    sleep(550);
     StopBot();
     MoveRobot(1, 1);
-    sleep(1000);
+    sleep(250);
     MoveRobot(-1,1);
-    sleep(2000);
+    sleep(700);
+    StopBot();
+    MoveRobot(1,1);
+    sleep(250);
+    StopBot();
+    MoveRobot(-1,1);
+    sleep(1550);
+    StopBot();
+    MoveRobot(1,1);
+    sleep(90);
+    StopBot();
+    MoveRobot(-1,1);
+    sleep(900);
     StopBot();
 }
     private void MoveRobot(double leftPower, double rightPower){
