@@ -21,13 +21,34 @@ public class Sensors extends LinearOpMode {
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets right motor to run without encoder
 
     waitForStart();
-    while(opModeIsActive()) {
+    /*while(opModeIsActive()) {
         telemetry.addData("Range in inches: ", range.getDistance(DistanceUnit.INCH));
         telemetry.addData("Range in CM: ", range.getDistance(DistanceUnit.CM));
         telemetry.addData("Range in Meters: ", range.getDistance(DistanceUnit.METER));
         telemetry.addData("Range in MM: ", range.getDistance(DistanceUnit.MM));
         telemetry.update();
+        }*/
+    while(!InRange(25, DistanceUnit.MM)){
+        telemetry.addData("Not in range, ", range.getDistance(DistanceUnit.MM));
+        telemetry.update();
+    }
+    telemetry.addData("in range, ", ":)");
+    telemetry.update();
+
+    }
+
+    public boolean InRange(double target, DistanceUnit units){
+    boolean inRange;
+    double distance;
+
+    distance = range.getDistance(units);
+    if(distance <= target){
+        inRange = true;
+    }
+    else{
+        inRange = false;
         }
-}
+    return inRange;
+    }
 
 }
