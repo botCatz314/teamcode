@@ -4,8 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous (name = "AutonomousTestt")
-public class Ezras_atonamous extends LinearOpMode {
+@Autonomous (name = "AutonomousTestCL")
+public class Crater_Left extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
     public double stopBot = 0;
