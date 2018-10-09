@@ -28,13 +28,19 @@ public class Sensors extends LinearOpMode {
         telemetry.addData("Range in MM: ", range.getDistance(DistanceUnit.MM));
         telemetry.update();
         }*/
-    while(!InRange(25, DistanceUnit.MM)){
+    left.setPower(DriveByDistance(10, DistanceUnit.INCH, 10));
+    right.setPower(DriveByDistance(10, DistanceUnit.INCH, 10));
+    telemetry.addData("Left: ", left.getPower());
+    telemetry.addData("Right: ", right.getPower());
+    telemetry.addData("Distance: ", range.getDistance(DistanceUnit.INCH));
+    telemetry.update();
+   /* while(!InRange(25, DistanceUnit.MM)){
         telemetry.addData("Not in range, ", range.getDistance(DistanceUnit.MM));
         telemetry.update();
     }
     telemetry.addData("in range, ", ":)");
     telemetry.update();
-
+*/
     }
 
     public boolean InRange(double target, DistanceUnit units){
@@ -49,6 +55,20 @@ public class Sensors extends LinearOpMode {
         inRange = false;
         }
     return inRange;
+    }
+
+    public double DriveByDistance(double desiredTime, DistanceUnit units, double stopDistance ){
+    double distance;
+    double rate = 0;
+    double radius;
+    radius = 2;
+    while (InRange(stopDistance, DistanceUnit.INCH)) {
+        distance = range.getDistance(units);
+        rate = distance / desiredTime;
+        return rate;
+
+    }
+    return rate;
     }
 
 }
