@@ -18,7 +18,7 @@ public class TeleOpTest extends LinearOpMode {
     waitForStart();
     while (opModeIsActive())
     {
-        left.setPower(-gamepad1.left_stick_y); //sets left motor power
+        left.setPower(gamepad1.left_stick_y); //sets left motor power
         right.setPower(-gamepad1.right_stick_y); //sets right motor power
 
         idle();
