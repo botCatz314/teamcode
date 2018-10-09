@@ -32,7 +32,7 @@ public class Crater_Left extends LinearOpMode {
     sleep(1400);
     StopBot();
     MoveRobot(1,1);
-    sleep(100);
+    sleep(110);
     StopBot();
     MoveRobot(-1,1);
     sleep(900);
