@@ -57,18 +57,14 @@ public class Sensors extends LinearOpMode {
     return inRange;
     }
 
-    public double DriveByDistance(double desiredTime, DistanceUnit units, double stopDistance ){
-    double distance;
-    double rate = 0;
-    double radius;
-    radius = 2;
-    while (InRange(stopDistance, DistanceUnit.INCH)) {
-        distance = range.getDistance(units);
-        rate = distance / desiredTime;
-        return rate;
-
+    private double DriveByDistance(double desiredTime, DistanceUnit units, double stopDistance ){
+    double distance; //sets variable to hold value that range sensor reads
+    double rate = 0; //sets the variable to hold the value that ill be the wheels power
+    while (InRange(stopDistance, DistanceUnit.INCH)) { //happens until we reach the desired proximity from the target object
+        distance = range.getDistance(units); //sets the distance variable to the sensors reading
+        rate = distance / desiredTime; //converts distance to a rate baed on how long we want to take
+        return rate; //returns the rate
+        }
+    return rate;//returns rate of zero
     }
-    return rate;
-    }
-
 }
