@@ -29,13 +29,16 @@ public class Ezras_atonamous extends LinearOpMode {
     sleep(250);
     StopBot();
     MoveRobot(-1,1);
-    sleep(1550);
+    sleep(1400);
     StopBot();
     MoveRobot(1,1);
-    sleep(90);
+    sleep(100);
     StopBot();
     MoveRobot(-1,1);
     sleep(900);
+    StopBot();
+    MoveRobot(1,-1);
+    sleep(2400);
     StopBot();
 }
     private void MoveRobot(double leftPower, double rightPower){
