@@ -51,8 +51,8 @@ public class Sensors extends LinearOpMode {
     double distance;
     double linearRate, angularRate, motorRate, prgmRate, off = 0;
     double radius, RPS = 15.7, percent = 100;
-
     radius = 2;
+
     while(!InRange(stopTarget, units)){ //repeats until we reach the desired range
         distance = range.getDistance(units); //finds the distance between the sensor and nearest object
         linearRate = distance / completeTime; //finds the rate in human measurement
@@ -66,8 +66,10 @@ public class Sensors extends LinearOpMode {
         telemetry.addData("range: ", range.getDistance(DistanceUnit.INCH));
         telemetry.update();
     }
+    
     prgmRate = off; //turns power of motors off
     right.setPower(prgmRate);
     left.setPower(prgmRate);
     }
+
 }
