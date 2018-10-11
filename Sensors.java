@@ -20,24 +20,12 @@ public class Sensors extends LinearOpMode {
     range = hardwareMap.get(DistanceSensor.class, "range");//
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets left motor to run without encoder
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets right motor to run without encoder
-    left.setDirection(DcMotorSimple.Direction.REVERSE);//sets left motor to reverse
+    right.setDirection(DcMotorSimple.Direction.REVERSE);//sets left motor to reverse
 
     waitForStart();
 
-    DrivebyDistance(20, 10, DistanceUnit.INCH);
+    DriveUntilDistance(10, DistanceUnit.INCH);
     sleep(20000);
-    /*while(!InRange(50, DistanceUnit.CM)){
-        right.setPower(.3);
-        left.setPower(0.3);
-        telemetry.addData("Not in range, ", range.getDistance(DistanceUnit.CM));
-        telemetry.update();
-    }
-    right.setPower(0);
-    left.setPower(0);
-    telemetry.addData("in range, ", ":)");
-    telemetry.addData("Final Range: ", range.getDistance(DistanceUnit.CM));
-    telemetry.update();
-    sleep(10000);*/
     }
 
     private boolean InRange(double target, DistanceUnit units){
@@ -46,30 +34,18 @@ public class Sensors extends LinearOpMode {
     return (distance <= target); //returns true if the robot is closer to the target than the target position
     }
 
+    private void DriveUntilDistance(double target, DistanceUnit unit){
 
-    private void DrivebyDistance( double completeTime, double stopTarget, DistanceUnit units){
-    double distance;
-    double linearRate, angularRate, motorRate, prgmRate, off = 0;
-    double radius, RPS = 15.7, percent = 100;
-    radius = 2;
-
-    while(!InRange(stopTarget, units)){ //repeats until we reach the desired range
-        distance = range.getDistance(units); //finds the distance between the sensor and nearest object
-        linearRate = distance / completeTime; //finds the rate in human measurement
-        angularRate = linearRate / radius; //solves for the rotations per second
-        motorRate = angularRate / RPS; //solves for the percentage that the motor needs to move at
-        prgmRate = motorRate / percent; //puts the percentage between -1 and 1 for the motors
-        right.setPower(prgmRate); //sets motor power
-        left.setPower(prgmRate);
-        telemetry.addData("leftPower: ", left.getPower()); //sends data for the left and right motor power and the distance sensor
-        telemetry.addData("right Power", right.getPower());
-        telemetry.addData("range: ", range.getDistance(DistanceUnit.INCH));
-        telemetry.update();
+    while(!InRange(target +10, unit)) {
+        left.setPower(0.5);
+        right.setPower(0.5);
     }
-    
-    prgmRate = off; //turns power of motors off
-    right.setPower(prgmRate);
-    left.setPower(prgmRate);
+    while (!InRange(target, unit )){
+        left.setPower(0.1);
+        right.setPower(0.1);
+    }
+    left.setPower(0);
+    right.setPower(0);
     }
 
 }
