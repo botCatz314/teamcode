@@ -50,7 +50,7 @@ public class Sensors extends LinearOpMode {
     private void DrivebyDistance( double completeTime, double stopTarget, DistanceUnit units){
     double distance;
     double linearRate, angularRate, motorRate, prgmRate, off = 0;
-    double radius, RPS = 9000, percent = 100;
+    double radius, RPS = 15.7, percent = 100;
 
     radius = 2;
     while(!InRange(stopTarget, units)){ //repeats until we reach the desired range
