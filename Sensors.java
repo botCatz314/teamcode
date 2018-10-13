@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -13,20 +15,42 @@ public class Sensors extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
     private DistanceSensor rangeLeft, rangeRight;
+    private ColorSensor colorLeft, colorRight;
 @Override
     public void runOpMode() {
     left = hardwareMap.dcMotor.get("left"); //set left drive motor
     right = hardwareMap.dcMotor.get("right"); //set right drive motor
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");//sets range left sensor
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
+    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+    colorRight = hardwareMap. get(ColorSensor.class, "colorRight");
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets left motor to run without encoder
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); //sets right motor to run without encoder
     left.setDirection(DcMotorSimple.Direction.REVERSE);//sets left motor to reverse
 
     waitForStart();
-
-    DistancetoRate(20, DistanceUnit.INCH, 20);
-    sleep(2000);
+    colorRight.enableLed(false);
+    colorLeft.enableLed(false);
+    DrivetoLine(45,29, 0.2, 0.2, true);
+    sleep(5000);
+    lineUp(45, 29, 0.1, 0.1);
+    telemetry.addData("right ", colorRight.blue());
+    telemetry.update();
+    sleep(4000);
+/*while(!WithinColorRange(45, 32, colorRight)) {
+    telemetry.addData("colorRight: ", colorRight.blue());
+    telemetry.addData("colorLeft: ", colorLeft.blue());
+    telemetry.addData("argb Right: ", colorRight.argb());
+    telemetry.addData("argb Left: ", colorLeft.argb());
+    telemetry.update();
+    right.setPower(.15);
+}
+telemetry.addData("done ", "in range");
+telemetry.update();
+right.setPower(0);*/
+sleep(2000);
+   // DistancetoRate(10, DistanceUnit.INCH, 10);
+   // sleep(2000);
     }
 
     private boolean InRangeLeft(double target, DistanceUnit units){
@@ -96,6 +120,53 @@ public class Sensors extends LinearOpMode {
     }
     }
 
+    private boolean WithinColorRange(int max, int min, ColorSensor sensor){
+    int color = sensor.blue();
+    return(color <= max && color >= min);
+
+    }
+
+    private void lineUp(int max, int min, double leftPower, double rightPower){
+    while(!WithinColorRange(max, min, colorRight)){
+        right.setPower(rightPower);
+     }
+    right.setPower(0);
+    while(!WithinColorRange(max, min, colorLeft)){
+            left.setPower(leftPower);
+        }
+        left.setPower(0);
+    while(!WithinColorRange(23, 11, colorLeft)){
+        left.setPower(leftPower);
+    }
+    left.setPower(0);
+    telemetry.addData("right: ", colorRight.blue());
+    telemetry.update();
+
+    while(!WithinColorRange(21, 11, colorRight)){
+        right.setPower(0.1);
+        left.setPower(-0.1);
+        telemetry.addData("is run, ", colorRight.blue());
+        telemetry.update();
+    }
+    left.setPower(0);
+    right.setPower(0);
+    }
 
 
+    private void DrivetoLine(int max, int min, double leftPower, double rightPower, boolean backup){
+    while(!WithinColorRange(max, min, colorRight)){
+        right.setPower(rightPower);
+        left.setPower(rightPower);
+        }
+        left.setPower(0);
+        right.setPower(0);
+        if(backup){
+            while(!WithinColorRange(23,11, colorRight)){
+                right.setPower(-0.1);
+                left.setPower(-0.1);
+            }
+            left.setPower(0);
+            right.setPower(0);
+        }
+    }
 }
