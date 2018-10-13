@@ -29,28 +29,33 @@ public class Sensors extends LinearOpMode {
     left.setDirection(DcMotorSimple.Direction.REVERSE);//sets left motor to reverse
 
     waitForStart();
-    colorRight.enableLed(false);
-    colorLeft.enableLed(false);
-    DrivetoLine(45,29, 0.2, 0.2, true);
-    sleep(5000);
-    lineUp(45, 29, 0.1, 0.1);
-    telemetry.addData("right ", colorRight.blue());
+
+   // DrivetoLine(45,29, 0.2, 0.2, true); //drives to line in auto
+
+  //  sleep(5000);
+
+   // lineUp(45, 29, 0.1, 0.1); //straightens robot
+    telemetry.addData("RangeLeft: ", rangeLeft.getDistance(DistanceUnit.INCH));
     telemetry.update();
-    sleep(4000);
-/*while(!WithinColorRange(45, 32, colorRight)) {
-    telemetry.addData("colorRight: ", colorRight.blue());
-    telemetry.addData("colorLeft: ", colorLeft.blue());
-    telemetry.addData("argb Right: ", colorRight.argb());
-    telemetry.addData("argb Left: ", colorLeft.argb());
-    telemetry.update();
-    right.setPower(.15);
-}
-telemetry.addData("done ", "in range");
+
+    while(!InRangeLeft(35, DistanceUnit.INCH)){
+        right.setPower(.8);
+        left.setPower(.8);
+    }
+    left.setPower(0);
+    right.setPower(0);
+    sleep(750);
+    DrivetoLine(35,20,0.15,0.15,true);
+    left.setPower(-1);
+    right.setPower(-1);
+
+    sleep(3000);
+    right.setPower(0);
+    left.setPower(0);
+  //  DrivetoLine(30, 20, 0.4, 0.4, false); //drives to team zone
+telemetry.addData("right: ", colorRight.blue());
 telemetry.update();
-right.setPower(0);*/
-sleep(2000);
-   // DistancetoRate(10, DistanceUnit.INCH, 10);
-   // sleep(2000);
+    sleep(4000);
     }
 
     private boolean InRangeLeft(double target, DistanceUnit units){
