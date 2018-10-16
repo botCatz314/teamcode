@@ -39,7 +39,7 @@ public class Sensors extends LinearOpMode {
 
     waitForStart();
 
-    
+    DistancetoRate(20, DistanceUnit.INCH, 10);
 
     }
     //returns whether the left range sensor is reading less than a certain value
@@ -89,7 +89,7 @@ public class Sensors extends LinearOpMode {
     //the radius of the wheel in inches
     double radius = 2;
     //runs until range sensor reads a specified distance at which point the robot stops
-    while(!InRangeLeft(stoptarget, unit)){
+    while(!InRangeLeft(stoptarget, unit) && !InRangeRight(stoptarget, unit)){
         //sets the distance variables to the range sensor to the difference of the range sensor reading and target location
         distanceLeft = rangeLeft.getDistance(unit) - stoptarget;
         distanceRight = rangeRight.getDistance(unit) - stoptarget;
