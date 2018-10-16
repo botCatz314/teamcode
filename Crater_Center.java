@@ -57,11 +57,11 @@ public class Crater_Center extends LinearOpMode {
     StopBot();
 }
     private void MoveRobot(double leftPower, double rightPower){
-    right.setPower(rightPower);
-    left.setPower(leftPower);
+    right.setPower(rightPower);// give power to the right motor
+    left.setPower(leftPower);// give left motor power
     }
     private void StopBot(){
-    left.setPower(stopBot);
-    right.setPower(stopBot);
+    left.setPower(stopBot);// stops left motor
+    right.setPower(stopBot);// stops right motor
     }
 }
