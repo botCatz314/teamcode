@@ -39,70 +39,44 @@ public class Sensors extends LinearOpMode {
 
     waitForStart();
 
-   // DrivetoLine(45,29, 0.2, 0.2, true); //drives to line in auto
+    
 
-   //  sleep(5000);
-
-   // lineUp(45, 29, 0.1, 0.1); //straightens robot
-  /*  telemetry.addData("RangeLeft: ", rangeLeft.getDistance(DistanceUnit.INCH));
-    telemetry.update();
-
-    while(!InRangeLeft(35, DistanceUnit.INCH)){
-        right.setPower(.8);
-        left.setPower(.8);
     }
-
-    left.setPower(0);
-    right.setPower(0);
-*/
-    Straighten(DistanceUnit.INCH);
-    telemetry.addData("left: ", rangeLeft.getDistance(DistanceUnit.INCH));
-    telemetry.addData("right: ", rangeRight.getDistance(DistanceUnit.INCH));
-    telemetry.update();
-    sleep(2000);
-
-    //DrivetoLine(35,20,0.15,0.15,true);
-
-   // left.setPower(-1);
-   // right.setPower(-1);
-
-    //sleep(3000);
-
-   // right.setPower(0);
-   // left.setPower(0);
-
-    //  DrivetoLine(30, 20, 0.4, 0.4, false); //drives to team zone
-
-    telemetry.addData("right: ", colorRight.blue());
-    telemetry.update();
-
-    sleep(4000);
-    }
-
+    //returns whether the left range sensor is reading less than a certain value
     private boolean InRangeLeft(double target, DistanceUnit units){
-    double distance; //creates a variable to hold the range sensor's reading
-    distance = rangeLeft.getDistance(units); //sets the distance variable to the value that the range sensor reads
-    return (distance <= target); //returns true if the robot is closer to the target than the target position
+    //creates a variable to hold the range sensor's reading
+    double distance;
+    //sets the distance variable to the value that the range sensor reads
+    distance = rangeLeft.getDistance(units);
+    //returns true if the robot is closer to the target than the target position
+    return (distance <= target);
     }
-
+    //returns whether the right range sensor is reading less than a certain value
     private boolean InRangeRight(double target, DistanceUnit units){
+    //declares a variable to hold the range sensor's reading
     double distanceRight;
+    //sets the distance variable to the value that the range sensor reads
     distanceRight = rangeRight.getDistance(units);
+    //returns true if the robot is closer to the target than the target position
     return ( distanceRight <= target);
     }
-
+    //powers drive motors until range sensor reads a certain target
     private void DriveUntilDistance(double target, DistanceUnit unit){
-
+    //goes until ten sensor is ten units from the target
     while(!InRangeLeft(target +10, unit) ) {
+        //powers drive motors
         left.setPower(0.5);
         right.setPower(0.5);
     }
+    //goes until the sensor is within the range of the target
     while (!InRangeLeft(target, unit )){
+        //sets drive power
         left.setPower(0.1);
         right.setPower(0.1);
     }
-    left.setPower(0);
-    right.setPower(0);
+    //turns off drive motors
+    left.setPower(powerOff);
+    right.setPower(powerOff);
     }
     //converts the distance read by the range sensor to a speed for drive motors
     private void DistancetoRate(double stoptarget, DistanceUnit unit, double time){
@@ -132,21 +106,28 @@ public class Sensors extends LinearOpMode {
     //turns off drive motors
     right.setPower(powerOff);
     left.setPower(powerOff);
-    //stopped here for cleaning up-direction = up
+    //waits one second to give robot to fully stop
     sleep(1000);
+    //if right wheel is further away than left wheel, turns the right wheel
     if(rangeRight.getDistance(unit ) > rangeLeft.getDistance(unit)){
+
         while(!InRangeLeft(rangeRight.getDistance(unit), unit)) {
+            //turns right wheel
+            right.setPower(0.1);
+            }
+        //turns off right drive motor
+        right.setPower(powerOff);
+        }
+    //if left wheel is further away than right wheel, turns the left wheel
+    if(rangeLeft.getDistance(unit) > rangeRight.getDistance(unit)){
+
+        while(!InRangeRight(rangeLeft.getDistance(unit), unit)){
+            //turns left wheel
             left.setPower(0.1);
             }
-        left.setPower(0);
+        //turns off left drive motor
+        left.setPower(powerOff);
         }
-
-    if(rangeLeft.getDistance(unit) > rangeRight.getDistance(unit)){
-        while(!InRangeRight(rangeLeft.getDistance(unit), unit)){
-            right.setPower(0.1);
-        }
-        right.setPower(0);
-    }
     }
     //determines if the color sensor's reading is in between two values
     private boolean WithinColorRange(int max, int min, ColorSensor sensor){
