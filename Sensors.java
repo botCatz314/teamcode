@@ -39,7 +39,8 @@ public class Sensors extends LinearOpMode {
 
     waitForStart();
 
-    DistancetoRate(20, DistanceUnit.INCH, 10);
+   // DistancetoRate(20, DistanceUnit.INCH, 10);
+    Straighten(DistanceUnit.INCH);
 
     }
     //returns whether the left range sensor is reading less than a certain value
@@ -209,8 +210,8 @@ public class Sensors extends LinearOpMode {
         //turns right if the right distance is less than the left
         if(rightRange < leftRange){
             //sets motor powers
-            right.setPower(-0.2);
-            left.setPower(0.2);
+            right.setPower(-0.25);
+            left.setPower(0.25);
         }
         //turns off motor power
         right.setPower(powerOff);
@@ -218,8 +219,8 @@ public class Sensors extends LinearOpMode {
         //turns left if the left range is less than the right
         if(leftRange < rightRange){
             //sets motor power
-            left.setPower(-0.2);
-            right.setPower(0.2);
+            left.setPower(-0.25);
+            right.setPower(0.25);
         }
         //turns drive motor power off
         right.setPower(powerOff);
