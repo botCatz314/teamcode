@@ -39,17 +39,21 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp(name="GoldAlign Example", group="DogeCV")
 
-public class GoldAlignExample extends OpMode
+public class GoldAlignExample extends LinearOpMode
 {
     private GoldAlignDetector detector;
     private DcMotor left, right;
-
+    private Servo phoneServo;
+    private String position;
+    boolean control = false;
     @Override
-    public void init() {
+    public void runOpMode(){
+
         telemetry.addData("Status", "DogeCV 2018.0 - Gold Align Example");
 
         detector = new GoldAlignDetector();
@@ -57,7 +61,7 @@ public class GoldAlignExample extends OpMode
         detector.useDefaults();
 
         // Optional Tuning
-        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignSize = 80; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
         detector.alignPosOffset = 0; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
 
@@ -73,50 +77,43 @@ public class GoldAlignExample extends OpMode
 
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
-        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        phoneServo = hardwareMap.servo.get("phoneServo");
+              left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         left.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    }
+        waitForStart();
 
-    @Override
-    public void init_loop() {
-    }
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
+            telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral
+            telemetry.addData("X Pos", detector.getXPosition()); // Gold X pos.
+            telemetry.update();
 
-             }
-
-boolean control = false;
-    @Override
-    public void loop() {
-        telemetry.addData("IsAligned" , detector.getAligned()); // Is the bot aligned with the gold mineral
-        telemetry.addData("X Pos" , detector.getXPosition()); // Gold X pos.
-
-        if(!detector.getAligned() && !control){
-            left.setPower(0.1);
-            right.setPower(-0.1);
-        }
         if(detector.getAligned()){
+            position = "center";
+        }
+        sleep(1000);
+        if(!control){
+            phoneServo.setPosition(1);
             control = true;
         }
+        sleep(1000);
+        if(detector.getAligned()){
+            position = "right";
+        }
+        else{
+            position = "left";
+        }
+        sleep(1000);
 
-            left.setPower(1);
-            right.setPower(1);
-
-
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
+             telemetry.addData("the position is: ", position);
+            telemetry.update();
+            sleep(10000);
         detector.disable();
+
+
+
+
     }
 
 }
