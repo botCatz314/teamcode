@@ -61,8 +61,8 @@ public class GoldAlignExample extends LinearOpMode
         detector.useDefaults();
 
         // Optional Tuning
-        detector.alignSize = 80; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
-        detector.alignPosOffset = 0; // How far from center frame to offset this alignment zone.
+        detector.alignSize = 10; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignPosOffset = 5000; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
 
         detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
@@ -72,37 +72,39 @@ public class GoldAlignExample extends LinearOpMode
         detector.ratioScorer.weight = 5;
         detector.ratioScorer.perfectRatio = 1.0;
 
-        detector.setAlignSettings(0,100);
+        detector.setAlignSettings(0,355); //changed from 400...........
         detector.enable();
 
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         phoneServo = hardwareMap.servo.get("phoneServo");
-              left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         left.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
-
-            telemetry.addData("IsAligned", detector.getAligned()); // Is the bot aligned with the gold mineral
-            telemetry.addData("X Pos", detector.getXPosition()); // Gold X pos.
-            telemetry.update();
-
+        phoneServo.setPosition(0.3);
         if(detector.getAligned()){
-            position = "center";
+            phoneServo.setPosition(0.4);
+            if(detector.getAligned()){
+                position = "left";
+            }
         }
         sleep(1000);
-        if(!control){
+        phoneServo.setPosition(.9);
+
+        if(detector.getAligned() && position != "left"){
             phoneServo.setPosition(1);
-            control = true;
+            if(detector.getAligned()) {
+                position = "center";
+            }
         }
-        sleep(1000);
-        if(detector.getAligned()){
+        else if (position != "center" && position != "left"){
             position = "right";
         }
         else{
-            position = "left";
+            position = "center";
         }
         sleep(1000);
 
