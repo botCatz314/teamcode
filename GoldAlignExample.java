@@ -84,18 +84,22 @@ public class GoldAlignExample extends LinearOpMode
 
         waitForStart();
 
-        phoneServo.setPosition(0.3);
+        phoneServo.setPosition(0.65);
+        sleep(1000);
         if(detector.getAligned()){
-            phoneServo.setPosition(0.4);
+            phoneServo.setPosition(0.7);
+            sleep(1000);
             if(detector.getAligned()){
                 position = "left";
             }
         }
         sleep(1000);
-        phoneServo.setPosition(.9);
+        phoneServo.setPosition(0.88);
+        sleep(1000);
 
         if(detector.getAligned() && position != "left"){
-            phoneServo.setPosition(1);
+            phoneServo.setPosition(0.9);
+            sleep(1000);
             if(detector.getAligned()) {
                 position = "center";
             }
