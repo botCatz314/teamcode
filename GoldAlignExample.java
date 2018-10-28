@@ -33,6 +33,7 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -42,14 +43,14 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 
-@TeleOp(name="GoldAlign Example", group="DogeCV")
+@Autonomous(name="GoldAlign Example", group="DogeCV")
 
 public class GoldAlignExample extends LinearOpMode
 {
     private GoldAlignDetector detector;
     private DcMotor left, right;
     private Servo phoneServo;
-    private String position;
+    private String position = null;
     boolean control = false;
     @Override
     public void runOpMode(){
@@ -70,9 +71,9 @@ public class GoldAlignExample extends LinearOpMode
         detector.maxAreaScorer.weight = 0.005;
 
         detector.ratioScorer.weight = 5;
-        detector.ratioScorer.perfectRatio = 1.0;
+        detector.ratioScorer.perfectRatio = 0.8;
 
-        detector.setAlignSettings(0,355); //changed from 400...........
+        detector.setAlignSettings(0,1000); //changed from 400...........
         detector.enable();
 
         left = hardwareMap.dcMotor.get("left");
@@ -82,43 +83,72 @@ public class GoldAlignExample extends LinearOpMode
         right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         left.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        waitForStart();
+        phoneServo.setPosition(1);
+        sleep(3000);
 
-        phoneServo.setPosition(0.65);
-        sleep(1000);
+        waitForStart();
         if(detector.getAligned()){
-            phoneServo.setPosition(0.7);
+            telemetry.addData("aligned: ", true);
+            telemetry.update();
             sleep(1000);
+            phoneServo.setPosition(phoneServo.getPosition() -0.01);
+            sleep(3000);
             if(detector.getAligned()){
+                telemetry.addData("still aligned: ", true);
+                telemetry.update();
+                position = "right";
+            }
+        }
+        sleep(1000);
+        phoneServo.setPosition(0.5);
+        sleep(3000);
+
+        if(detector.getAligned() && position == null){
+            telemetry.addData("aligned: ", true);
+            telemetry.update();
+            phoneServo.setPosition(phoneServo.getPosition() - 0.01);
+            sleep(1000);
+            if(detector.getAligned()) {
                 position = "left";
             }
         }
-        sleep(1000);
-        phoneServo.setPosition(0.88);
-        sleep(1000);
-
-        if(detector.getAligned() && position != "left"){
-            phoneServo.setPosition(0.9);
-            sleep(1000);
-            if(detector.getAligned()) {
-                position = "center";
-            }
-        }
-        else if (position != "center" && position != "left"){
-            position = "right";
-        }
-        else{
+        else if (position == null){
             position = "center";
         }
         sleep(1000);
 
              telemetry.addData("the position is: ", position);
             telemetry.update();
+            phoneServo.setPosition(0.92);
             sleep(10000);
+
         detector.disable();
 
+    if (position == "left"){
+        left.setPower(-0.2);
+        right.setPower(0.2);
+        sleep(450);
+        left.setPower(-1);
+        right.setPower(-1);
+        sleep(2000); //negative is forwards
 
 
+     }
+     if(position == "right"){
+         left.setPower(0.2);
+         right.setPower(-0.2);
+         sleep(375);
+         left.setPower(-1);
+         right.setPower(-1);
+         sleep(1200);
+     }
+     if(position == "center"){
+        left.setPower(-1);
+        right.setPower(-1);
+        sleep(750);
+        left.setPower(0);
+        right.setPower(0);
+     }
 
     }
 
