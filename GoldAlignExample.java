@@ -120,7 +120,7 @@ public class GoldAlignExample extends LinearOpMode
              telemetry.addData("the position is: ", position);
             telemetry.update();
             phoneServo.setPosition(0.92);
-            sleep(10000);
+            sleep(100);
 
         detector.disable();
 

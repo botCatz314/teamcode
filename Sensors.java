@@ -37,10 +37,13 @@ public class Sensors extends LinearOpMode {
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     left.setDirection(DcMotorSimple.Direction.REVERSE);
 
+    left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     waitForStart();
+    sleep(10000);
 
    // DistancetoRate(20, DistanceUnit.INCH, 10);
-    Straighten(DistanceUnit.INCH);
+   // Straighten(DistanceUnit.INCH);
 
     }
     //returns whether the left range sensor is reading less than a certain value
@@ -229,3 +232,5 @@ public class Sensors extends LinearOpMode {
 
     }
 }
+
+
