@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class TouchTheSensor extends LinearOpMode {
 
     private DcMotor left, right; // declare drive motor variables
-    
+
     private TouchSensor touchLeft, touchRight;
 
     private double powerOff = 0; //declares common powers that we use
@@ -40,8 +40,8 @@ public class TouchTheSensor extends LinearOpMode {
 
     private void DriveUntilTouch(){
     while(!touchLeft.isPressed() && !touchRight.isPressed()){
-        right.setPower(0.1);
-        left.setPower(0.1);
+        right.setPower(-0.1);
+        left.setPower(-0.1);
     }
         left.setPower(powerOff);
         right.setPower(powerOff);
