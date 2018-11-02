@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -16,13 +16,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous (name = "Sensors")
 public class Sensors extends LinearOpMode {
 
-    private DcMotor left, right, crazy; // declare drive motor variables
+    private DcMotor left, right; // declare drive motor variables
 
     private DistanceSensor rangeLeft, rangeRight; //declares range sensor variables
 
     private ColorSensor colorLeft, colorRight; //declares color sensor variables
 
-    private TouchSensor touchLeft, touchRight; //declares touch sensor variables
+    private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
 
     private double powerOff = 0; //declares common powers that we use
 @Override
@@ -33,30 +33,22 @@ public class Sensors extends LinearOpMode {
     //sets range sensors
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
-    crazy = hardwareMap.dcMotor.get("crazy");
     //sets color sensors
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     colorRight = hardwareMap. get(ColorSensor.class, "colorRight");
     //sets touch sensor variables
-    touchLeft = hardwareMap.get(TouchSensor.class, "touchLeft");
-    touchRight = hardwareMap.get(TouchSensor.class, "touchRight");
+    touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
+    touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
 
    //sets up drive motors to our specification
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     left.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    touchRight.setMode(DigitalChannel.Mode.INPUT);
+    touchLeft.setMode(DigitalChannel.Mode.INPUT);
     waitForStart();
 
-    telemetry.addData("going", true);
-    telemetry.update();
-    right.setPower(1.0);
-    left.setPower(1.0);
-    crazy.setPower(1);
-    telemetry.addData("made it here", true);
-    telemetry.update();
     DriveUntilTouch();
 
    // DistancetoRate(20, DistanceUnit.INCH, 10);
@@ -248,16 +240,25 @@ public class Sensors extends LinearOpMode {
     }
 
     }
+    private boolean LeftPressed(){
+    return !touchLeft.getState();
+    }
+    private boolean RightPressed(){
+    return !touchRight.getState();
+    }
     //a method that drives until both touch sensors are pressed
     private void DriveUntilTouch(){
 
-    while (!touchLeft.isPressed() && !touchRight.isPressed()){
-        right.setPower(0.2);
-        left.setPower(0.2);
-    }
-    right.setPower(powerOff);
-    left.setPower(powerOff);
+    while (!LeftPressed() || !RightPressed()){
+    telemetry.addData("left pressed: ", LeftPressed());
+    telemetry.addData("right pressed: ", RightPressed());
+    telemetry.update();
+    left.setPower(-0.2);
+    right.setPower(-0.2);
 
+    }
+    left.setPower(powerOff);
+    right.setPower(powerOff);
 
     }
 
