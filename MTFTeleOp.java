@@ -2,15 +2,18 @@ package org.firstinspires.ftc.teamcode.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "MTF TeleOp", group = "Default")
 public class MTFTeleOp extends LinearOpMode {
 
     private DcMotor left, left1, right1, right, hangingMotor, pivotMotor, slideMotor; //declares
     private DigitalChannel touchLower, touchUpper;
+    private CRServo collector;
 
     private boolean collecting;
 @Override
@@ -25,6 +28,7 @@ public class MTFTeleOp extends LinearOpMode {
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
     pivotMotor = hardwareMap.get("pivotMotor");
     slideMotor = hardwareMap.get("slideMotor");
+    collector = hardwareMap.crservo.get("collector");
 
 
 
@@ -51,6 +55,13 @@ public class MTFTeleOp extends LinearOpMode {
             else if (!collecting){
                 collecting = true
             }
+    }
+
+    if (collecting){
+            collector.setPower(100);
+    }
+    else {
+            collector.setPower(0);
     }
 
     slideMotor.setPower(gamepad2.right_stick_y);
