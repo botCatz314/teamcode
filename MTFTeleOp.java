@@ -26,8 +26,8 @@ public class MTFTeleOp extends LinearOpMode {
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     touchLower = hardwareMap.get(DigitalChannel.class, "touchLower");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
-    pivotMotor = hardwareMap.get("pivotMotor");
-    slideMotor = hardwareMap.get("slideMotor");
+    pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
+    slideMotor = hardwareMap.dcMotor.get("slideMotor");
     collector = hardwareMap.crservo.get("collector");
 
 
@@ -48,12 +48,13 @@ public class MTFTeleOp extends LinearOpMode {
         right.setPower(-gamepad1.right_stick_y); //sets right motor power
         right1.setPower(-gamepad1.right_stick_y);
 
-        gamepad2.x {
+        if(gamepad2.x)
+        {
             if (collecting){
-                collecting = false
+                collecting = false;
             }
             else if (!collecting){
-                collecting = true
+                collecting = true;
             }
     }
 

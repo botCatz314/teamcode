@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous (name = "Sensors")
 public class Sensors extends LinearOpMode {
 
-    private DcMotor left, right; // declare drive motor variables
+    private DcMotor left, right, hangingMotor; // declare drive motor variables
 
     private DistanceSensor rangeLeft, rangeRight; //declares range sensor variables
 
@@ -30,6 +30,7 @@ public class Sensors extends LinearOpMode {
     //sets drive motors
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
+    hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     //sets range sensors
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
@@ -49,11 +50,7 @@ public class Sensors extends LinearOpMode {
     touchLeft.setMode(DigitalChannel.Mode.INPUT);
     waitForStart();
 
-    DriveUntilTouch();
-    telemetry.addData("right: ", colorRight.blue());
-    telemetry.addData("left: ", colorLeft.blue());
-    telemetry.update();
-    sleep(10000);
+    HangingApparatus();
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
@@ -263,6 +260,12 @@ public class Sensors extends LinearOpMode {
     left.setPower(powerOff);
     right.setPower(powerOff);
 
+    }
+    private void HangingApparatus(){
+        while(!RightPressed()){
+            hangingMotor.setPower(1);
+        }
+        hangingMotor.setPower(powerOff);
     }
 
 }

@@ -84,7 +84,7 @@ public class MtFAuto extends LinearOpMode {
     detector.setAlignSettings(0, 1000);
     detector.enable();
 
-    phoneServo.setPosition(1);
+   // phoneServo.setPosition(1);
     sleep(1000);
 
     waitForStart();
@@ -94,7 +94,7 @@ public class MtFAuto extends LinearOpMode {
     GetGoldPos(); //determines where gold is
     Sampling(position); //hits the gold*/
 
-    
+
     //get working through at least here
   /*  sleep(1000);
     DriveUntilDistanceReverse(10, DistanceUnit.INCH);
