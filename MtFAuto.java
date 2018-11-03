@@ -7,19 +7,31 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous (name = "MtFAuto")
 public class MtFAuto extends LinearOpMode {
 
-    private DcMotor left, right; // declare drive motor variables
+    private DcMotor left, right, left1, right1; // declare drive motor variables
+
+    private DcMotor hangingMotor;
 
     private DistanceSensor rangeLeft, rangeRight; //declares range sensor variables
 
     private ColorSensor colorLeft, colorRight; //declares color sensor variables
 
-    private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
+    private DigitalChannel touchLower, touchUpper; //declares touch sensor variables
+
+    private Servo phoneServo;
+
+    private GoldAlignDetector detector;
+
+    private String position = null;
 
     private double powerOff = 0; //declares common powers that we use
 @Override
@@ -27,6 +39,11 @@ public class MtFAuto extends LinearOpMode {
     //sets drive motors
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
+    left1 = hardwareMap.dcMotor.get("left1");
+    right1 = hardwareMap.dcMotor.get("right1");
+
+    hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+
     //sets range sensors
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
@@ -34,23 +51,86 @@ public class MtFAuto extends LinearOpMode {
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     colorRight = hardwareMap. get(ColorSensor.class, "colorRight");
     //sets touch sensor variables
-    touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
-    touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+    touchLower = hardwareMap.get(DigitalChannel.class, "touchLower");
+    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
 
    //sets up drive motors to our specification
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    left1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    right1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     left.setDirection(DcMotorSimple.Direction.REVERSE);
+    left1.setDirection(DcMotorSimple.Direction.REVERSE);
+    hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    touchRight.setMode(DigitalChannel.Mode.INPUT);
-    touchLeft.setMode(DigitalChannel.Mode.INPUT);
+    touchUpper.setMode(DigitalChannel.Mode.INPUT);
+    touchLower.setMode(DigitalChannel.Mode.INPUT);
+
+    //set up Doge CV Detector
+    detector = new GoldAlignDetector();
+    detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+    detector.useDefaults();
+
+    detector.alignSize = 10;
+    detector.alignPosOffset = 5000;
+    detector.downscale = 0.4;
+
+    detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
+    detector.maxAreaScorer.weight = 0.005;
+
+    detector.ratioScorer.weight = 5;
+    detector.ratioScorer.perfectRatio = 0.8;
+
+    detector.setAlignSettings(0, 1000);
+    detector.enable();
+
+    phoneServo.setPosition(1);
+    sleep(1000);
+
     waitForStart();
+    HangingApparatus(); //lowers from hanging position
+    /*DrivetoLine(23, 11, 0.4,0.4,true);//goes to blue line
+    lineUp(23, 11, 0.2,0.2); //straightens
+    GetGoldPos(); //determines where gold is
+    Sampling(position); //hits the gold*/
 
-    DriveUntilTouch();
+    
+    //get working through at least here
+  /*  sleep(1000);
+    DriveUntilDistanceReverse(10, DistanceUnit.INCH);
+    TurnLeft(0.2, 200);
+    DistancetoRate(15,DistanceUnit.INCH, 10);
+    Straighten(DistanceUnit.INCH);
+    TurnLeft(0.2, 300);
+    DriveUntilDistance(30, DistanceUnit.INCH);
+    DrivetoLine(23,11,0.4,0.4,false);
+    */
 
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
+    }
+    private void TurnLeft(double power, long time){
+        left.setPower(-power);
+        right.setPower(power);
+        right1.setPower(power);
+        left1.setPower(-power);
+        sleep(time);
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+        right1.setPower(powerOff);
+        left1.setPower(powerOff);
+    }
+    private void TurnRight(double power, long time){
+        left.setPower(power);
+        right.setPower(-power);
+        right1.setPower(-power);
+        left1.setPower(power);
+        sleep(time);
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+        right1.setPower(powerOff);
+        left1.setPower(powerOff);
     }
     //returns whether the left range sensor is reading less than a certain value
     private boolean InRangeLeft(double target, DistanceUnit units){
@@ -77,16 +157,41 @@ public class MtFAuto extends LinearOpMode {
         //powers drive motors
         left.setPower(0.5);
         right.setPower(0.5);
+        right1.setPower(0.5);
+        left1.setPower(0.5);
     }
     //goes until the sensor is within the range of the target
     while (!InRangeLeft(target, unit )){
         //sets drive power
         left.setPower(0.1);
         right.setPower(0.1);
+        right1.setPower(0.1);
+        left1.setPower(0.1);
+
     }
     //turns off drive motors
     left.setPower(powerOff);
     right.setPower(powerOff);
+    right1.setPower(powerOff);
+    left1.setPower(powerOff);
+    }
+    private void DriveUntilDistanceReverse(double target, DistanceUnit units){
+    while(InRangeLeft(target + 10, units)){
+        left.setPower(-0.5);
+        right.setPower(-0.5);
+        right1.setPower(-0.5);
+        left1.setPower(-0.5);
+        }
+        while(InRangeLeft(target, units)){
+        left.setPower(-0.1);
+        right.setPower(-0.1);
+        right1.setPower(-0.1);
+        left1.setPower(-0.1);
+        }
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+        right1.setPower(powerOff);
+        left1.setPower(powerOff);
     }
     //converts the distance read by the range sensor to a speed for drive motors
     private void DistancetoRate(double stoptarget, DistanceUnit unit, double time){
@@ -112,10 +217,14 @@ public class MtFAuto extends LinearOpMode {
         //sets drive motors to the angular rate value
         left.setPower(angularRateLeft);
         right.setPower(angularRateRight);
+        left1.setPower(angularRateLeft);
+        right1.setPower(angularRateRight);
     }
     //turns off drive motors
     right.setPower(powerOff);
     left.setPower(powerOff);
+    right1.setPower(powerOff);
+    left1.setPower(powerOff);
     //waits one second to give robot to fully stop
     sleep(1000);
     //if right wheel is further away than left wheel, turns the right wheel
@@ -124,9 +233,11 @@ public class MtFAuto extends LinearOpMode {
         while(!InRangeLeft(rangeRight.getDistance(unit), unit)) {
             //turns right wheel
             right.setPower(0.1);
+            right1.setPower(0.1);
             }
         //turns off right drive motor
         right.setPower(powerOff);
+        right1.setPower(powerOff);
         }
     //if left wheel is further away than right wheel, turns the left wheel
     if(rangeLeft.getDistance(unit) > rangeRight.getDistance(unit)){
@@ -134,9 +245,11 @@ public class MtFAuto extends LinearOpMode {
         while(!InRangeRight(rangeLeft.getDistance(unit), unit)){
             //turns left wheel
             left.setPower(0.1);
+            left1.setPower(0.1);
             }
         //turns off left drive motor
         left.setPower(powerOff);
+        left1.setPower(powerOff);
         }
     }
     //determines if the color sensor's reading is in between two values
@@ -153,32 +266,42 @@ public class MtFAuto extends LinearOpMode {
     while(!WithinColorRange(max, min, colorRight)){
         //sets right drive power
         right.setPower(rightPower);
+        right1.setPower(rightPower);
      }
      //turns off right drive power
     right.setPower(powerOff);
+    right1.setPower(powerOff);
    //moves left motor until the color sensor reads the line's color range
     while(!WithinColorRange(max, min, colorLeft)){
             //sets left drive power
             left.setPower(leftPower);
+            left1.setPower(leftPower);
         }
         //turns off left drive power
         left.setPower(powerOff);
+        left1.setPower(powerOff);
     //moves left motor until the color sensor reads the non-line's color range
     while(!WithinColorRange(23, 11, colorLeft)){
         //sets left drive power
         left.setPower(leftPower);
+        left1.setPower(leftPower);
     }
     //turns off left drive power
     left.setPower(powerOff);
+    left1.setPower(powerOff);
     //moves right motor forward and left motor backwards until right motor reads the non-line's color range
     while(!WithinColorRange(21, 11, colorRight)){
         //sets drive motor's powers
         right.setPower(0.1);
         left.setPower(-0.1);
+        right1.setPower(0.1);
+        left1.setPower(-0.1);
     }
     //turns off drive motors
     left.setPower(powerOff);
     right.setPower(powerOff);
+    right1.setPower(powerOff);
+    left1.setPower(powerOff);
     }
 
     //stops the robot when the color sensor reads within the set range
@@ -188,20 +311,28 @@ public class MtFAuto extends LinearOpMode {
         //sets drive motors to respective powers set in the calling of the method
         right.setPower(rightPower);
         left.setPower(leftPower);
+        right1.setPower(rightPower);
+        left1.setPower(leftPower);
         }
         //turns power off
         left.setPower(powerOff);
         right.setPower(powerOff);
+        left1.setPower(powerOff);
+        right1.setPower(powerOff);
         //if backup variable set in calling of the method is true
         if(backup){
             //back up until right behind the line we drove to
             while(!WithinColorRange(23,11, colorRight)){
                 right.setPower(-0.1);
                 left.setPower(-0.1);
+                left1.setPower(-0.1);
+                right1.setPower(-0.1);
             }
             //turns drive power off
             left.setPower(powerOff);
             right.setPower(powerOff);
+            right1.setPower(powerOff);
+            left1.setPower(powerOff);
         }
     }
     //uses the range sensor to square robot relative to a surface
@@ -221,34 +352,42 @@ public class MtFAuto extends LinearOpMode {
             //sets motor powers
             right.setPower(-0.25);
             left.setPower(0.25);
+            left1.setPower(0.25);
+            right1.setPower(-0.25);
         }
         //turns off motor power
         right.setPower(powerOff);
         left.setPower(powerOff);
+        left1.setPower(powerOff);
+        right1.setPower(powerOff);
         //turns left if the left range is less than the right
         if(leftRange < rightRange){
             //sets motor power
             left.setPower(-0.25);
             right.setPower(0.25);
+            right1.setPower(0.25);
+            left.setPower(-0.25);
         }
         //turns drive motor power off
         right.setPower(powerOff);
         left.setPower(powerOff);
+        right1.setPower(powerOff);
+        left1.setPower(powerOff);
     }
 
     }
-    private boolean LeftPressed(){
-    return !touchLeft.getState();
+    private boolean LowerPressed(){
+    return !touchLower.getState();
     }
-    private boolean RightPressed(){
-    return !touchRight.getState();
+    private boolean UpperPressed(){
+    return !touchUpper.getState();
     }
     //a method that drives until both touch sensors are pressed
-    private void DriveUntilTouch(){
+    /*private void DriveUntilTouch(){
 
     while (!LeftPressed() || !RightPressed()){
-    telemetry.addData("left pressed: ", LeftPressed());
-    telemetry.addData("right pressed: ", RightPressed());
+    telemetry.addData("left pressed: ", LowerPressed());
+    telemetry.addData("right pressed: ", UpperPressed());
     telemetry.update();
     left.setPower(-0.2);
     right.setPower(-0.2);
@@ -258,7 +397,72 @@ public class MtFAuto extends LinearOpMode {
     right.setPower(powerOff);
 
     }
+*/
+    private String GetGoldPos(){
+    if(detector.getAligned()){
+        telemetry.addData("sees gold: ", true);
+        telemetry.update();
+        phoneServo.setPosition(phoneServo.getPosition() - 0.01);
+        if(detector.getAligned()){
+            telemetry.addData("Gold's position determined: ", true);
+            telemetry.update();
+            position = "Right";
+        }
+    }
+    phoneServo.setPosition(0.5);
+    sleep(1000);
+    if(detector.getAligned() && position ==null){
+        telemetry.addData("sees gold: ", true);
+        telemetry.update();
+        phoneServo.setPosition(phoneServo.getPosition() - 0.01);
+        if(detector.getAligned()){
+            telemetry.addData("Gold's position determined: ", true);
+            telemetry.update();
+            position = "left";
+        }
+    }
+    else if(position ==null){
+        position = "center";
+    }
+    detector.disable();
+    return position;
+    }
 
+    private void HangingApparatus(){
+        while(!UpperPressed()){
+            hangingMotor.setPower(1);
+        }
+        hangingMotor.setPower(powerOff);
+    }
+    private void Sampling(String pos){
+        if(pos == "Left"){
+            left.setPower(-0.2);
+            right.setPower(0.2);
+            right1.setPower(0.2);
+            left1.setPower(-0.2);
+            sleep(450);
+            right.setPower(powerOff);
+            left.setPower(powerOff);
+            right1.setPower(powerOff);
+            left1.setPower(powerOff);
+            DriveUntilDistance(5,DistanceUnit.INCH);
+        }
+        if(pos =="Right"){
+            left.setPower(0.2);
+            right.setPower(-0.2);
+            left1.setPower(0.2);
+            right1.setPower(-0.2);
+            sleep(375);
+            left.setPower(powerOff);
+            right.setPower(powerOff);
+            right1.setPower(powerOff);
+            left1.setPower(powerOff);
+            DriveUntilDistance(5, DistanceUnit.INCH);
+        }
+        if(pos == "Center"){
+            DriveUntilDistance(5, DistanceUnit.INCH);
+        }
+    }
 }
 
 

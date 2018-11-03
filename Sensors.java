@@ -50,7 +50,10 @@ public class Sensors extends LinearOpMode {
     waitForStart();
 
     DriveUntilTouch();
-
+    telemetry.addData("right: ", colorRight.blue());
+    telemetry.addData("left: ", colorLeft.blue());
+    telemetry.update();
+    sleep(10000);
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
