@@ -51,6 +51,11 @@ public class Sensors extends LinearOpMode {
     waitForStart();
 
     HangingApparatus();
+    left.setPower(0.2);
+    right.setPower(0.2);
+    sleep(2000);
+    right.setPower(0);
+    left.setPower(0);
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
