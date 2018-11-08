@@ -17,5 +17,6 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.addData("Color Left: ", colorLeft.blue());
     telemetry.addData("Color Right: ", colorRight.blue());
     telemetry.update();
+    sleep(20000);
 }
 }

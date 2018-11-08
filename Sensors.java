@@ -20,17 +20,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Sensors extends LinearOpMode {
 
     private GoldAlignDetector detector;
-    private DcMotor left, right, hangingMotor; // declare drive motor variables
+    public static DcMotor left, right, hangingMotor; // declare drive motor variables
 
     private DistanceSensor rangeLeft, rangeRight; //declares range sensor variables
 
-    private ColorSensor colorLeft, colorRight; //declares color sensor variables
+    public static ColorSensor colorLeft, colorRight; //declares color sensor variables
 
     private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
 
-    private String position = null;
+    public static String position = null;
 
-    private double powerOff = 0; //declares common powers that we use
+    public static double powerOff = 0; //declares common powers that we use
 @Override
     public void runOpMode() {
     //sets drive motors
@@ -168,7 +168,7 @@ public class Sensors extends LinearOpMode {
         }
     }
     //determines if the color sensor's reading is in between two values
-    private boolean WithinColorRange(int max, int min, ColorSensor sensor){
+    public static boolean WithinColorRange(int max, int min, ColorSensor sensor){
     //declares and sets a variable equal to the color sensor reading
     int color = sensor.blue();
     //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
@@ -176,7 +176,7 @@ public class Sensors extends LinearOpMode {
 
     }
     //uses color sensors to square along a colored line
-    private void LineUp(int max, int min, double leftPower, double rightPower){
+    public static void LineUp(int max, int min, double leftPower, double rightPower){
    //moves right wheel until it is on the color sensor reads the line's color range
     while(!WithinColorRange(max, min, colorRight)){
         //sets right drive power
@@ -210,7 +210,7 @@ public class Sensors extends LinearOpMode {
     }
 
     //stops the robot when the color sensor reads within the set range
-    private void DrivetoLine(int max, int min, double leftPower, double rightPower, boolean backup){
+    public static void DrivetoLine(int max, int min, double leftPower, double rightPower, boolean backup){
     //runs until it is within the set range
     while(!WithinColorRange(max, min, colorRight)){
         //sets drive motors to respective powers set in the calling of the method
