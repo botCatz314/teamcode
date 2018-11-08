@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.teamcode;
 
 import android.text.method.Touch;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -16,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Autonomous (name = "Sensors")
 public class Sensors extends LinearOpMode {
 
+    private GoldAlignDetector detector;
     private DcMotor left, right, hangingMotor; // declare drive motor variables
 
     private DistanceSensor rangeLeft, rangeRight; //declares range sensor variables
@@ -23,6 +27,8 @@ public class Sensors extends LinearOpMode {
     private ColorSensor colorLeft, colorRight; //declares color sensor variables
 
     private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
+
+    private String position = null;
 
     private double powerOff = 0; //declares common powers that we use
 @Override
@@ -48,14 +54,28 @@ public class Sensors extends LinearOpMode {
 
     touchRight.setMode(DigitalChannel.Mode.INPUT);
     touchLeft.setMode(DigitalChannel.Mode.INPUT);
+
+    detector = new GoldAlignDetector();
+    detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+    detector.useDefaults();
+
+    detector.alignSize = 10;
+    detector.alignPosOffset = 5000;
+    detector.downscale = 0.4;
+
+    detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
+    detector.maxAreaScorer.weight = 0.005;
+
+    detector.ratioScorer.weight = 5;
+    detector.ratioScorer.perfectRatio = 0.8;
+
+    detector.setAlignSettings(0, 1000);
+    detector.enable();
     waitForStart();
 
     HangingApparatus();
-    left.setPower(0.2);
-    right.setPower(0.2);
-    sleep(2000);
-    right.setPower(0);
-    left.setPower(0);
+    DrivetoLine(50, 42, 0.3, 0.3,true);
+    LineUp(50,42,0.2,0.2);
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
@@ -156,7 +176,7 @@ public class Sensors extends LinearOpMode {
 
     }
     //uses color sensors to square along a colored line
-    private void lineUp(int max, int min, double leftPower, double rightPower){
+    private void LineUp(int max, int min, double leftPower, double rightPower){
    //moves right wheel until it is on the color sensor reads the line's color range
     while(!WithinColorRange(max, min, colorRight)){
         //sets right drive power
@@ -179,7 +199,7 @@ public class Sensors extends LinearOpMode {
     //turns off left drive power
     left.setPower(powerOff);
     //moves right motor forward and left motor backwards until right motor reads the non-line's color range
-    while(!WithinColorRange(21, 11, colorRight)){
+    while(!WithinColorRange(23, 11, colorRight)){
         //sets drive motor's powers
         right.setPower(0.1);
         left.setPower(-0.1);
@@ -203,9 +223,9 @@ public class Sensors extends LinearOpMode {
         //if backup variable set in calling of the method is true
         if(backup){
             //back up until right behind the line we drove to
-            while(!WithinColorRange(23,11, colorRight)){
-                right.setPower(-0.1);
-                left.setPower(-0.1);
+            while(!WithinColorRange(25,13, colorRight)){
+                right.setPower(-0.2);
+                left.setPower(-0.2);
             }
             //turns drive power off
             left.setPower(powerOff);

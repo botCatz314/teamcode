@@ -89,6 +89,8 @@ public class MtFAuto extends LinearOpMode {
 
     waitForStart();
     HangingApparatus(); //lowers from hanging position
+    DriveForward(0.4, 1000);
+
     /*DrivetoLine(23, 11, 0.4,0.4,true);//goes to blue line
     lineUp(23, 11, 0.2,0.2); //straightens
     GetGoldPos(); //determines where gold is
@@ -109,6 +111,13 @@ public class MtFAuto extends LinearOpMode {
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
+    }
+    private void DriveForward(double power, long time){
+        left.setPower(power);
+        right.setPower(power);
+        sleep(time);
+        left.setPower(powerOff);
+        right.setPower(powerOff);
     }
     private void TurnLeft(double power, long time){
         left.setPower(-power);
