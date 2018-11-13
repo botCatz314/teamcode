@@ -37,14 +37,25 @@ import com.disnodeteam.dogecv.filters.HSVColorFilter;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="Sampling Order Example", group="DogeCV")
 
 public class SamplingOrderExample extends OpMode
 {
     private SamplingOrderDetector detector;
-
+    BNO055IMU imu;
+    Orientation lastAngles = new Orientation();
+    double globalAngle, correction;
+    private DcMotor left, right;
 
     @Override
     public void init() {
@@ -65,6 +76,10 @@ public class SamplingOrderExample extends OpMode
         detector.ratioScorer.perfectRatio = 1.0;
 
         detector.enable();
+
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
+
 
 
     }
