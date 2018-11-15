@@ -34,6 +34,7 @@ public class AutonomousTest extends LinearOpMode {
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    right.setDirection(DcMotorSimple.Direction.REVERSE);
 
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -50,7 +51,17 @@ public class AutonomousTest extends LinearOpMode {
         sleep(50);
         idle();
     }
+    telemetry.addData("mode: ", "ready");
+    telemetry.update();
     waitForStart();
+
+    DriveUntilTouch();
+   // GyroTurn(85, 0.2);
+    while(opModeIsActive()){
+        telemetry.addData("check Direction: ", CheckDirection());
+        telemetry.addData("angles: ", GetAngles());
+        telemetry.update();
+    }
     telemetry.addData("Color Left: ", colorLeft.blue());
     telemetry.addData("Color Right: ", colorRight.blue());
     telemetry.update();
@@ -161,7 +172,7 @@ private void GyroStraightening(double power){
             telemetry.addData("left pressed: ", LeftPressed());
             telemetry.addData("right pressed: ", RightPressed());
             telemetry.update();
-            GyroStraightening(0.5);
+            GyroStraightening(0.3);
         }
         //turns off drive power
         left.setPower(powerOff);
