@@ -139,9 +139,11 @@ private void GyroTurn(int degrees, double power){
     //resets the value of the angle variables
     ResetAngles();
 }
+//adjusts the drive power to keep robot on a 0 degree heading
 private void GyroStraightening(double power){
+    //sets correction to CheckDirection
     correction = CheckDirection();
-
+    //sets drive power relative to gyro reading 
     left.setPower(-power + correction);
     right.setPower(-power);
 }
