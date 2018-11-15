@@ -265,12 +265,8 @@ public class Sensors extends LinearOpMode {
     }
 
     }
-    private boolean LeftPressed(){
-    return !touchLeft.getState();
-    }
-    private boolean RightPressed(){
-    return !touchRight.getState();
-    }
+    private boolean LeftPressed(){return !touchLeft.getState(); }
+    private boolean RightPressed(){ return !touchRight.getState();}
     //a method that drives until both touch sensors are pressed
     private void DriveUntilTouch(){
 

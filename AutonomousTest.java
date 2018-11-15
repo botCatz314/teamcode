@@ -13,21 +13,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorLeft, colorRight;
     private DcMotor left, right;
-    BNO055IMU imu;
-    Orientation lastAngles = new Orientation();
-    double correction, globalAngle, powerOff = 0;
+    private BNO055IMU imu;
+    private Orientation lastAngles = new Orientation();
+    private double correction, globalAngle, powerOff = 0;
+    private DigitalChannel touchLeft, touchRight;
 @Override
     public void runOpMode() {
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
+    touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
+    touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -143,8 +147,24 @@ private void GyroTurn(int degrees, double power){
 private void GyroStraightening(double power){
     //sets correction to CheckDirection
     correction = CheckDirection();
-    //sets drive power relative to gyro reading 
+    //sets drive power relative to gyro reading
     left.setPower(-power + correction);
     right.setPower(-power);
 }
+    //returns true if touch sensor is pressed
+    private boolean LeftPressed(){return !touchLeft.getState(); }
+    private boolean RightPressed(){ return !touchRight.getState();}
+    //a method that drives until both touch sensors are pressed
+    private void DriveUntilTouch(){
+        //while either left or right is not pressed, drives with gyro straightening
+        while (!LeftPressed() || !RightPressed()){
+            telemetry.addData("left pressed: ", LeftPressed());
+            telemetry.addData("right pressed: ", RightPressed());
+            telemetry.update();
+            GyroStraightening(0.5);
+        }
+        //turns off drive power
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+    }
 }
