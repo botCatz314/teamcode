@@ -14,11 +14,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorLeft, colorRight;
+    private DistanceSensor rangeLeft;
     private DcMotor left, right;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
@@ -32,6 +33,7 @@ public class AutonomousTest extends LinearOpMode {
     right = hardwareMap.dcMotor.get("right");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+    rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeRight");
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -53,10 +55,12 @@ public class AutonomousTest extends LinearOpMode {
     }
     telemetry.addData("mode: ", "ready");
     telemetry.update();
+    right.setDirection(DcMotorSimple.Direction.FORWARD);
+    left.setDirection(DcMotorSimple.Direction.REVERSE);
     waitForStart();
 
-    DriveUntilTouch();
-   // GyroTurn(85, 0.2);
+   //DriveUntilTouch(1.0);
+   GyroTurn(90, 0.2);
     while(opModeIsActive()){
         telemetry.addData("check Direction: ", CheckDirection());
         telemetry.addData("angles: ", GetAngles());
@@ -114,21 +118,23 @@ private void ResetAngles(){
     //sets global angle to 0
     globalAngle = 0;
 }
-//turns using the gyro to determine distance
+//turns using the gyro to determine distance; works best at 0.2 power
 private void GyroTurn(int degrees, double power){
+    int offset = 5;
+    degrees = degrees - offset;
     //declares two variables to hold the power of the left and right drive motors
     double leftPower, rightPower;
     //sets angle variables to starting values
     ResetAngles();
     //if it is less than 0, sets drive motors to turn right
     if(degrees < 0){
-        leftPower = -power;
-        rightPower = power;
+        leftPower = power;
+        rightPower = -power;
     }
     //otherwise, if the value of degrees is greater than 0, sets drive motors to turn left
     else if(degrees > 0){
-         leftPower = power;
-         rightPower = -power;
+         leftPower = -power;
+         rightPower = power;
     }
     //otherwise do nothing
     else return;
@@ -159,20 +165,20 @@ private void GyroStraightening(double power){
     //sets correction to CheckDirection
     correction = CheckDirection();
     //sets drive power relative to gyro reading
-    left.setPower(-power + correction);
-    right.setPower(-power);
+    left.setPower(power - correction);
+    right.setPower(power);
 }
     //returns true if touch sensor is pressed
     private boolean LeftPressed(){return !touchLeft.getState(); }
     private boolean RightPressed(){ return !touchRight.getState();}
     //a method that drives until both touch sensors are pressed
-    private void DriveUntilTouch(){
+    private void DriveUntilTouch(double power) {
         //while either left or right is not pressed, drives with gyro straightening
-        while (!LeftPressed() || !RightPressed()){
+        while (!LeftPressed() || !RightPressed()) {
             telemetry.addData("left pressed: ", LeftPressed());
             telemetry.addData("right pressed: ", RightPressed());
             telemetry.update();
-            GyroStraightening(0.3);
+            GyroStraightening(power);
         }
         //turns off drive power
         left.setPower(powerOff);
