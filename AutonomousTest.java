@@ -9,6 +9,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
@@ -33,7 +34,7 @@ public class AutonomousTest extends LinearOpMode {
     right = hardwareMap.dcMotor.get("right");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
-    rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeRight");
+    rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -57,11 +58,25 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
     right.setDirection(DcMotorSimple.Direction.FORWARD);
     left.setDirection(DcMotorSimple.Direction.REVERSE);
+
     waitForStart();
 
    //DriveUntilTouch(1.0);
+   GyroTurn(70, 0.2);
+   DrivebyRange(10,0.4);
+   DriveUntilTouch(0.2);
+   ResetAngles();
+   DrivebyRangeReverse(5, 0.4);
    GyroTurn(90, 0.2);
-    while(opModeIsActive()){
+   DrivebyRange(30, 1.0);
+    DrivebyColor(0.4);
+    sleep(5000);
+    right.setPower(-0.9);
+    left.setPower(-1);
+    sleep(3000);
+    right.setPower(0);
+    left.setPower(0);
+   while(opModeIsActive()){
         telemetry.addData("check Direction: ", CheckDirection());
         telemetry.addData("angles: ", GetAngles());
         telemetry.update();
@@ -178,10 +193,58 @@ private void GyroStraightening(double power){
             telemetry.addData("left pressed: ", LeftPressed());
             telemetry.addData("right pressed: ", RightPressed());
             telemetry.update();
-            GyroStraightening(power);
+            right.setPower(0.2);
+            left.setPower(0.4);
         }
         //turns off drive power
         left.setPower(powerOff);
         right.setPower(powerOff);
     }
+    private boolean InRangeLeft(double target, DistanceUnit units){
+        //creates a variable to hold the range sensor's reading
+        double distance;
+        //sets the distance variable to the value that the range sensor reads
+        distance = rangeLeft.getDistance(units);
+        //returns true if the robot is closer to the target than the target position
+        return (distance <= target);
+    }
+    private void DrivebyRange(double distance, double power){
+    while(!InRangeLeft(distance, DistanceUnit.INCH)){
+        GyroStraightening(power);
+    }
+    right.setPower(powerOff);
+    left.setPower(powerOff);
+}
+private void DrivebyRangeReverse(double distance, double power){
+    while(InRangeLeft(distance, DistanceUnit.INCH)){
+        GyroStraightening(-power);
+    }
+    left.setPower(powerOff);
+    right.setPower(powerOff);
+}
+private void DrivebyColor(double power){
+    while(!WithinColorRange(50, 42, colorLeft)){
+        GyroStraightening(power);
+    }
+    left.setPower(powerOff);
+    right.setPower(powerOff);
+
+}
+private boolean WithinColorRange(int max, int min, ColorSensor sensor){
+        //declares and sets a variable equal to the color sensor reading
+        int color = sensor.blue();
+        //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
+        return(color <= max && color >= min);
+
+    }
+private void GyroTime(double power, double time){
+    int timer = 0;
+    while(timer < time){
+        GyroStraightening(power);
+        sleep(100);
+        timer++;
+    }
+    left.setPower(powerOff);
+    right.setPower(powerOff);
+}
 }
