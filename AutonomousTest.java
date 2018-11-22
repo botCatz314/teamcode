@@ -16,28 +16,51 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.robotcore.util.Hardware;
+import com.qualcomm.robotcore.util.Range;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-    private ColorSensor colorLeft, colorRight;
-    private DistanceSensor rangeLeft;
+    private ColorSensor colorRight;
+    private DistanceSensor rangeLeft, rangeHigh;
     private DcMotor left, right;
+    private Servo phoneServo;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
     private DigitalChannel touchLeft, touchRight;
+    private GoldAlignDetector detector;
+    private String position = null;
 @Override
     public void runOpMode() {
-    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+   // colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
+    phoneServo = hardwareMap.servo.get("phoneServo");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
+    rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setDirection(DcMotorSimple.Direction.REVERSE);
+
+    detector = new GoldAlignDetector();
+    detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+    detector.useDefaults();
+    detector.alignSize = 10;
+    detector.alignPosOffset = 5000;
+    detector.downscale = 0.4;
+    detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
+    detector.maxAreaScorer.weight = 0.005;
+    detector.ratioScorer.weight = 5;
+    detector.ratioScorer.perfectRatio = 0.8;
+    detector.setAlignSettings(0,1000);
+    detector.enable();
 
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -59,32 +82,33 @@ public class AutonomousTest extends LinearOpMode {
     right.setDirection(DcMotorSimple.Direction.FORWARD);
     left.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    waitForStart();
+    phoneServo.setPosition(0.9);
 
-   //DriveUntilTouch(1.0);
+    waitForStart();
+    DrivebyColor(0.4, colorRight);
+    Sampling();
    GyroTurn(70, 0.2);
-   DrivebyRange(10,0.4);
+   DrivebyRange(10,0.4, rangeLeft);
    DriveUntilTouch(0.2);
    ResetAngles();
-   DrivebyRangeReverse(5, 0.4);
+   DrivebyRangeReverse(5, 0.4, rangeLeft);
    GyroTurn(90, 0.2);
-   DrivebyRange(30, 1.0);
-    DrivebyColor(0.4);
+   DrivebyRange(30, 1.0, rangeLeft);
+    DrivebyColor(0.4, colorRight);
     sleep(5000);
     right.setPower(-0.9);
     left.setPower(-1);
     sleep(3000);
     right.setPower(0);
     left.setPower(0);
+
+
+
    while(opModeIsActive()){
         telemetry.addData("check Direction: ", CheckDirection());
         telemetry.addData("angles: ", GetAngles());
         telemetry.update();
     }
-    telemetry.addData("Color Left: ", colorLeft.blue());
-    telemetry.addData("Color Right: ", colorRight.blue());
-    telemetry.update();
-    sleep(20000);
 }
 //gets the reading from the imu and converts the angle to be cumulative
 private double GetAngles(){
@@ -200,51 +224,101 @@ private void GyroStraightening(double power){
         left.setPower(powerOff);
         right.setPower(powerOff);
     }
-    private boolean InRangeLeft(double target, DistanceUnit units){
+    private boolean InRange(double target, DistanceUnit units, DistanceSensor range){
         //creates a variable to hold the range sensor's reading
         double distance;
         //sets the distance variable to the value that the range sensor reads
-        distance = rangeLeft.getDistance(units);
+        distance = range.getDistance(units);
         //returns true if the robot is closer to the target than the target position
         return (distance <= target);
     }
-    private void DrivebyRange(double distance, double power){
-    while(!InRangeLeft(distance, DistanceUnit.INCH)){
+    private void DrivebyRange(double distance, double power, DistanceSensor range){
+    while(!InRange(distance, DistanceUnit.INCH, range)){
         GyroStraightening(power);
     }
     right.setPower(powerOff);
     left.setPower(powerOff);
 }
-private void DrivebyRangeReverse(double distance, double power){
-    while(InRangeLeft(distance, DistanceUnit.INCH)){
+private void DrivebyRangeReverse(double distance, double power, DistanceSensor range){
+    while(InRange(distance, DistanceUnit.INCH, range)){
         GyroStraightening(-power);
     }
     left.setPower(powerOff);
     right.setPower(powerOff);
 }
-private void DrivebyColor(double power){
-    while(!WithinColorRange(50, 42, colorLeft)){
+private void DrivebyColor(double power, ColorSensor colorSensor){
+    while(!WithinColorRange(50, 42, colorSensor)){
         GyroStraightening(power);
     }
     left.setPower(powerOff);
     right.setPower(powerOff);
 
 }
-private boolean WithinColorRange(int max, int min, ColorSensor sensor){
-        //declares and sets a variable equal to the color sensor reading
-        int color = sensor.blue();
-        //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
-        return(color <= max && color >= min);
+private boolean WithinColorRange(int max, int min, ColorSensor sensor) {
+    //declares and sets a variable equal to the color sensor reading
+    int color = sensor.blue();
+    //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
+    return (color <= max && color >= min);
 
+}
+private String GetPosition(){
+    if(detector.getAligned()){
+        position = "Right";
     }
-private void GyroTime(double power, double time){
-    int timer = 0;
-    while(timer < time){
-        GyroStraightening(power);
-        sleep(100);
-        timer++;
+    if(position == null) {
+        phoneServo.setPosition(0.5);
+        sleep(500);
+        if(detector.getAligned()){
+            position = "Left";
+        }
+        else if(!detector.getAligned()){
+            position = "Center";
+        }
     }
-    left.setPower(powerOff);
-    right.setPower(powerOff);
+    return position;
+}
+private void ColorStraightenSimple(double power){
+    if(WithinColorRange(50, 42, colorRight)){
+        /*while(!WithinColorRange(50, 42, colorLeft)){
+            left.setPower(power);
+            right.setPower(-power);
+        }*/
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+    }
+    /*else if(WithinColorRange(50, 42, colorLeft)){
+        while(!WithinColorRange(50, 42, colorRight)){
+            right.setPower(power);
+            left.setPower(-power);
+        }
+        right.setPower(powerOff);
+        left.setPower(powerOff);
+     }*/
+}
+private void Sampling(){
+    String position = GetPosition();
+    switch (position){
+        case("Center"):
+            DrivebyRange(7, 0.4, rangeLeft);
+            right.setPower(powerOff);
+            left.setPower(powerOff);
+            DrivebyRangeReverse(19, -0.4, rangeLeft);
+            break;
+        case("Left"):
+            GyroTurn(25, 0.2);
+            right.setPower(0.6);
+            left.setPower(0.6);
+            sleep(850);
+            right.setPower(powerOff);
+            left.setPower(powerOff);
+            break;
+        case("Right"):
+            GyroTurn(-25, 0.2);
+            DrivebyRangeReverse(29, -0.4, rangeHigh);
+            sleep(100);
+            DrivebyRange(23, -0.4, rangeHigh);
+            GyroTurn(35, 0.2);
+            break;
+        }
 }
 }
