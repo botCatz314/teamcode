@@ -33,7 +33,17 @@ public class BruteForceRedSilver extends LinearOpMode {
     left.setPower(.5);
     right.setPower(1);
     sleep(1500);
-
+left.setPower(-1);
+right.setPower(1);
+sleep(465);
+left.setPower(1);
+right.setPower(1);
+sleep(2500);
+right.setPower(1);
+sleep(250);
+left.setPower(-1);
+right.setPower(-1);
+sleep(2800);
 }
 
 }
