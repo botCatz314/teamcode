@@ -85,31 +85,26 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo.setPosition(0.9);
 
     waitForStart();
+
     DrivebyColor(0.4, colorRight);
     Sampling();
-   GyroTurn(70, 0.2);
-   DrivebyRange(10,0.4, rangeLeft);
-   DriveUntilTouch(0.2);
-   ResetAngles();
-   DrivebyRangeReverse(5, 0.4, rangeLeft);
-   GyroTurn(90, 0.2);
-   DrivebyRange(30, 1.0, rangeLeft);
-    DrivebyColor(0.4, colorRight);
+    telemetry.addData("gold:", GetPosition());
+    telemetry.update();
+    phoneServo.setPosition(0.5);
+    GyroTurn(70, 0.2);
+    DrivebyRange(10,0.4, rangeLeft);
+    DriveUntilTouch(0.4);
+    ResetAngles();
+    DrivebyRangeReverse(3, 0.4, rangeLeft);
+    GyroTurn(90, 0.2);
+    DrivebyRange(23, 1.0, rangeLeft);
     sleep(5000);
     right.setPower(-0.9);
     left.setPower(-1);
     sleep(3000);
     right.setPower(0);
     left.setPower(0);
-
-
-
-   while(opModeIsActive()){
-        telemetry.addData("check Direction: ", CheckDirection());
-        telemetry.addData("angles: ", GetAngles());
-        telemetry.update();
     }
-}
 //gets the reading from the imu and converts the angle to be cumulative
 private double GetAngles(){
     //declares and sets a variable to the reading of the imu
@@ -247,7 +242,7 @@ private void DrivebyRangeReverse(double distance, double power, DistanceSensor r
     right.setPower(powerOff);
 }
 private void DrivebyColor(double power, ColorSensor colorSensor){
-    while(!WithinColorRange(50, 42, colorSensor)){
+    while(!WithinColorRange(70, 42, colorSensor)){
         GyroStraightening(power);
     }
     left.setPower(powerOff);
@@ -267,7 +262,6 @@ private String GetPosition(){
     }
     if(position == null) {
         phoneServo.setPosition(0.5);
-        sleep(500);
         if(detector.getAligned()){
             position = "Left";
         }
@@ -295,28 +289,42 @@ private void ColorStraightenSimple(double power){
         left.setPower(powerOff);
      }*/
 }
+private void DriveByLander(double target, double power){
+    if(power < 0){
+        while(!InRange(target, DistanceUnit.INCH, rangeHigh)){
+            left.setPower(power);
+            right.setPower(power);
+        }
+        right.setPower(powerOff);
+        left.setPower(powerOff);
+    }
+    else if(power > 0){
+        while(InRange(target, DistanceUnit.INCH, rangeHigh)){
+            left.setPower(power);
+            right.setPower(power);
+        }
+        left.setPower(powerOff);
+        right.setPower(powerOff);
+    }
+}
+
 private void Sampling(){
     String position = GetPosition();
     switch (position){
         case("Center"):
-            DrivebyRange(7, 0.4, rangeLeft);
-            right.setPower(powerOff);
-            left.setPower(powerOff);
-            DrivebyRangeReverse(19, -0.4, rangeLeft);
+            DriveByLander(27, 0.4);
+            DriveByLander(13, -0.4);
             break;
         case("Left"):
             GyroTurn(25, 0.2);
-            right.setPower(0.6);
-            left.setPower(0.6);
-            sleep(850);
-            right.setPower(powerOff);
-            left.setPower(powerOff);
+            DriveByLander(29, 0.4);
+            DriveByLander(13, -0.4);
+            GyroTurn(-20, 0.2);
             break;
         case("Right"):
             GyroTurn(-25, 0.2);
             DrivebyRangeReverse(29, -0.4, rangeHigh);
-            sleep(100);
-            DrivebyRange(23, -0.4, rangeHigh);
+            DrivebyRange(17, -0.4, rangeHigh);
             GyroTurn(35, 0.2);
             break;
         }
