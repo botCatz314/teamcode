@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-    private ColorSensor colorRight;
+    private ColorSensor colorLeft;
     private DistanceSensor rangeLeft, rangeHigh;
     private DcMotor left, right;
     private Servo phoneServo;
@@ -37,7 +37,7 @@ public class AutonomousTest extends LinearOpMode {
 @Override
     public void runOpMode() {
    // colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
+    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
     phoneServo = hardwareMap.servo.get("phoneServo");
@@ -48,6 +48,7 @@ public class AutonomousTest extends LinearOpMode {
     left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     right.setDirection(DcMotorSimple.Direction.REVERSE);
+    left.setDirection(DcMotorSimple.Direction.FORWARD);
 
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -79,14 +80,14 @@ public class AutonomousTest extends LinearOpMode {
     }
     telemetry.addData("mode: ", "ready");
     telemetry.update();
-    right.setDirection(DcMotorSimple.Direction.FORWARD);
-    left.setDirection(DcMotorSimple.Direction.REVERSE);
 
     phoneServo.setPosition(0.9);
 
     waitForStart();
-
-    DrivebyColor(0.4, colorRight);
+    DrivebyColor(0.4, colorLeft);
+    sleep(500);
+    Sampling();
+    /* DrivebyColor(0.4, colorLeft);
     Sampling();
     telemetry.addData("gold:", GetPosition());
     telemetry.update();
@@ -102,8 +103,8 @@ public class AutonomousTest extends LinearOpMode {
     right.setPower(-0.9);
     left.setPower(-1);
     sleep(3000);
-    right.setPower(0);
-    left.setPower(0);
+    right.setPower(powerOff);
+    left.setPower(powerOff);*/
     }
 //gets the reading from the imu and converts the angle to be cumulative
 private double GetAngles(){
@@ -162,13 +163,13 @@ private void GyroTurn(int degrees, double power){
     ResetAngles();
     //if it is less than 0, sets drive motors to turn right
     if(degrees < 0){
-        leftPower = power;
-        rightPower = -power;
+        leftPower = -power;
+        rightPower = power;
     }
     //otherwise, if the value of degrees is greater than 0, sets drive motors to turn left
     else if(degrees > 0){
-         leftPower = -power;
-         rightPower = power;
+         leftPower = power;
+         rightPower = -power;
     }
     //otherwise do nothing
     else return;
@@ -272,7 +273,7 @@ private String GetPosition(){
     return position;
 }
 private void ColorStraightenSimple(double power){
-    if(WithinColorRange(50, 42, colorRight)){
+    if(WithinColorRange(50, 42, colorLeft)){
         /*while(!WithinColorRange(50, 42, colorLeft)){
             left.setPower(power);
             right.setPower(-power);
@@ -323,9 +324,14 @@ private void Sampling(){
             break;
         case("Right"):
             GyroTurn(-25, 0.2);
+            sleep(100);
             DrivebyRangeReverse(29, -0.4, rangeHigh);
+            sleep(500);
+            GyroTurn(20, -0.2);
             DrivebyRange(17, -0.4, rangeHigh);
+            sleep(500);
             GyroTurn(35, 0.2);
+            sleep(500);
             break;
         }
 }
