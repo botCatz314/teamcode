@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "MTF TeleOp", group = "Default")
 public class MTFTeleOp extends LinearOpMode {
@@ -37,20 +35,34 @@ public class MTFTeleOp extends LinearOpMode {
     touchUpper.setMode(DigitalChannel.Mode.INPUT);
 
 
-    left.setDirection(DcMotorSimple.Direction.REVERSE);
-    //left1.setDirection(DcMotorSimple.Direction.REVERSE);
+    right.setDirection(DcMotorSimple.Direction.REVERSE);
+    //right1.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
     while (opModeIsActive())
     {
-        left.setPower(gamepad1.left_stick_y); //sets left motor power
-        //left1.setPower(gamepad1.left_stick_y);
-        right.setPower(gamepad1.right_stick_y); //sets right motor power
-        //right1.setPower(gamepad1.right_stick_y);
+        if (gamepad1.left_stick_y >=0.1 || gamepad1.left_stick_y <= -0.1) {
+            left.setPower(gamepad1.left_stick_y); //sets left motor power
+            //left1.setPower(gamepad1.left_stick_y);
+        } else {
+            // brake
+            left.setPower(0);
+            //left1.setPower(0);
+        }
 
-collector.setPower(gamepad2.right_trigger);
-collector.setPower(-gamepad2.left_trigger);
+        if (gamepad1.right_stick_y >=0.1 || gamepad1.right_stick_y <= -0.1) {
+            right.setPower(gamepad1.right_stick_y); //sets right motor power
+            //right1.setPower(gamepad1.right_stick_y);
+        } else {
+            // brake
+            right.setPower(0);
+            //right1.setPower(0);
+        }
+
+        collector.setPower(gamepad2.right_trigger);
+        collector.setPower(-gamepad2.left_trigger);
+
         slideMotor.setPower(gamepad2.right_stick_y);
         pivotMotor.setPower(-gamepad2.left_stick_y);
 
