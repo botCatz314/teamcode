@@ -27,7 +27,7 @@ public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorLeft;
     private DistanceSensor rangeLeft, rangeHigh;
     private DcMotor left, right;
-    private Servo phoneServo;
+    private Servo phoneServo, catLauncher;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
@@ -41,6 +41,7 @@ public class AutonomousTest extends LinearOpMode {
     left = hardwareMap.dcMotor.get("left");
     right = hardwareMap.dcMotor.get("right");
     phoneServo = hardwareMap.servo.get("phoneServo");
+    catLauncher = hardwareMap.servo.get("catLauncher");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
@@ -93,6 +94,7 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.addData("gold:", GetPosition());
     telemetry.update();
     phoneServo.setPosition(0.5);
+
     GyroTurn(70, 0.2);
     DrivebyRange(10,0.4, rangeLeft);
     DriveUntilTouch(0.4);
@@ -100,7 +102,8 @@ public class AutonomousTest extends LinearOpMode {
     DrivebyRangeReverse(3, 0.4, rangeLeft);
     GyroTurn(90, 0.2);
     DrivebyRange(23, 1.0, rangeLeft);
-    sleep(5000);
+    catLauncher.setPosition(1);
+
     right.setPower(-0.9);
     left.setPower(-1);
     sleep(3000);
