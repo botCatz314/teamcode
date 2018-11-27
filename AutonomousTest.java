@@ -87,6 +87,7 @@ public class AutonomousTest extends LinearOpMode {
     DrivebyColor(0.4, colorLeft);
     sleep(500);
     Sampling();
+    sleep(10000);
     /* DrivebyColor(0.4, colorLeft);
     Sampling();
     telemetry.addData("gold:", GetPosition());
@@ -314,13 +315,19 @@ private void Sampling(){
     switch (position){
         case("Center"):
             DriveByLander(27, 0.4);
+            sleep(1000);
             DriveByLander(13, -0.4);
+            sleep(1000);
             break;
         case("Left"):
             GyroTurn(25, 0.2);
+            sleep(1000);
             DriveByLander(29, 0.4);
+            sleep(1000);
             DriveByLander(13, -0.4);
+            sleep(1000);
             GyroTurn(-20, 0.2);
+            sleep(1000);
             break;
         case("Right"):
             GyroTurn(-25, 0.2);
