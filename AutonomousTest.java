@@ -156,7 +156,7 @@ private double GetAngles(){
 //returns the value that the robot must correct for the robot to maintain a straight heading
 private double CheckDirection(){
     //sets three variables to hold the value that the robot is off course, the reading of the imu, and the value for how much error allowed
-    double correction, angle, gain = 0.1;
+    double correction, angle;
     //sets the value of angles equal to the reading of the imu
     angle = GetAngles();
     //if the robot is on course, correction equals 0
@@ -167,8 +167,6 @@ private double CheckDirection(){
     else{
         correction = -angle;
     }
-    //account for a small amount of error
-    correction = correction * gain;
     //return the value of correction
     return correction;
 }
@@ -188,22 +186,9 @@ private void GyroTurn(int degrees, double power){
     //sets angle variables to starting values
     ResetAngles();
     //if it is less than 0, sets drive motors to turn right
-    if(degrees < 0){
-        leftPower = -power;
-        rightPower = power;
-    }
-    //otherwise, if the value of degrees is greater than 0, sets drive motors to turn left
-    else if(degrees > 0){
-         leftPower = power;
-         rightPower = -power;
-    }
-    //otherwise do nothing
-    else return;
-    //sets the power of the drive motors
-    left.setPower(leftPower);
-    right.setPower(rightPower);
-
-    if(degrees < 0){
+    boolean isRight = degrees < 0;
+    setRotationPower(isRight, 0.2);
+    if(isRight){
         //turns until complete. First while method is to get robot off value of 0
         while(opModeIsActive() && GetAngles() == 0){}
 
@@ -214,8 +199,7 @@ private void GyroTurn(int degrees, double power){
         while(opModeIsActive() && GetAngles() < degrees){}
     }
     //turns off power to drive motors
-    left.setPower(powerOff);
-    right.setPower(powerOff);
+    powerMotorsOff();
     //waits half a second
     sleep(500);
     //resets the value of the angle variables
@@ -223,11 +207,8 @@ private void GyroTurn(int degrees, double power){
 }
 //adjusts the drive power to keep robot on a 0 degree heading
 private void GyroStraightening(double power){
-    //sets correction to CheckDirection
-    correction = CheckDirection();
     //sets drive power relative to gyro reading
-    left.setPower(power - correction);
-    right.setPower(power);
+    setPowerInDirection(0, power);
 }
     //returns true if touch sensor is pressed
     private boolean LeftPressed(){return !touchLeft.getState(); }
@@ -239,12 +220,10 @@ private void GyroStraightening(double power){
             telemetry.addData("left pressed: ", LeftPressed());
             telemetry.addData("right pressed: ", RightPressed());
             telemetry.update();
-            right.setPower(0.2);
-            left.setPower(0.4);
+            setPowerInDirection(2, 0.4);
         }
         //turns off drive power
-        left.setPower(powerOff);
-        right.setPower(powerOff);
+        powerMotorsOff();
     }
     private boolean InRange(double target, DistanceUnit units, DistanceSensor range){
         //creates a variable to hold the range sensor's reading
@@ -258,22 +237,19 @@ private void GyroStraightening(double power){
     while(!InRange(distance, DistanceUnit.INCH, range)){
         GyroStraightening(power);
     }
-    right.setPower(powerOff);
-    left.setPower(powerOff);
+    powerMotorsOff();
 }
 private void DrivebyRangeReverse(double distance, double power, DistanceSensor range){
     while(InRange(distance, DistanceUnit.INCH, range)){
         GyroStraightening(-power);
     }
-    left.setPower(powerOff);
-    right.setPower(powerOff);
+    powerMotorsOff();
 }
 private void DrivebyColor(double power, ColorSensor colorSensor){
     while(!WithinColorRange(70, 42, colorSensor)){
         GyroStraightening(power);
     }
-    left.setPower(powerOff);
-    right.setPower(powerOff);
+    powerMotorsOff();
 
 }
 private boolean WithinColorRange(int max, int min, ColorSensor sensor) {
@@ -311,22 +287,17 @@ private void ColorStraightenSimple(double power){
 private void DriveByLander(double target, double power){
     if(power < 0){
         while(!InRange(target, DistanceUnit.INCH, rangeHigh)){
-            left.setPower(power);
-            right.setPower(power);
+            setPowerInDirection(0, power);
         }
-        right.setPower(powerOff);
-        left.setPower(powerOff);
+        powerMotorsOff();
     }
     else if(power > 0){
         while(InRange(target, DistanceUnit.INCH, rangeHigh)){
-            left.setPower(power);
-            right.setPower(power);
+            setPowerInDirection(0, power);
         }
-        left.setPower(powerOff);
-        right.setPower(powerOff);
+        powerMotorsOff();
     }
 }
-
 private void Sampling(){
     String position = GetPosition();
     switch (position){
