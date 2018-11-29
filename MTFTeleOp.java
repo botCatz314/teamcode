@@ -9,17 +9,19 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 @TeleOp(name = "MTF TeleOp", group = "Default")
 public class MTFTeleOp extends LinearOpMode {
 
-    private DcMotor left, left1, right1, right, hangingMotor, pivotMotor, slideMotor, collector; //declares
+    private DcMotor leftF, rightF, leftB, rightB, hangingMotor, pivotMotor, slideMotor, collector; //declares
+    double velX = 0, velY, velR;
+    boolean motorIsUsed = false, driveAtAngle;
     private DigitalChannel touchLower, touchUpper;
 
     private boolean collecting;
 @Override
     public void runOpMode()
 {
-    left = hardwareMap.dcMotor.get("left"); //sets value to left motor
-    right = hardwareMap.dcMotor.get("right"); //sets value to right motor
-   // left1 = hardwareMap.dcMotor.get(("left1"));
-  //  right1 = hardwareMap.dcMotor.get("right1");
+    leftF = hardwareMap.dcMotor.get("leftF"); //sets value to left motor
+    rightF = hardwareMap.dcMotor.get("rightF"); //sets value to right motor
+    leftB = hardwareMap.dcMotor.get(("leftB"));
+    rightF = hardwareMap.dcMotor.get("rightB");
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     touchLower = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchRight");
@@ -35,30 +37,61 @@ public class MTFTeleOp extends LinearOpMode {
     touchUpper.setMode(DigitalChannel.Mode.INPUT);
 
 
-    right.setDirection(DcMotorSimple.Direction.REVERSE);
-    //right1.setDirection(DcMotorSimple.Direction.REVERSE);
+    rightF.setDirection(DcMotorSimple.Direction.REVERSE);
+    rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
     while (opModeIsActive())
     {
-        if (gamepad1.left_stick_y >=0.1 || gamepad1.left_stick_y <= -0.1) {
-            left.setPower(gamepad1.left_stick_y); //sets left motor power
-            //left1.setPower(gamepad1.left_stick_y);
-        } else {
-            // brake
-            left.setPower(0);
-            //left1.setPower(0);
+        motorIsUsed = false;
+        if(gamepad1.dpad_up){
+            velY = 0.5;
+            setControlBools(false, true);
+        }
+        else if(gamepad1.dpad_down){
+            velY = -0.5;
+            setControlBools(false, true);
+        }
+        else if(gamepad1.dpad_right){
+            velX = 0.5;
+            setControlBools(false, true);
+        }
+        else if(gamepad1.dpad_left){
+            velX = -0.5;
+            setControlBools(false, true);
+        }
+        if(driveAtAngle){
+            driveMotors(velY + velX, velY - velX, velY - velX, velY + velX);
+            setControlBools(true, false);
+        }
+        if(gamepad1.right_trigger >=0.1 && !motorIsUsed){
+            motorIsUsed = true;
+            velX = gamepad1.right_trigger;
+            driveMotors( velX, -velX,
+                        -velX,  velX);
         }
 
-        if (gamepad1.right_stick_y >=0.1 || gamepad1.right_stick_y <= -0.1) {
-            right.setPower(gamepad1.right_stick_y); //sets right motor power
-            //right1.setPower(gamepad1.right_stick_y);
-        } else {
-            // brake
-            right.setPower(0);
-            //right1.setPower(0);
+        if(gamepad1.left_trigger >= 0.1 && !motorIsUsed){
+            motorIsUsed = true;
+            velX = -gamepad1.left_trigger;
+            driveMotors(-velX,  velX,
+                         velX, -velX);
         }
+    if(!motorIsUsed) {
+            double velL = 0;
+            double velR = 0;
+            motorIsUsed = true;
+        if (gamepad1.left_stick_y >= 0.1 || gamepad1.left_stick_y <= -0.1) {
+            velL = gamepad1.left_stick_y;
+        }
+
+        if (gamepad1.right_stick_y >= 0.1 || gamepad1.right_stick_y <= -0.1) {
+            velR = (gamepad1.right_stick_y); //sets right motor power
+        }
+        driveMotors(velL, velR,
+                    velL, velR);
+    }
 
         collector.setPower(gamepad2.right_trigger);
         collector.setPower(-gamepad2.left_trigger);
@@ -66,18 +99,29 @@ public class MTFTeleOp extends LinearOpMode {
         slideMotor.setPower(gamepad2.right_stick_y);
         pivotMotor.setPower(-gamepad2.left_stick_y);
 
-        hangingMotor.setPower(gamepad1.left_trigger);
-        hangingMotor.setPower(-gamepad1.right_trigger);
+        if(gamepad1.right_bumper){
+            hangingMotor.setPower(0.2);
+        }
+        else if(gamepad1.left_bumper){
+            hangingMotor.setPower(-0.2);
+        }
+        else{
+            hangingMotor.setPower(0);
+        }
 
         idle();
     }
 }
 
 
-
-
-
-
-
-
+    private void driveMotors(double powerLF, double powerRF, double powerLB, double powerRB){
+        leftF.setPower(powerLF);
+        rightF.setPower(powerRF);
+        leftB.setPower(powerLB);
+        rightB.setPower(powerRB);
+    }
+    private void setControlBools(boolean mtrIsUsed, boolean drvAtAngle){
+        motorIsUsed = mtrIsUsed;
+        driveAtAngle = drvAtAngle;
+    }
 }

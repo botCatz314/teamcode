@@ -110,6 +110,28 @@ public class AutonomousTest extends LinearOpMode {
     right.setPower(powerOff);
     left.setPower(powerOff);*/
     }
+
+ private void setRotationPower(boolean isRight, double power){
+    if(isRight){
+        left.setPower(-power);
+        right.setPower(power);
+    }
+    else{
+        left.setPower(power);
+        right.setPower(-power);
+    }
+ }
+ private void setPowerInDirection(double degrees, double power){
+    degrees = CheckDirection();
+    left.setPower(power);
+    right.setPower(power-degrees*0.1);
+ }
+ private void setPowerStraight(double power){
+    setPowerInDirection(0, power);
+ }
+ private void powerMotorsOff(){
+    setPowerInDirection(0,powerOff);
+ }
 //gets the reading from the imu and converts the angle to be cumulative
 private double GetAngles(){
     //declares and sets a variable to the reading of the imu
@@ -285,14 +307,6 @@ private void ColorStraightenSimple(double power){
         left.setPower(powerOff);
         right.setPower(powerOff);
     }
-    /*else if(WithinColorRange(50, 42, colorLeft)){
-        while(!WithinColorRange(50, 42, colorRight)){
-            right.setPower(power);
-            left.setPower(-power);
-        }
-        right.setPower(powerOff);
-        left.setPower(powerOff);
-     }*/
 }
 private void DriveByLander(double target, double power){
     if(power < 0){
