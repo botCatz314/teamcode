@@ -9,10 +9,10 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 @TeleOp(name = "MTF TeleOp", group = "Default")
 public class MTFTeleOp extends LinearOpMode {
 
-    private DcMotor leftF, rightF, leftB, rightB, hangingMotor, pivotMotor, slideMotor, collector; //declares
+    private DcMotor leftF, rightF, leftB, rightB; //hangingMotor, pivotMotor, slideMotor, collector; //declares
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
-    private DigitalChannel touchLower, touchUpper;
+    //private DigitalChannel touchLower, touchUpper;
 
     private boolean collecting;
 @Override
@@ -21,44 +21,45 @@ public class MTFTeleOp extends LinearOpMode {
     leftF = hardwareMap.dcMotor.get("leftF"); //sets value to left motor
     rightF = hardwareMap.dcMotor.get("rightF"); //sets value to right motor
     leftB = hardwareMap.dcMotor.get(("leftB"));
-    rightF = hardwareMap.dcMotor.get("rightB");
-    hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
-    touchLower = hardwareMap.get(DigitalChannel.class, "touchLeft");
-    touchUpper = hardwareMap.get(DigitalChannel.class, "touchRight");
-    pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
-    slideMotor = hardwareMap.dcMotor.get("slideMotor");
-    collector = hardwareMap.dcMotor.get("collector");
+    rightB = hardwareMap.dcMotor.get("rightB");
+    //hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+   // touchLower = hardwareMap.get(DigitalChannel.class, "touchLeft");
+   // touchUpper = hardwareMap.get(DigitalChannel.class, "touchRight");
+    //pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
+    //slideMotor = hardwareMap.dcMotor.get("slideMotor");
+    //collector = hardwareMap.dcMotor.get("collector");
 
 
 
 
 
-    touchLower.setMode(DigitalChannel.Mode.INPUT);
-    touchUpper.setMode(DigitalChannel.Mode.INPUT);
-
+   // touchLower.setMode(DigitalChannel.Mode.INPUT);
+    //touchUpper.setMode(DigitalChannel.Mode.INPUT);
 
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
-    hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+    //hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
     while (opModeIsActive())
     {
         motorIsUsed = false;
+        velX = 0;
+        velY = 0;
         if(gamepad1.dpad_up){
-            velY = 0.5;
-            setControlBools(false, true);
-        }
-        else if(gamepad1.dpad_down){
             velY = -0.5;
             setControlBools(false, true);
         }
+        else if(gamepad1.dpad_down){
+            velY = 0.5;
+            setControlBools(false, true);
+        }
         else if(gamepad1.dpad_right){
-            velX = 0.5;
+            velX = -0.5;
             setControlBools(false, true);
         }
         else if(gamepad1.dpad_left){
-            velX = -0.5;
+            velX = 0.5;
             setControlBools(false, true);
         }
         if(driveAtAngle){
@@ -68,15 +69,15 @@ public class MTFTeleOp extends LinearOpMode {
         if(gamepad1.right_trigger >=0.1 && !motorIsUsed){
             motorIsUsed = true;
             velX = gamepad1.right_trigger;
-            driveMotors( velX, -velX,
-                        -velX,  velX);
+            driveMotors( -velX,  velX,
+                          velX,  -velX);
         }
 
         if(gamepad1.left_trigger >= 0.1 && !motorIsUsed){
             motorIsUsed = true;
-            velX = -gamepad1.left_trigger;
-            driveMotors(-velX,  velX,
-                         velX, -velX);
+            velX = gamepad1.left_trigger;
+            driveMotors(  velX,  -velX,
+                         -velX,  velX);
         }
     if(!motorIsUsed) {
             double velL = 0;
@@ -93,7 +94,7 @@ public class MTFTeleOp extends LinearOpMode {
                     velL, velR);
     }
 
-        collector.setPower(gamepad2.right_trigger);
+       /* collector.setPower(gamepad2.right_trigger);
         collector.setPower(-gamepad2.left_trigger);
 
         slideMotor.setPower(gamepad2.right_stick_y);
@@ -108,7 +109,7 @@ public class MTFTeleOp extends LinearOpMode {
         else{
             hangingMotor.setPower(0);
         }
-
+        */
         idle();
     }
 }

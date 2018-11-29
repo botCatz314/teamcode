@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.util.Range;
 public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorLeft;
     private DistanceSensor rangeLeft, rangeHigh;
-    private DcMotor left, right;
+    private DcMotor leftF, rightF, leftB, rightB;
     private Servo phoneServo, catLauncher;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
@@ -36,20 +36,21 @@ public class AutonomousTest extends LinearOpMode {
     private String position = null;
 @Override
     public void runOpMode() {
-   // colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+   // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    left = hardwareMap.dcMotor.get("left");
-    right = hardwareMap.dcMotor.get("right");
-    phoneServo = hardwareMap.servo.get("phoneServo");
+    leftF = hardwareMap.dcMotor.get("leftF");
+    rightF = hardwareMap.dcMotor.get("rightF");
+    leftB = hardwareMap.dcMotor.get("leftB");
+    rightB = hardwareMap.dcMotor.get("rightB");   phoneServo = hardwareMap.servo.get("phoneServo");
     catLauncher = hardwareMap.servo.get("catLauncher");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
-    left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    right.setDirection(DcMotorSimple.Direction.REVERSE);
-    left.setDirection(DcMotorSimple.Direction.FORWARD);
+    leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    rightF.setDirection(DcMotorSimple.Direction.REVERSE);
+    leftF.setDirection(DcMotorSimple.Direction.FORWARD);
 
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -113,18 +114,18 @@ public class AutonomousTest extends LinearOpMode {
 
  private void setRotationPower(boolean isRight, double power){
     if(isRight){
-        left.setPower(-power);
-        right.setPower(power);
+        leftF.setPower(-power);
+        rightF.setPower(power);
     }
     else{
-        left.setPower(power);
-        right.setPower(-power);
+        leftF.setPower(power);
+        rightF.setPower(-power);
     }
  }
  private void setPowerInDirection(double degrees, double power){
     degrees = CheckDirection();
-    left.setPower(power);
-    right.setPower(power-degrees*0.1);
+    leftF.setPower(power);
+    rightF.setPower(power-degrees*0.1);
  }
  private void setPowerStraight(double power){
     setPowerInDirection(0, power);
@@ -280,8 +281,8 @@ private void ColorStraightenSimple(double power){
             left.setPower(power);
             right.setPower(-power);
         }*/
-        left.setPower(powerOff);
-        right.setPower(powerOff);
+        leftF.setPower(powerOff);
+        rightF.setPower(powerOff);
     }
 }
 private void DriveByLander(double target, double power){
@@ -330,4 +331,14 @@ private void Sampling(){
             break;
         }
 }
+private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
+    leftF.setPower(leftFPwr);
+    rightF.setPower(rightFPwr);
+
+}
+private void Strafe(double power, boolean right){
+        if(right){
+
+        }
+    }
 }
