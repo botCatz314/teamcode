@@ -21,19 +21,23 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous (name = "MecanumTest")
 public class MecanumTest extends LinearOpMode {
-    private DcMotor left, right, left1, right1;
+    private DcMotor leftF, rightF, leftB, rightB;
     private BNO055IMU imu;
 
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
 @Override
     public void runOpMode() {
-    left = hardwareMap.dcMotor.get("left");
-    right = hardwareMap.dcMotor.get("right");
-    left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    right.setDirection(DcMotorSimple.Direction.REVERSE);
-    left.setDirection(DcMotorSimple.Direction.FORWARD);
+    leftF = hardwareMap.dcMotor.get("leftF");
+    rightF = hardwareMap.dcMotor.get("rightF");
+    leftB = hardwareMap.dcMotor.get("leftB");
+    rightB = hardwareMap.dcMotor.get("rightB");
+    leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    rightB.setDirection(DcMotorSimple.Direction.FORWARD);
+    rightF.setDirection(DcMotorSimple.Direction.FORWARD);
+    leftB.setDirection(DcMotorSimple.Direction.REVERSE);
+    leftF.setDirection(DcMotorSimple.Direction.REVERSE);
 
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     parameters.mode = BNO055IMU.SensorMode.IMU;
@@ -56,7 +60,21 @@ public class MecanumTest extends LinearOpMode {
     waitForStart();
 
 
-
+        rotateMecanumWheels(0.2, false);
+        sleep(2000);
+        setPowerOff();
+        mecanumNormalDrive(0.4, true);
+        sleep(1600);
+        setPowerOff();
+        rotateMecanumWheels(0.2, false);
+        sleep(1400);
+        setPowerOff();
+        mecanumNormalDrive(0.4, true);
+        sleep(2000);
+        setPowerOff();
+        strafe(0.2, true);
+        sleep(500);
+        setPowerOff();
 
     }
 //gets the reading from the imu and converts the angle to be cumulative
@@ -127,8 +145,8 @@ private void GyroTurn(int degrees, double power){
     //otherwise do nothing
     else return;
     //sets the power of the drive motors
-    left.setPower(leftPower);
-    right.setPower(rightPower);
+    leftF.setPower(leftPower);
+    rightF.setPower(rightPower);
 
     if(degrees < 0){
         //turns until complete. First while method is to get robot off value of 0
@@ -141,8 +159,8 @@ private void GyroTurn(int degrees, double power){
         while(opModeIsActive() && GetAngles() < degrees){}
     }
     //turns off power to drive motors
-    left.setPower(powerOff);
-    right.setPower(powerOff);
+    leftF.setPower(powerOff);
+    rightF.setPower(powerOff);
     //waits half a second
     sleep(500);
     //resets the value of the angle variables
@@ -153,8 +171,57 @@ private void GyroStraightening(double power){
     //sets correction to CheckDirection
     correction = CheckDirection();
     //sets drive power relative to gyro reading
-    left.setPower(power - correction);
-    right.setPower(power);
+    leftF.setPower(power - correction);
+    rightF.setPower(power);
 }
     //returns true if touch sensor is pressed
+
+private void mecanumNormalDrive(double power, boolean forwards){
+    if(forwards){
+        leftF.setPower(power);
+        rightF.setPower(power);
+        leftB.setPower(power);
+        rightB.setPower(power);
+    }
+    else{
+        leftF.setPower(-power);
+        rightF.setPower(-power);
+        leftB.setPower(-power);
+        rightB.setPower(-power);
+    }
+}
+private void rotateMecanumWheels(double power, boolean right){
+    if(right){
+        leftF.setPower(power);
+        rightF.setPower(-power);
+        leftB.setPower(power);
+        rightB.setPower(-power);
+    }
+    else{
+        leftF.setPower(-power);
+        rightF.setPower(power);
+        leftB.setPower(-power);
+        rightB.setPower(power);
+    }
+}
+private void setPowerOff(){
+    leftF.setPower(powerOff);
+    rightF.setPower(powerOff);
+    leftB.setPower(powerOff);
+    rightB.setPower(powerOff);
+}
+private void strafe(double power, boolean right){
+    if(right){
+        leftF.setPower(-power);
+        rightF.setPower(power);
+        leftB.setPower(power);
+        rightB.setPower(-power);
+    }
+    else{
+        leftF.setPower(power);
+        rightF.setPower(-power);
+        leftB.setPower(-power);
+        rightB.setPower(power);
+    }
+}
 }
