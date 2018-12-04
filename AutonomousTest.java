@@ -31,7 +31,7 @@ public class AutonomousTest extends LinearOpMode {
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
-    private DigitalChannel touchLeft, touchRight;
+    private DigitalChannel touchLeft, touchRight, magneticSwitch;
     private GoldAlignDetector detector;
     private String position = null;
 @Override
@@ -45,6 +45,7 @@ public class AutonomousTest extends LinearOpMode {
     catLauncher = hardwareMap.servo.get("catLauncher");
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+    magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -86,10 +87,10 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo.setPosition(0.9);
 
     waitForStart();
-    DrivebyColor(0.4, colorLeft);
-    sleep(500);
-    Sampling();
-    sleep(10000);
+    while(opModeIsActive()){
+        telemetry.addData("ms: ", magneticSwitch.getState());
+        telemetry.update();
+    }
     /* DrivebyColor(0.4, colorLeft);
     Sampling();
     telemetry.addData("gold:", GetPosition());

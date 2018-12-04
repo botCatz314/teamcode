@@ -12,6 +12,7 @@ public class MTFTeleOp extends LinearOpMode {
     private DcMotor leftF, rightF, leftB, rightB; //hangingMotor, pivotMotor, slideMotor, collector; //declares
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
+    private DigitalChannel magneticSwitch;
     //private DigitalChannel touchLower, touchUpper;
 
     private boolean collecting;
@@ -22,6 +23,7 @@ public class MTFTeleOp extends LinearOpMode {
     rightF = hardwareMap.dcMotor.get("rightF"); //sets value to right motor
     leftB = hardwareMap.dcMotor.get(("leftB"));
     rightB = hardwareMap.dcMotor.get("rightB");
+    magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     //hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
    // touchLower = hardwareMap.get(DigitalChannel.class, "touchLeft");
    // touchUpper = hardwareMap.get(DigitalChannel.class, "touchRight");

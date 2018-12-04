@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class MecanumTest extends LinearOpMode {
     private DcMotor leftF, rightF, leftB, rightB;
     private BNO055IMU imu;
+    private DigitalChannel magneticSwitch;
 
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
@@ -32,6 +33,8 @@ public class MecanumTest extends LinearOpMode {
     rightF = hardwareMap.dcMotor.get("rightF");
     leftB = hardwareMap.dcMotor.get("leftB");
     rightB = hardwareMap.dcMotor.get("rightB");
+
+    magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightB.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -58,9 +61,12 @@ public class MecanumTest extends LinearOpMode {
     telemetry.update();
 
     waitForStart();
+while(opModeIsActive()){
+    telemetry.addData("ms: ", magneticSwitch.getState());
+    telemetry.update();
+}
 
-
-        rotateMecanumWheels(0.2, false);
+        /*rotateMecanumWheels(0.2, false);
         sleep(2000);
         setPowerOff();
         mecanumNormalDrive(0.4, true);
@@ -74,7 +80,7 @@ public class MecanumTest extends LinearOpMode {
         setPowerOff();
         strafe(0.2, true);
         sleep(500);
-        setPowerOff();
+        setPowerOff();*/
 
     }
 //gets the reading from the imu and converts the angle to be cumulative
