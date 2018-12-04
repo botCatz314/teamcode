@@ -50,8 +50,10 @@ public class AutonomousTest extends LinearOpMode {
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    rightF.setDirection(DcMotorSimple.Direction.REVERSE);
-    leftF.setDirection(DcMotorSimple.Direction.FORWARD);
+    leftF.setDirection(DcMotorSimple.Direction.REVERSE);
+    rightF.setDirection(DcMotorSimple.Direction.FORWARD);
+    leftB.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -115,18 +117,18 @@ public class AutonomousTest extends LinearOpMode {
 
  private void setRotationPower(boolean isRight, double power){
     if(isRight){
-        leftF.setPower(-power);
-        rightF.setPower(power);
+        setMotorPowers(-power, power,
+                       -power, power);
     }
     else{
-        leftF.setPower(power);
-        rightF.setPower(-power);
+        setMotorPowers(power, -power,
+                       power, -power);
     }
  }
  private void setPowerInDirection(double degrees, double power){
     degrees = CheckDirection();
-    leftF.setPower(power);
-    rightF.setPower(power-degrees*0.1);
+    double rightPwr = (power - degrees) *0.1;
+    setMotorPowers(power, rightPwr, power, rightPwr);
  }
  private void setPowerStraight(double power){
     setPowerInDirection(0, power);
@@ -335,6 +337,8 @@ private void Sampling(){
 private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
     leftF.setPower(leftFPwr);
     rightF.setPower(rightFPwr);
+    leftB.setPower(leftBPwr);
+    rightB.setPower(rightBPwr);
 
 }
 private void Strafe(double power, boolean right){
