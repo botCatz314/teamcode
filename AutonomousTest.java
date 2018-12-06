@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.Range;
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorLeft;
-    private DistanceSensor rangeLeft, rangeHigh;
+    private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
     private Servo phoneServo, catLauncher;
     private BNO055IMU imu;
@@ -47,6 +47,7 @@ public class AutonomousTest extends LinearOpMode {
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
     magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
+    rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -89,126 +90,126 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo.setPosition(0.9);
 
     waitForStart();
+
     while(opModeIsActive()){
         telemetry.addData("ms: ", magneticSwitch.getState());
         telemetry.update();
     }
-    /* DrivebyColor(0.4, colorLeft);
-    Sampling();
-    telemetry.addData("gold:", GetPosition());
-    telemetry.update();
-    phoneServo.setPosition(0.5);
+     /* DrivebyColor(0.4, colorLeft);
+        Sampling();
+        telemetry.addData("gold:", GetPosition());
+        telemetry.update();
+        phoneServo.setPosition(0.5);
 
-    GyroTurn(70, 0.2);
-    DrivebyRange(10,0.4, rangeLeft);
-    DriveUntilTouch(0.4);
-    ResetAngles();
-    DrivebyRangeReverse(3, 0.4, rangeLeft);
-    GyroTurn(90, 0.2);
-    DrivebyRange(23, 1.0, rangeLeft);
-    catLauncher.setPosition(1);
+        GyroTurn(70, 0.2);
+        DrivebyRange(10,0.4, rangeLeft);
+        DriveUntilTouch(0.4);
+        ResetAngles();
+        DrivebyRangeReverse(3, 0.4, rangeLeft);
+        GyroTurn(90, 0.2);
+        DrivebyRange(23, 1.0, rangeLeft);
+        catLauncher.setPosition(1);
 
-    right.setPower(-0.9);
-    left.setPower(-1);
-    sleep(3000);
-    right.setPower(powerOff);
-    left.setPower(powerOff);*/
+        right.setPower(-0.9);
+        left.setPower(-1);
+        sleep(3000);
+        right.setPower(powerOff);
+        left.setPower(powerOff);*/
     }
 
- private void setRotationPower(boolean isRight, double power){
-    if(isRight){
-        setMotorPowers(-power, power,
-                       -power, power);
+    private void setRotationPower(boolean isRight, double power){
+        if(isRight){
+            setMotorPowers(-power, power,
+                           -power, power);
+        }
+        else{
+            setMotorPowers(power, -power,
+                           power, -power);
+        }
     }
-    else{
-        setMotorPowers(power, -power,
-                       power, -power);
-    }
- }
- private void setPowerInDirection(double degrees, double power){
+    private void setPowerInDirection(double degrees, double power){
     degrees = checkDirection();
     double rightPwr = (power - degrees) *0.1;
     setMotorPowers(power, rightPwr, power, rightPwr);
- }
- private void setPowerStraight(double power){
+    }
+    private void setPowerStraight(double power){
     setPowerInDirection(0, power);
  }
- private void powerMotorsOff(){
+    private void powerMotorsOff(){
     setPowerInDirection(0,powerOff);
  }
-//gets the reading from the imu and converts the angle to be cumulative
-private double getAngles(){
-    //declares and sets a variable to the reading of the imu
-    Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-    //declares and sets a variable to the change of the angle that is and the angle that was before
-    double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-    //sets delta angle itself plus 360 if it is less than -180 degrees
-    if (deltaAngle < -180){
-        deltaAngle += 360;
+    //gets the reading from the imu and converts the angle to be cumulative
+    private double getAngles(){
+        //declares and sets a variable to the reading of the imu
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //declares and sets a variable to the change of the angle that is and the angle that was before
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+            //sets delta angle itself plus 360 if it is less than -180 degrees
+        if (deltaAngle < -180){
+            deltaAngle += 360;
+        }
+        //sets delta angle to itself minus 360 if it is greater than 180 degrees
+        else if(deltaAngle > 180){
+            deltaAngle -= 360;
+        }
+        //sets globalAngle to itself plus deltaAngle
+        globalAngle += deltaAngle;
+        //sets last angle to the current value of angles
+        lastAngles = angles;
+        //returns globalAngle
+        return globalAngle;
     }
-    //sets delta angle to itself minus 360 if it is greater than 180 degrees
-    else if(deltaAngle > 180) {
-        deltaAngle -= 360;
+    //returns the value that the robot must correct for the robot to maintain a straight heading
+    private double checkDirection(){
+        //sets three variables to hold the value that the robot is off course, the reading of the imu, and the value for how much error allowed
+        double correction, angle;
+        //sets the value of angles equal to the reading of the imu
+        angle = getAngles();
+        //if the robot is on course, correction equals 0
+        if (angle == 0){
+            correction = 0;
+        }
+        //otherwise, the correction is the opposite of the imu reading
+        else{
+            correction = -angle;
+        }
+        //return the value of correction
+        return correction;
     }
-    //sets globalAngle to itself plus deltaAngle
-    globalAngle += deltaAngle;
-    //sets last angle to the current value of angles
-    lastAngles = angles;
-    //returns globalAngle
-    return globalAngle;
-}
-//returns the value that the robot must correct for the robot to maintain a straight heading
-private double checkDirection(){
-    //sets three variables to hold the value that the robot is off course, the reading of the imu, and the value for how much error allowed
-    double correction, angle;
-    //sets the value of angles equal to the reading of the imu
-    angle = getAngles();
-    //if the robot is on course, correction equals 0
-    if (angle == 0){
-        correction = 0;
+    //sets all angles to starting values
+    private void resetAngles(){
+        //sets last angles to the current reading of the imu
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //sets global angle to 0
+        globalAngle = 0;
     }
-    //otherwise, the correction is the opposite of the imu reading
-    else{
-        correction = -angle;
+    //turns using the gyro to determine distance; works best at 0.2 power
+    private void gyroTurn(int degrees, double power){
+        int offset = 5;
+        degrees = degrees - offset;
+        //declares two variables to hold the power of the left and right drive motors
+        double leftPower, rightPower;
+        //sets angle variables to starting values
+        resetAngles();
+        //if it is less than 0, sets drive motors to turn right
+        boolean isRight = degrees < 0;
+        setRotationPower(isRight, power);
+        if(isRight){
+            //turns until complete. First while method is to get robot off value of 0
+            while(opModeIsActive() && getAngles() == 0){}
+            while(opModeIsActive() && getAngles() > degrees){}
+        }
+        else {
+            //otherwise, turns until complete
+            while(opModeIsActive() && getAngles() < degrees){}
+        }
+        //turns off power to drive motors
+        powerMotorsOff();
+        //waits half a second
+        sleep(500);
+        //resets the value of the angle variables
+        resetAngles();
     }
-    //return the value of correction
-    return correction;
-}
-//sets all angles to starting values
-private void resetAngles(){
-    //sets last angles to the current reading of the imu
-    lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-    //sets global angle to 0
-    globalAngle = 0;
-}
-//turns using the gyro to determine distance; works best at 0.2 power
-private void gyroTurn(int degrees, double power){
-    int offset = 5;
-    degrees = degrees - offset;
-    //declares two variables to hold the power of the left and right drive motors
-    double leftPower, rightPower;
-    //sets angle variables to starting values
-    resetAngles();
-    //if it is less than 0, sets drive motors to turn right
-    boolean isRight = degrees < 0;
-    setRotationPower(isRight, power);
-    if(isRight){
-        //turns until complete. First while method is to get robot off value of 0
-        while(opModeIsActive() && getAngles() == 0){}
-
-        while(opModeIsActive() && getAngles() > degrees){}
-    }
-    else {
-        //otherwise, turns until complete
-        while(opModeIsActive() && getAngles() < degrees){}
-    }
-    //turns off power to drive motors
-    powerMotorsOff();
-    //waits half a second
-    sleep(500);
-    //resets the value of the angle variables
-    resetAngles();
-}
     //returns true if touch sensor is pressed
     private boolean leftPressed(){return !touchLeft.getState(); }
     private boolean rightPressed(){ return !touchRight.getState();}
@@ -233,116 +234,189 @@ private void gyroTurn(int degrees, double power){
         return (distance <= target);
     }
     private void drivebyRange(double distance, double power, DistanceSensor range){
-    while(!inRange(distance, DistanceUnit.INCH, range)){
-        setPowerStraight(power);
+        while(!inRange(distance, DistanceUnit.INCH, range)){
+            setPowerStraight(power);
+        }
+        powerMotorsOff();
     }
-    powerMotorsOff();
-}
-private void drivebyRangeReverse(double distance, double power, DistanceSensor range){
-    while(inRange(distance, DistanceUnit.INCH, range)){
-        setPowerStraight(-power);
+    private void drivebyRangeReverse(double distance, double power, DistanceSensor range){
+        while(inRange(distance, DistanceUnit.INCH, range)){
+            setPowerStraight(-power);
+        }
+        powerMotorsOff();
     }
-    powerMotorsOff();
-}
-private void drivebyColor(double power, ColorSensor colorSensor){
-    while(!withinColorRange(70, 42, colorSensor)){
-        setPowerStraight(power);
-    }
-    powerMotorsOff();
+    private void drivebyColor(double power, ColorSensor colorSensor){
+        while(!withinColorRange(70, 42, colorSensor)){
+            setPowerStraight(power);
+        }
+        powerMotorsOff();
 
-}
-private boolean withinColorRange(int max, int min, ColorSensor sensor) {
-    //declares and sets a variable equal to the color sensor reading
-    int color = sensor.blue();
-    //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
-    return (color <= max && color >= min);
-}
-private String getPosition(){
-    if(detector.getAligned()){
-        position = "Right";
     }
-    if(position == null) {
-        phoneServo.setPosition(0.5);
+    //returns true if color sensor reads within the maximum and minimum values
+    private boolean withinColorRange(int max, int min, ColorSensor sensor) {
+        //declares and sets a variable equal to the color sensor reading
+        int color = sensor.blue();
+        //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
+        return (color <= max && color >= min);
+    }
+    //returns string with position of gold
+    private String getPosition(){
+        //sets position to right
         if(detector.getAligned()){
-            position = "Left";
+            position = "Right";
         }
-        else if(!detector.getAligned()){
-            position = "Center";
+        //if the position is not already set
+        if(position == null) {
+            //move servo to left mineral position
+            phoneServo.setPosition(0.5);
+            //sets position to left
+            if(detector.getAligned()){
+                position = "Left";
+            }
+            //otherwise sets position to center
+            else if(!detector.getAligned()){
+                position = "Center";
+            }
+        }
+        //returns the position
+        return position;
+    }
+    //drive by range for the rangeHigh relative to the lander
+    private void driveByLander(double target, double power){
+        //determines direction robot wants to travel
+        if(power < 0){
+            //if traveling backwards, drive until robot is within a range
+            while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
+                setPowerStraight(power);
+            }
+            powerMotorsOff();
+        }
+        //if the robot wants to drive forwards
+        else if(power > 0){
+            //drive until the range sensor is not within a range
+            while(inRange(target, DistanceUnit.INCH, rangeHigh)){
+                setPowerStraight(power);
+            }
+            powerMotorsOff();
         }
     }
-    return position;
-}
-private void colorStraightenSimple(double power){
-    if(withinColorRange(50, 42, colorLeft)){
-        /*while(!WithinColorRange(50, 42, colorLeft)){
-            left.setPower(power);
-            right.setPower(-power);
-        }*/
-        leftF.setPower(powerOff);
-        rightF.setPower(powerOff);
-    }
-}
-private void driveByLander(double target, double power){
-    if(power < 0){
-        while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
-            setPowerStraight(power);
-        }
-        powerMotorsOff();
-    }
-    else if(power > 0){
-        while(inRange(target, DistanceUnit.INCH, rangeHigh)){
-            setPowerStraight(power);
-        }
-        powerMotorsOff();
-    }
-}
-private void sampling(){
-    String position = getPosition();
-    switch (position){
-        case("Center"):
-            driveByLander(27, 0.4);
-            sleep(1000);
-            driveByLander(13, -0.4);
-            sleep(1000);
-            break;
-        case("Left"):
-            gyroTurn(25, 0.2);
-            sleep(1000);
-            driveByLander(29, 0.4);
-            sleep(1000);
-            driveByLander(13, -0.4);
-            sleep(1000);
-            gyroTurn(-20, 0.2);
-            sleep(1000);
-            break;
-        case("Right"):
-            gyroTurn(-25, 0.2);
-            sleep(100);
-            drivebyRangeReverse(29, -0.4, rangeHigh);
-            sleep(500);
-            gyroTurn(20, -0.2);
-            drivebyRange(17, -0.4, rangeHigh);
-            sleep(500);
-            gyroTurn(35, 0.2);
-            sleep(500);
-            break;
+    //navigates to hit the correct mineral
+    private void sampling(){
+        //finds where the gold is
+        String position = getPosition();
+        switch (position){
+            //if center, hit the center position TO DO: test
+            case("Center"):
+                driveByLander(27, 0.4);
+                sleep(1000);
+                driveByLander(13, -0.4);
+                sleep(1000);
+                break;
+            //if left, hit the left position TO DO: test
+            case("Left"):
+                gyroTurn(25, 0.2);
+                sleep(1000);
+                driveByLander(29, 0.4);
+                sleep(1000);
+                driveByLander(13, -0.4);
+                sleep(1000);
+                gyroTurn(-20, 0.2);
+                sleep(1000);
+                break;
+            //if right, hit the right position TO DO: test
+            case("Right"):
+                gyroTurn(-25, 0.2);
+                sleep(100);
+                drivebyRangeReverse(29, -0.4, rangeHigh);
+                sleep(500);
+                gyroTurn(20, -0.2);
+                drivebyRange(17, -0.4, rangeHigh);
+                sleep(500);
+                gyroTurn(35, 0.2);
+                sleep(500);
+                break;
         }
 }
-private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
-    leftF.setPower(leftFPwr);
-    rightF.setPower(rightFPwr);
-    leftB.setPower(leftBPwr);
-    rightB.setPower(rightBPwr);
+    //sets all the motors power to the inputs
+    private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
+        leftF.setPower(leftFPwr);
+        rightF.setPower(rightFPwr);
+        leftB.setPower(leftBPwr);
+        rightB.setPower(rightBPwr);
 
-}
-private void strafe(double power, boolean right){
+    }
+    //strafes the robot
+    private void strafe(double power, boolean right){
+        //if strafing right
         if(right){
+            //sets front left and back right motors to negative power, sets front right and back left motors to positive power
             setMotorPowers(-power, power,
                             power, -power);
         }
+        //if strafing left
         else{
+            //sets front left and back right motors to positive power and sets front right and back left motors to negative power
             setMotorPowers(power, -power,
                             -power, power);
+        }
+    }
+    //
+    private void distanceToRate(double stoptarget, DistanceUnit unit, double time){
+        //sets variables to hold the values of the distance that the robot needs to travel
+        double distanceRight, distanceLeft;
+        //declares a variable to hold the linear rate
+        double linearRateLeft, linearRateRight;
+        //declares a variable to hold the angular rate
+        double angularRateLeft, angularRateRight;
+        //the radius of the wheel in inches
+        double radius = 2;
+        //runs until range sensor reads a specified distance at which point the robot stops
+        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight)){
+            //sets the distance variables to the range sensor to the difference of the range sensor reading and target location
+            distanceLeft = rangeLeft.getDistance(unit) - stoptarget;
+            distanceRight = rangeRight.getDistance(unit) - stoptarget;
+            //sets linear rate to the distance we want to travel divided by the target time
+            linearRateLeft = distanceLeft / time;
+            linearRateRight = distanceRight / time;
+            //converts linear rate into angular rate by dividing it by the radius of the wheel
+            angularRateLeft = linearRateLeft / radius;
+            angularRateRight = linearRateRight / radius;
+            //sets drive motors to the angular rate value
+            setMotorPowers(angularRateLeft, angularRateRight,
+                           angularRateLeft, angularRateRight);
+        }
+        //turns off drive motors
+        powerMotorsOff();
+        //waits one second to give robot to fully stop
+        sleep(1000);
+        }
+    private void straighten(DistanceUnit units){
+        //declares variables to hold range sensor reading
+        double rightRange, leftRange;
+        //sets the initial values of the variables to the range sensors reading
+        rightRange = rangeRight.getDistance(units);
+        leftRange = rangeLeft.getDistance(units);
+        //runs until we are straight
+        while(rightRange != leftRange){
+            //updates values of range variables
+            rightRange = rangeRight.getDistance(units);
+            leftRange = rangeLeft.getDistance(units);
+            //turns right if the right distance is less than the left
+            if(rightRange < leftRange){
+                //sets motor powers
+                setMotorPowers(0.25, -0.25,
+                               0.25, -0.25);
+            }
+            //turns off motor power
+            powerMotorsOff();
+            //turns left if the left range is less than the right
+            if(leftRange < rightRange){
+                //sets motor power
+                setMotorPowers(-0.25, 0.25,
+                               -0.25, 0.25);
+            }
+            //turns drive motor power off
+            powerMotorsOff();
         }
     }
 }

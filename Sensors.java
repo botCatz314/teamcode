@@ -288,6 +288,18 @@ public class Sensors extends LinearOpMode {
         }
         hangingMotor.setPower(powerOff);
     }
+   /*
+    private void colorStraightenSimple(double power){
+        if(withinColorRange(50, 42, colorLeft)){
+            /*while(!WithinColorRange(50, 42, colorLeft)){
+                left.setPower(power);
+                right.setPower(-power);
+            }
+            leftF.setPower(powerOff);
+            rightF.setPower(powerOff);
+        }
+    }
+    */
 
 }
 
