@@ -126,7 +126,7 @@ public class AutonomousTest extends LinearOpMode {
     }
  }
  private void setPowerInDirection(double degrees, double power){
-    degrees = CheckDirection();
+    degrees = checkDirection();
     double rightPwr = (power - degrees) *0.1;
     setMotorPowers(power, rightPwr, power, rightPwr);
  }
@@ -137,7 +137,7 @@ public class AutonomousTest extends LinearOpMode {
     setPowerInDirection(0,powerOff);
  }
 //gets the reading from the imu and converts the angle to be cumulative
-private double GetAngles(){
+private double getAngles(){
     //declares and sets a variable to the reading of the imu
     Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     //declares and sets a variable to the change of the angle that is and the angle that was before
@@ -158,11 +158,11 @@ private double GetAngles(){
     return globalAngle;
 }
 //returns the value that the robot must correct for the robot to maintain a straight heading
-private double CheckDirection(){
+private double checkDirection(){
     //sets three variables to hold the value that the robot is off course, the reading of the imu, and the value for how much error allowed
     double correction, angle;
     //sets the value of angles equal to the reading of the imu
-    angle = GetAngles();
+    angle = getAngles();
     //if the robot is on course, correction equals 0
     if (angle == 0){
         correction = 0;
@@ -175,61 +175,56 @@ private double CheckDirection(){
     return correction;
 }
 //sets all angles to starting values
-private void ResetAngles(){
+private void resetAngles(){
     //sets last angles to the current reading of the imu
     lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
     //sets global angle to 0
     globalAngle = 0;
 }
 //turns using the gyro to determine distance; works best at 0.2 power
-private void GyroTurn(int degrees, double power){
+private void gyroTurn(int degrees, double power){
     int offset = 5;
     degrees = degrees - offset;
     //declares two variables to hold the power of the left and right drive motors
     double leftPower, rightPower;
     //sets angle variables to starting values
-    ResetAngles();
+    resetAngles();
     //if it is less than 0, sets drive motors to turn right
     boolean isRight = degrees < 0;
-    setRotationPower(isRight, 0.2);
+    setRotationPower(isRight, power);
     if(isRight){
         //turns until complete. First while method is to get robot off value of 0
-        while(opModeIsActive() && GetAngles() == 0){}
+        while(opModeIsActive() && getAngles() == 0){}
 
-        while(opModeIsActive() && GetAngles() > degrees){}
+        while(opModeIsActive() && getAngles() > degrees){}
     }
     else {
         //otherwise, turns until complete
-        while(opModeIsActive() && GetAngles() < degrees){}
+        while(opModeIsActive() && getAngles() < degrees){}
     }
     //turns off power to drive motors
     powerMotorsOff();
     //waits half a second
     sleep(500);
     //resets the value of the angle variables
-    ResetAngles();
-}
-//adjusts the drive power to keep robot on a 0 degree heading
-private void GyroStraightening(double power){
-    //sets drive power relative to gyro reading
-    setPowerInDirection(0, power);
+    resetAngles();
 }
     //returns true if touch sensor is pressed
-    private boolean LeftPressed(){return !touchLeft.getState(); }
-    private boolean RightPressed(){ return !touchRight.getState();}
+    private boolean leftPressed(){return !touchLeft.getState(); }
+    private boolean rightPressed(){ return !touchRight.getState();}
     //a method that drives until both touch sensors are pressed
-    private void DriveUntilTouch(double power) {
+    private void driveUntilTouch(double power) {
         //while either left or right is not pressed, drives with gyro straightening
-        while (!LeftPressed() || !RightPressed()) {
-            telemetry.addData("left pressed: ", LeftPressed());
-            telemetry.addData("right pressed: ", RightPressed());
+        while (!leftPressed() || !rightPressed()) {
+            telemetry.addData("left pressed: ", leftPressed());
+            telemetry.addData("right pressed: ", rightPressed());
             telemetry.update();
             setPowerInDirection(2, 0.4);
         }
         //turns off drive power
         powerMotorsOff();
     }
-    private boolean InRange(double target, DistanceUnit units, DistanceSensor range){
+    private boolean inRange(double target, DistanceUnit units, DistanceSensor range){
         //creates a variable to hold the range sensor's reading
         double distance;
         //sets the distance variable to the value that the range sensor reads
@@ -237,33 +232,32 @@ private void GyroStraightening(double power){
         //returns true if the robot is closer to the target than the target position
         return (distance <= target);
     }
-    private void DrivebyRange(double distance, double power, DistanceSensor range){
-    while(!InRange(distance, DistanceUnit.INCH, range)){
-        GyroStraightening(power);
+    private void drivebyRange(double distance, double power, DistanceSensor range){
+    while(!inRange(distance, DistanceUnit.INCH, range)){
+        setPowerStraight(power);
     }
     powerMotorsOff();
 }
-private void DrivebyRangeReverse(double distance, double power, DistanceSensor range){
-    while(InRange(distance, DistanceUnit.INCH, range)){
-        GyroStraightening(-power);
+private void drivebyRangeReverse(double distance, double power, DistanceSensor range){
+    while(inRange(distance, DistanceUnit.INCH, range)){
+        setPowerStraight(-power);
     }
     powerMotorsOff();
 }
-private void DrivebyColor(double power, ColorSensor colorSensor){
-    while(!WithinColorRange(70, 42, colorSensor)){
-        GyroStraightening(power);
+private void drivebyColor(double power, ColorSensor colorSensor){
+    while(!withinColorRange(70, 42, colorSensor)){
+        setPowerStraight(power);
     }
     powerMotorsOff();
 
 }
-private boolean WithinColorRange(int max, int min, ColorSensor sensor) {
+private boolean withinColorRange(int max, int min, ColorSensor sensor) {
     //declares and sets a variable equal to the color sensor reading
     int color = sensor.blue();
     //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
     return (color <= max && color >= min);
-
 }
-private String GetPosition(){
+private String getPosition(){
     if(detector.getAligned()){
         position = "Right";
     }
@@ -278,8 +272,8 @@ private String GetPosition(){
     }
     return position;
 }
-private void ColorStraightenSimple(double power){
-    if(WithinColorRange(50, 42, colorLeft)){
+private void colorStraightenSimple(double power){
+    if(withinColorRange(50, 42, colorLeft)){
         /*while(!WithinColorRange(50, 42, colorLeft)){
             left.setPower(power);
             right.setPower(-power);
@@ -288,48 +282,48 @@ private void ColorStraightenSimple(double power){
         rightF.setPower(powerOff);
     }
 }
-private void DriveByLander(double target, double power){
+private void driveByLander(double target, double power){
     if(power < 0){
-        while(!InRange(target, DistanceUnit.INCH, rangeHigh)){
-            setPowerInDirection(0, power);
+        while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
+            setPowerStraight(power);
         }
         powerMotorsOff();
     }
     else if(power > 0){
-        while(InRange(target, DistanceUnit.INCH, rangeHigh)){
-            setPowerInDirection(0, power);
+        while(inRange(target, DistanceUnit.INCH, rangeHigh)){
+            setPowerStraight(power);
         }
         powerMotorsOff();
     }
 }
-private void Sampling(){
-    String position = GetPosition();
+private void sampling(){
+    String position = getPosition();
     switch (position){
         case("Center"):
-            DriveByLander(27, 0.4);
+            driveByLander(27, 0.4);
             sleep(1000);
-            DriveByLander(13, -0.4);
+            driveByLander(13, -0.4);
             sleep(1000);
             break;
         case("Left"):
-            GyroTurn(25, 0.2);
+            gyroTurn(25, 0.2);
             sleep(1000);
-            DriveByLander(29, 0.4);
+            driveByLander(29, 0.4);
             sleep(1000);
-            DriveByLander(13, -0.4);
+            driveByLander(13, -0.4);
             sleep(1000);
-            GyroTurn(-20, 0.2);
+            gyroTurn(-20, 0.2);
             sleep(1000);
             break;
         case("Right"):
-            GyroTurn(-25, 0.2);
+            gyroTurn(-25, 0.2);
             sleep(100);
-            DrivebyRangeReverse(29, -0.4, rangeHigh);
+            drivebyRangeReverse(29, -0.4, rangeHigh);
             sleep(500);
-            GyroTurn(20, -0.2);
-            DrivebyRange(17, -0.4, rangeHigh);
+            gyroTurn(20, -0.2);
+            drivebyRange(17, -0.4, rangeHigh);
             sleep(500);
-            GyroTurn(35, 0.2);
+            gyroTurn(35, 0.2);
             sleep(500);
             break;
         }
@@ -341,9 +335,14 @@ private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, 
     rightB.setPower(rightBPwr);
 
 }
-private void Strafe(double power, boolean right){
+private void strafe(double power, boolean right){
         if(right){
-
+            setMotorPowers(-power, power,
+                            power, -power);
+        }
+        else{
+            setMotorPowers(power, -power,
+                            -power, power);
         }
     }
 }

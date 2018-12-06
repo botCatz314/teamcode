@@ -75,7 +75,7 @@ public class Sensors extends LinearOpMode {
 
     HangingApparatus();
     DrivetoLine(50, 42, 0.3, 0.3,true);
-    LineUp(50,42,0.2,0.2);
+    lineUp(50,42,0.2,0.2);
    // DistancetoRate(20, DistanceUnit.INCH, 10);
    // Straighten(DistanceUnit.INCH);
 
@@ -117,7 +117,7 @@ public class Sensors extends LinearOpMode {
     right.setPower(powerOff);
     }
     //converts the distance read by the range sensor to a speed for drive motors
-    private void DistancetoRate(double stoptarget, DistanceUnit unit, double time){
+    private void distanceToRate(double stoptarget, DistanceUnit unit, double time){
     //sets variables to hold the values of the distance that the robot needs to travel
     double distanceRight, distanceLeft;
     //declares a variable to hold the linear rate
@@ -176,7 +176,7 @@ public class Sensors extends LinearOpMode {
 
     }
     //uses color sensors to square along a colored line
-    public static void LineUp(int max, int min, double leftPower, double rightPower){
+    public static void lineUp(int max, int min, double leftPower, double rightPower){
    //moves right wheel until it is on the color sensor reads the line's color range
     while(!WithinColorRange(max, min, colorRight)){
         //sets right drive power
@@ -233,7 +233,7 @@ public class Sensors extends LinearOpMode {
         }
     }
     //uses the range sensor to square robot relative to a surface
-    private void Straighten(DistanceUnit units){
+    private void straighten(DistanceUnit units){
     //declares variables to hold range sensor reading
     double rightRange, leftRange;
     //sets the initial values of the variables to the range sensors reading
