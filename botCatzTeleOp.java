@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@TeleOp(name = "MTF TeleOp", group = "Default")
-public class MTFTeleOp extends LinearOpMode {
+@TeleOp(name = "botCatzTeleOp", group = "Default")
+public class botCatzTeleOp extends LinearOpMode {
 
     private DcMotor leftF, rightF, leftB, rightB; //hangingMotor, pivotMotor, slideMotor, collector; //declares
     double velX = 0, velY, velR;
