@@ -24,36 +24,35 @@ import com.qualcomm.robotcore.util.Range;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-    private ColorSensor colorLeft;
+    private ColorSensor colorRight;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
-    private Servo phoneServo, catLauncher;
+    private Servo phoneServo;// catLauncher;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
-    private DigitalChannel touchLeft, touchRight, magneticSwitch;
+    //private DigitalChannel touchLeft, touchRight, magneticSwitch;
     private GoldAlignDetector detector;
     private String position = null;
 @Override
     public void runOpMode() {
    // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
-    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+    colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     leftF = hardwareMap.dcMotor.get("leftF");
     rightF = hardwareMap.dcMotor.get("rightF");
     leftB = hardwareMap.dcMotor.get("leftB");
     rightB = hardwareMap.dcMotor.get("rightB");   phoneServo = hardwareMap.servo.get("phoneServo");
-    catLauncher = hardwareMap.servo.get("catLauncher");
-    touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
-    touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
-    magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
+   // catLauncher = hardwareMap.servo.get("catLauncher");
+    //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
+   // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+   // magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    leftF.setDirection(DcMotorSimple.Direction.REVERSE);
-    rightF.setDirection(DcMotorSimple.Direction.FORWARD);
-    leftB.setDirection(DcMotorSimple.Direction.REVERSE);
+    rightF.setDirection(DcMotorSimple.Direction.REVERSE);
+    rightB.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
     detector = new GoldAlignDetector();
@@ -91,10 +90,9 @@ public class AutonomousTest extends LinearOpMode {
 
     waitForStart();
 
-    while(opModeIsActive()){
-        telemetry.addData("ms: ", magneticSwitch.getState());
-        telemetry.update();
-    }
+   drivebyColor(0.3, colorRight);
+   driveByChangeInRange(false);
+    sleep(1000);
      /* DrivebyColor(0.4, colorLeft);
         Sampling();
         telemetry.addData("gold:", GetPosition());
@@ -129,7 +127,9 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void setPowerInDirection(double degrees, double power){
     degrees = checkDirection();
-    double rightPwr = (power - degrees) *0.1;
+    double rightPwr = power - (degrees *0.1);
+    telemetry.addData("rightPower: ", rightPwr);
+    telemetry.update();
     setMotorPowers(power, rightPwr, power, rightPwr);
     }
     private void setPowerStraight(double power){
@@ -211,10 +211,10 @@ public class AutonomousTest extends LinearOpMode {
         resetAngles();
     }
     //returns true if touch sensor is pressed
-    private boolean leftPressed(){return !touchLeft.getState(); }
-    private boolean rightPressed(){ return !touchRight.getState();}
+  //  private boolean leftPressed(){return !touchLeft.getState(); }
+    //private boolean rightPressed(){ return !touchRight.getState();}
     //a method that drives until both touch sensors are pressed
-    private void driveUntilTouch(double power) {
+ /*   private void driveUntilTouch(double power) {
         //while either left or right is not pressed, drives with gyro straightening
         while (!leftPressed() || !rightPressed()) {
             telemetry.addData("left pressed: ", leftPressed());
@@ -224,7 +224,7 @@ public class AutonomousTest extends LinearOpMode {
         }
         //turns off drive power
         powerMotorsOff();
-    }
+    }*/
     private boolean inRange(double target, DistanceUnit units, DistanceSensor range){
         //creates a variable to hold the range sensor's reading
         double distance;
@@ -246,7 +246,7 @@ public class AutonomousTest extends LinearOpMode {
         powerMotorsOff();
     }
     private void drivebyColor(double power, ColorSensor colorSensor){
-        while(!withinColorRange(70, 42, colorSensor)){
+        while(!withinColorRange(30, 20, colorSensor)){
             setPowerStraight(power);
         }
         powerMotorsOff();
@@ -417,6 +417,13 @@ public class AutonomousTest extends LinearOpMode {
             }
             //turns drive motor power off
             powerMotorsOff();
+        }
+    }
+    private void driveByChangeInRange(boolean right){
+        double originDistance = rangeHigh.getDistance(DistanceUnit.INCH);
+
+        while(rangeHigh.getDistance(DistanceUnit.INCH) <= originDistance + 10){
+            strafe(0.4, right);
         }
     }
 }
