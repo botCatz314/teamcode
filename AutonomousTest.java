@@ -86,13 +86,18 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.addData("mode: ", "ready");
     telemetry.update();
 
-    phoneServo.setPosition(0.9);
+    phoneServo.setPosition(1);
 
     waitForStart();
 
-   drivebyColor(0.3, colorRight);
-   driveByChangeInRange(false);
-    sleep(1000);
+    driveByLander(12, 0.3);
+    sampling();
+    powerMotorsOff();
+    //getAngles();
+   // telemetry.addData("position of gold: ", position);
+//   //drivebyColor(0.3, colorRight);
+  // driveByChangeInRange(false);
+    //sleep(1000);
      /* DrivebyColor(0.4, colorLeft);
         Sampling();
         telemetry.addData("gold:", GetPosition());
@@ -127,10 +132,10 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void setPowerInDirection(double degrees, double power){
     degrees = checkDirection();
-    double rightPwr = power - (degrees *0.1);
-    telemetry.addData("rightPower: ", rightPwr);
+    double leftPwr = power - (degrees *0.1);
+    telemetry.addData("rightPower: ", leftPwr);
     telemetry.update();
-    setMotorPowers(power, rightPwr, power, rightPwr);
+    setMotorPowers(leftPwr, power, leftPwr, power);
     }
     private void setPowerStraight(double power){
     setPowerInDirection(0, power);
@@ -268,7 +273,8 @@ public class AutonomousTest extends LinearOpMode {
         //if the position is not already set
         if(position == null) {
             //move servo to left mineral position
-            phoneServo.setPosition(0.5);
+            phoneServo.setPosition(0.7);
+            sleep(1000);
             //sets position to left
             if(detector.getAligned()){
                 position = "Left";
@@ -307,33 +313,24 @@ public class AutonomousTest extends LinearOpMode {
         switch (position){
             //if center, hit the center position TO DO: test
             case("Center"):
-                driveByLander(27, 0.4);
-                sleep(1000);
-                driveByLander(13, -0.4);
-                sleep(1000);
+                driveByLander(27, 0.3);
+
+                driveByLander(20, -0.3);
+
                 break;
             //if left, hit the left position TO DO: test
             case("Left"):
-                gyroTurn(25, 0.2);
-                sleep(1000);
-                driveByLander(29, 0.4);
-                sleep(1000);
-                driveByLander(13, -0.4);
-                sleep(1000);
-                gyroTurn(-20, 0.2);
-                sleep(1000);
+
                 break;
             //if right, hit the right position TO DO: test
             case("Right"):
-                gyroTurn(-25, 0.2);
-                sleep(100);
-                drivebyRangeReverse(29, -0.4, rangeHigh);
-                sleep(500);
-                gyroTurn(20, -0.2);
-                drivebyRange(17, -0.4, rangeHigh);
-                sleep(500);
-                gyroTurn(35, 0.2);
-                sleep(500);
+                strafe(0.4, false);
+                sleep(1500);
+                strafe(0, false);
+                setMotorPowers(0.3, 0.3, 0.3,0.3);
+                sleep(800);
+                powerMotorsOff();
+
                 break;
         }
 }
@@ -417,13 +414,6 @@ public class AutonomousTest extends LinearOpMode {
             }
             //turns drive motor power off
             powerMotorsOff();
-        }
-    }
-    private void driveByChangeInRange(boolean right){
-        double originDistance = rangeHigh.getDistance(DistanceUnit.INCH);
-
-        while(rangeHigh.getDistance(DistanceUnit.INCH) <= originDistance + 10){
-            strafe(0.4, right);
         }
     }
 }
