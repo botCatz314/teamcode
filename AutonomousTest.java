@@ -92,7 +92,9 @@ public class AutonomousTest extends LinearOpMode {
 
     driveByLander(12, 0.3);
     sampling();
-    powerMotorsOff();
+    driveToDepot();
+    dropCat();
+    park();
     //getAngles();
    // telemetry.addData("position of gold: ", position);
 //   //drivebyColor(0.3, colorRight);
@@ -418,5 +420,14 @@ public class AutonomousTest extends LinearOpMode {
             //turns drive motor power off
             powerMotorsOff();
         }
+    }
+    private void driveToDepot(){
+
+    }
+    private void dropCat(){
+
+    }
+    private void park(){
+
     }
 }
