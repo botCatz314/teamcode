@@ -324,12 +324,15 @@ public class AutonomousTest extends LinearOpMode {
                 break;
             //if right, hit the right position TO DO: test
             case("Right"):
-                strafe(0.4, false);
+                strafe(0.4, true);
                 sleep(1500);
-                strafe(0, false);
+                strafe(0, true);
                 setMotorPowers(0.3, 0.3, 0.3,0.3);
                 sleep(800);
                 powerMotorsOff();
+                setMotorPowers(0, -0.3, -0.3, 0);
+                sleep(800);
+                setMotorPowers(0,0,0,0);
 
                 break;
         }
@@ -347,14 +350,14 @@ public class AutonomousTest extends LinearOpMode {
         //if strafing right
         if(right){
             //sets front left and back right motors to negative power, sets front right and back left motors to positive power
-            setMotorPowers(-power, power,
-                            power, -power);
+            setMotorPowers(power, -power,
+                            -power, power);
         }
         //if strafing left
         else{
             //sets front left and back right motors to positive power and sets front right and back left motors to negative power
-            setMotorPowers(power, -power,
-                            -power, power);
+            setMotorPowers(-power, power,
+                            power, -power);
         }
     }
     //
