@@ -20,7 +20,7 @@ public class botCatzTeleOp extends LinearOpMode {
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
     private DigitalChannel magneticSwitch;
-    private DigitalChannel touchLower, touchUpper;
+    private DigitalChannel touchUpper;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double powerOff = 0, globalAngle;
@@ -36,7 +36,6 @@ public class botCatzTeleOp extends LinearOpMode {
     rightB = hardwareMap.dcMotor.get("rightB");
     //finds magnetic switch and touch sensors in hardware map
     magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
-    touchLower = hardwareMap.get(DigitalChannel.class, "touchLower");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
     //finds the attachment motors in the hardware map
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
@@ -44,11 +43,6 @@ public class botCatzTeleOp extends LinearOpMode {
     slideMotor = hardwareMap.dcMotor.get("slideMotor");
     collector = hardwareMap.dcMotor.get("collector");
 
-
-
-
-
-    touchLower.setMode(DigitalChannel.Mode.INPUT);
     touchUpper.setMode(DigitalChannel.Mode.INPUT);
 
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -81,14 +75,14 @@ public class botCatzTeleOp extends LinearOpMode {
             driveMotors(velY + velX, velY - velX, velY - velX, velY + velX);
             setControlBools(true, false);
         }
-        if(gamepad1.right_trigger >=0.1 && !motorIsUsed){
+        if((gamepad1.right_trigger >=0.1 && !motorIsUsed) || (gamepad2.dpad_right && !motorIsUsed)){
             motorIsUsed = true;
             velX = gamepad1.right_trigger;
             driveMotors( -velX,  velX,
                           velX,  -velX);
         }
 
-        if(gamepad1.left_trigger >= 0.1 && !motorIsUsed){
+        if((gamepad1.left_trigger >= 0.1 && !motorIsUsed) || (gamepad2.dpad_left && !motorIsUsed)){
             motorIsUsed = true;
             velX = gamepad1.left_trigger;
             driveMotors(  velX,  -velX,
@@ -109,31 +103,35 @@ public class botCatzTeleOp extends LinearOpMode {
                     velL, velR);
     }
 
-       collector.setPower(gamepad2.right_trigger);
-       collector.setPower(-gamepad2.left_trigger);
+        if(gamepad2.right_bumper){
+            collector.setPower(9.0);
+        }
+        else if(gamepad2.left_bumper){
+            collector.setPower(powerOff);
+        }
+        else if(gamepad2.a){
+            collector.setPower(-0.9);
+        }
 
         slideMotor.setPower(gamepad2.right_stick_y);
 
         pivotMotor.setPower(-gamepad2.left_stick_y);
 
-        if(gamepad2.a){
+        if(gamepad2.b){
             armToScoringPosition(0.5);
+        }
+        if(gamepad2.x){
+            armToScoringPosition(-0.5);
         }
 
         if(gamepad2.dpad_up && !getTouch(touchUpper)){
-            hangingMotor.setPower(0.7);
+            driveUntilTouch(1.0, hangingMotor, touchUpper);
         }
-        else if(gamepad2.dpad_down && !getTouch(touchLower)){
-            hangingMotor.setPower(-0.7);
+        if(gamepad2.right_trigger > 0.1) {
+            hangingMotor.setPower(gamepad2.right_trigger);
         }
-        else if(gamepad2.dpad_right){
-            driveUntilTouch(0.7, hangingMotor, touchUpper);
-        }
-        else if(gamepad2.dpad_left){
-            driveUntilTouch(-0.7, hangingMotor, touchLower);
-        }
-        else{
-            hangingMotor.setPower(powerOff);
+        if(gamepad2.left_trigger > 0.1){
+            hangingMotor.setPower(-gamepad2.left_trigger);
         }
 
         telemetry.addData("Gyro: ", getAngles());
@@ -142,7 +140,6 @@ public class botCatzTeleOp extends LinearOpMode {
         idle();
     }
 }
-
 
     private void driveMotors(double powerLF, double powerRF, double powerLB, double powerRB){
         leftF.setPower(powerLF);
