@@ -27,11 +27,12 @@ public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorRight;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
+    private DcMotor hangingMotor;
     private Servo phoneServo;// catLauncher;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
-    //private DigitalChannel touchLeft, touchRight, magneticSwitch;
+    private DigitalChannel touchUpper, magneticSwitch;
     private GoldAlignDetector detector;
     private String position = null;
 @Override
@@ -41,7 +42,10 @@ public class AutonomousTest extends LinearOpMode {
     leftF = hardwareMap.dcMotor.get("leftF");
     rightF = hardwareMap.dcMotor.get("rightF");
     leftB = hardwareMap.dcMotor.get("leftB");
-    rightB = hardwareMap.dcMotor.get("rightB");   phoneServo = hardwareMap.servo.get("phoneServo");
+    rightB = hardwareMap.dcMotor.get("rightB");
+    hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+    phoneServo = hardwareMap.servo.get("phoneServo");
+    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
    // catLauncher = hardwareMap.servo.get("catLauncher");
     //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
    // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
@@ -65,7 +69,7 @@ public class AutonomousTest extends LinearOpMode {
     detector.maxAreaScorer.weight = 0.005;
     detector.ratioScorer.weight = 5;
     detector.ratioScorer.perfectRatio = 0.8;
-    detector.setAlignSettings(0,1000);
+    detector.setAlignSettings(0,800); //1000
     detector.enable();
 
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -86,12 +90,15 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.addData("mode: ", "ready");
     telemetry.update();
 
-    phoneServo.setPosition(1);
+    telemetry.addData("servo: ", phoneServo.getPosition());
+    telemetry.update();
+
+    phoneServo.setPosition(0.8);
 
     waitForStart();
-
-    driveByLander(12, 0.3);
-    sampling();
+    deploy();
+    driveByLander(15, 0.3);
+    sampling2();
     driveToDepot();
     dropCat();
     park();
@@ -275,7 +282,7 @@ public class AutonomousTest extends LinearOpMode {
         //if the position is not already set
         if(position == null) {
             //move servo to left mineral position
-            phoneServo.setPosition(0.7);
+            phoneServo.setPosition(0.5);
             sleep(1000);
             //sets position to left
             if(detector.getAligned()){
@@ -291,6 +298,8 @@ public class AutonomousTest extends LinearOpMode {
     }
     //drive by range for the rangeHigh relative to the lander
     private void driveByLander(double target, double power){
+        telemetry.addData("doing this", true);
+        telemetry.update();
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
@@ -327,14 +336,16 @@ public class AutonomousTest extends LinearOpMode {
             //if right, hit the right position TO DO: test
             case("Right"):
                 strafe(0.4, true);
-                sleep(1500);
+                sleep(1700);
                 strafe(0, true);
                 setMotorPowers(0.3, 0.3, 0.3,0.3);
-                sleep(800);
+                sleep(850);
                 powerMotorsOff();
-                setMotorPowers(0, -0.3, -0.3, 0);
-                sleep(800);
-                setMotorPowers(0,0,0,0);
+                setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+                sleep(900);
+                strafe(0.4, false);
+                sleep(1700);
+                strafe(0,false);
 
                 break;
         }
@@ -422,6 +433,15 @@ public class AutonomousTest extends LinearOpMode {
         }
     }
     private void driveToDepot(){
+       setMotorPowers(-0.3, 0.3, -0.3, 0.3);
+       sleep(1200);
+       setMotorPowers(0,0,0,0);
+       drivebyRange(12, 0.3, rangeRight);
+       sleep(500);
+       setRotationPower(true, 0.3);
+       sleep(1800);
+       powerMotorsOff();
+       drivebyRange(24, 1, rangeRight);
 
     }
     private void dropCat(){
@@ -429,5 +449,65 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void park(){
 
+    }
+    private void sampling2(){
+        strafe(0.5, true);
+        sleep(1700);
+        strafe(0, false);
+        if(detector.getAligned()){
+            position = "Right";
+            setMotorPowers(0.3, 0.3, 0.3, 0.3);
+            sleep(800);
+            setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+            sleep(800);
+            strafe(0.5, false);
+            sleep(2400);
+            strafe(0, false);
+        }
+        else if(position == null){
+            telemetry.addData("got here:", true);
+            telemetry.update();
+            strafe(0.5, false);
+            sleep(1700);
+            strafe(0, false);
+            if(detector.getAligned()){
+                position = "Center";
+                setMotorPowers(0.3, 0.3, 0.3, 0.3);
+                sleep(550);
+                setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+                sleep(550);
+                powerMotorsOff();
+                strafe(0.5, false);
+                sleep(1400);
+                strafe(0, false);
+            }
+            else if(position == null){
+                strafe(0.5, false);
+                sleep(1000);
+                strafe(0, false);
+                if(detector.getAligned()){
+                    setMotorPowers(0.3, 0.3, 0.3, 0.3);
+                    sleep(540);
+                    setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+                    sleep(620);
+                    setMotorPowers(0,0,0,0);
+                }
+            }
+        }
+    }
+    private boolean isTouched(){
+        return !touchUpper.getState();
+    }
+    private void goToTouch(double power){
+        while(!isTouched()){
+            hangingMotor.setPower(power);
+        }
+        hangingMotor.setPower(powerOff);
+    }
+    private void deploy(){
+        hangingMotor.setPower(-0.2);
+        sleep(300);
+        hangingMotor.setPower(powerOff);
+        goToTouch(0.5);
     }
 }
