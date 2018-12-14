@@ -57,7 +57,7 @@ public class AutonomousTest extends LinearOpMode {
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
-
+    hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -500,14 +500,20 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void goToTouch(double power){
         while(!isTouched()){
+            telemetry.addData("get here", true);
+            telemetry.update();
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
     }
     private void deploy(){
         hangingMotor.setPower(-0.2);
-        sleep(300);
+        sleep(200);
         hangingMotor.setPower(powerOff);
-        goToTouch(0.5);
+        sleep(1000);
+        goToTouch(-0.5);
+        strafe(0.3, false);
+        sleep(200);
+        strafe(0,false);
     }
 }

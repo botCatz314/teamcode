@@ -21,10 +21,7 @@ public class botCatzTeleOp extends LinearOpMode {
     boolean motorIsUsed = false, driveAtAngle;
     private DigitalChannel magneticSwitch;
     private DigitalChannel touchUpper;
-    private BNO055IMU imu;
-    private Orientation lastAngles = new Orientation();
-    private double powerOff = 0, globalAngle;
-
+    private double powerOff = 0;
     private boolean collecting;
 @Override
     public void runOpMode()
@@ -50,6 +47,8 @@ public class botCatzTeleOp extends LinearOpMode {
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
+    telemetry.addData("happening: ", true);
+    telemetry.update();
     while (opModeIsActive())
     {
         motorIsUsed = false;
@@ -138,12 +137,10 @@ public class botCatzTeleOp extends LinearOpMode {
         if(gamepad2.right_trigger > 0.1) {
             hangingMotor.setPower(gamepad2.right_trigger);
         }
-        if(gamepad2.left_trigger > 0.1){
+        else if(gamepad2.left_trigger > 0.1){
             hangingMotor.setPower(-gamepad2.left_trigger);
         }
-
-        telemetry.addData("Gyro: ", getAngles());
-        telemetry.update();
+        else{hangingMotor.setPower(0);}
 
         idle();
     }
@@ -173,24 +170,5 @@ public class botCatzTeleOp extends LinearOpMode {
         }
         slideMotor.setPower(powerOff);
     }
-    private double getAngles(){
-        //declares and sets a variable to the reading of the imu
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        //declares and sets a variable to the change of the angle that is and the angle that was before
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-        //sets delta angle itself plus 360 if it is less than -180 degrees
-        if (deltaAngle < -180){
-            deltaAngle += 360;
-        }
-        //sets delta angle to itself minus 360 if it is greater than 180 degrees
-        else if(deltaAngle > 180){
-            deltaAngle -= 360;
-        }
-        //sets globalAngle to itself plus deltaAngle
-        globalAngle += deltaAngle;
-        //sets last angle to the current value of angles
-        lastAngles = angles;
-        //returns globalAngle
-        return globalAngle;
-    }
+
 }
