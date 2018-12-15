@@ -27,7 +27,7 @@ public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorRight;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
-    private DcMotor hangingMotor;
+    private DcMotor hangingMotor, pivotMotor;
     private Servo phoneServo;// catLauncher;
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
@@ -44,6 +44,7 @@ public class AutonomousTest extends LinearOpMode {
     leftB = hardwareMap.dcMotor.get("leftB");
     rightB = hardwareMap.dcMotor.get("rightB");
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+    pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
     phoneServo = hardwareMap.servo.get("phoneServo");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
    // catLauncher = hardwareMap.servo.get("catLauncher");
@@ -97,9 +98,15 @@ public class AutonomousTest extends LinearOpMode {
 
     waitForStart();
     deploy();
+    pivotMotor.setPower(0.5);
+    sleep(200);
+    pivotMotor.setPower(powerOff);
     driveByLander(15, 0.3);
     sampling2();
     driveToDepot();
+    powerMotorsOff();
+    leftF.setPower(0);
+    leftB.setPower(0);
     dropCat();
     park();
     //getAngles();
@@ -433,18 +440,34 @@ public class AutonomousTest extends LinearOpMode {
         }
     }
     private void driveToDepot(){
-       setMotorPowers(-0.3, 0.3, -0.3, 0.3);
-       sleep(1200);
-       setMotorPowers(0,0,0,0);
-       drivebyRange(12, 0.3, rangeRight);
-       sleep(500);
-       setRotationPower(true, 0.3);
-       sleep(1800);
-       powerMotorsOff();
-       drivebyRange(24, 1, rangeRight);
+       strafe(0.4, false);    //strafes from seeing gold
+       sleep(6000);
+       strafe(powerOff, false);
 
+       setRotationPower(false, 0.3);    // makes a slight turn
+       sleep(1500);
+       powerMotorsOff();
+
+       setMotorPowers(-0.3, -0.3, -0.3, -0.3);   // goes to depot
+       sleep(2000);
+       powerMotorsOff();
     }
     private void dropCat(){
+        pivotMotor.setPower(0.4);
+        sleep(1000);
+        pivotMotor.setPower(-0.4);
+        sleep(200);
+        pivotMotor.setPower(0.4);
+        sleep(200);
+        pivotMotor.setPower(-0.4);
+        sleep(200);
+        pivotMotor.setPower(0.4);
+        sleep(200);
+        pivotMotor.setPower(-0.4);
+        sleep(200);
+        pivotMotor.setPower(0.4);
+        sleep(200);
+        pivotMotor.setPower(0);
 
     }
     private void park(){
@@ -452,14 +475,14 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void sampling2(){
         strafe(0.5, true);
-        sleep(1700);
+        sleep(1500);
         strafe(0, false);
         if(detector.getAligned()){
             position = "Right";
             setMotorPowers(0.3, 0.3, 0.3, 0.3);
-            sleep(800);
+            sleep(760);
             setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-            sleep(800);
+            sleep(760);
             strafe(0.5, false);
             sleep(2400);
             strafe(0, false);
@@ -468,7 +491,7 @@ public class AutonomousTest extends LinearOpMode {
             telemetry.addData("got here:", true);
             telemetry.update();
             strafe(0.5, false);
-            sleep(1700);
+            sleep(1500);
             strafe(0, false);
             if(detector.getAligned()){
                 position = "Center";
@@ -481,15 +504,15 @@ public class AutonomousTest extends LinearOpMode {
                 sleep(1400);
                 strafe(0, false);
             }
-            else if(position == null){
+            else if(position == null){       // this thing does check if gold is in left.
                 strafe(0.5, false);
                 sleep(1000);
                 strafe(0, false);
                 if(detector.getAligned()){
                     setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                    sleep(540);
+                    sleep(650);
                     setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-                    sleep(620);
+                    sleep(530);
                     setMotorPowers(0,0,0,0);
                 }
             }
@@ -507,12 +530,11 @@ public class AutonomousTest extends LinearOpMode {
         hangingMotor.setPower(powerOff);
     }
     private void deploy(){
-        hangingMotor.setPower(-0.2);
-        sleep(200);
+        hangingMotor.setPower(-1);
+        sleep(80);
         hangingMotor.setPower(powerOff);
-        sleep(1000);
-        goToTouch(-0.5);
-        strafe(0.3, false);
+        sleep(3000);
+        strafe(0.3, true);
         sleep(200);
         strafe(0,false);
     }
