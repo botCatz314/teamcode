@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.util.Range;
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorRight;
+    private DcMotor slideMotor;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
     private DcMotor hangingMotor, pivotMotor;
@@ -46,6 +47,7 @@ public class AutonomousTest extends LinearOpMode {
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
     phoneServo = hardwareMap.servo.get("phoneServo");
+    slideMotor = hardwareMap.dcMotor.get("slideMotor");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
    // catLauncher = hardwareMap.servo.get("catLauncher");
     //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
@@ -101,14 +103,14 @@ public class AutonomousTest extends LinearOpMode {
     pivotMotor.setPower(0.5);
     sleep(200);
     pivotMotor.setPower(powerOff);
-    driveByLander(15, 0.3);
+    driveByLander(11, 0.3);
     sampling2();
-    driveToDepot();
+    /*driveToDepot();
     powerMotorsOff();
     leftF.setPower(0);
     leftB.setPower(0);
     dropCat();
-    park();
+    park();*/
     //getAngles();
    // telemetry.addData("position of gold: ", position);
 //   //drivebyColor(0.3, colorRight);
@@ -455,6 +457,8 @@ public class AutonomousTest extends LinearOpMode {
     private void dropCat(){
         pivotMotor.setPower(0.4);
         sleep(1000);
+        slideMotor.setPower(.5);
+        sleep(700);
         pivotMotor.setPower(-0.4);
         sleep(200);
         pivotMotor.setPower(0.4);
@@ -480,12 +484,8 @@ public class AutonomousTest extends LinearOpMode {
         if(detector.getAligned()){
             position = "Right";
             setMotorPowers(0.3, 0.3, 0.3, 0.3);
-            sleep(760);
-            setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-            sleep(760);
-            strafe(0.5, false);
-            sleep(2400);
-            strafe(0, false);
+            sleep(1060);
+            powerMotorsOff();
         }
         else if(position == null){
             telemetry.addData("got here:", true);
@@ -496,13 +496,9 @@ public class AutonomousTest extends LinearOpMode {
             if(detector.getAligned()){
                 position = "Center";
                 setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                sleep(550);
-                setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-                sleep(550);
+                sleep(950);
                 powerMotorsOff();
-                strafe(0.5, false);
-                sleep(1400);
-                strafe(0, false);
+
             }
             else if(position == null){       // this thing does check if gold is in left.
                 strafe(0.5, false);
@@ -510,10 +506,8 @@ public class AutonomousTest extends LinearOpMode {
                 strafe(0, false);
                 if(detector.getAligned()){
                     setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                    sleep(650);
-                    setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-                    sleep(530);
-                    setMotorPowers(0,0,0,0);
+                    sleep(1050);
+
                 }
             }
         }
@@ -531,9 +525,12 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void deploy(){
         hangingMotor.setPower(-1);
-        sleep(80);
+        sleep(120);
         hangingMotor.setPower(powerOff);
         sleep(3000);
+        hangingMotor.setPower(1);
+        sleep(5000);
+        hangingMotor.setPower(powerOff);
         strafe(0.3, true);
         sleep(200);
         strafe(0,false);
