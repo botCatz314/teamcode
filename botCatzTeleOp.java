@@ -51,7 +51,8 @@ public class botCatzTeleOp extends LinearOpMode {
     telemetry.update();
     while (opModeIsActive())
     {
-        motorIsUsed = false;
+        //drive mode 1
+      /*  motorIsUsed = false;
         velX = 0;
         velY = 0;
         if(gamepad1.dpad_up){
@@ -109,7 +110,25 @@ public class botCatzTeleOp extends LinearOpMode {
         driveMotors(velL, velR,
                     velL, velR);
     }
+*/
+      //drive mode 2
+        velX = 0;
+        velY = 0;
+        slideMotor.setPower(0);
+        if(gamepad1.left_stick_y > 0.1 || gamepad1.left_stick_y < -0.1){
+            velY = -gamepad1.left_stick_y;
+        }
+        if (gamepad1.right_stick_y > 0.1 || gamepad1.right_stick_y < -0.1){
+            velX = -gamepad1.right_stick_y;
+        }
+        driveMotors(velX, velY, velY, velX);
+        if (gamepad1.right_trigger > 0.1){
+            driveMotors(gamepad1.right_trigger, -gamepad1.right_trigger, gamepad1.right_trigger, -gamepad1.right_trigger);
+        }
+        if(gamepad1.left_trigger > 0.1){
+            driveMotors(-gamepad1.left_trigger, gamepad1.left_trigger, -gamepad1.left_trigger, gamepad1.left_trigger);
 
+        }
         if(gamepad2.right_bumper){
             collector.setPower(9.0);
         }
@@ -119,9 +138,12 @@ public class botCatzTeleOp extends LinearOpMode {
         else if(gamepad2.a){
             collector.setPower(-0.9);
         }
+        if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
             slideMotor.setPower(gamepad2.left_stick_y);
-
+        }
+        if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
             pivotMotor.setPower(-gamepad2.right_stick_y);
+        }
         if(gamepad2.b){
             armToScoringPosition(0.5);
         }

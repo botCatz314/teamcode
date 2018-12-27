@@ -13,12 +13,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous (name = "Sensors")
-@Disabled
+
 public class Sensors extends LinearOpMode {
 
     private GoldAlignDetector detector;
@@ -29,6 +29,8 @@ public class Sensors extends LinearOpMode {
     public static ColorSensor colorLeft, colorRight; //declares color sensor variables
 
     private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
+
+    private AnalogInput armPos;
 
     public static String position = null;
 
@@ -48,6 +50,8 @@ public class Sensors extends LinearOpMode {
     //sets touch sensor variables
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+
+    armPos = hardwareMap.get(AnalogInput.class, "armPos");
 
    //sets up drive motors to our specification
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -75,11 +79,11 @@ public class Sensors extends LinearOpMode {
     detector.enable();
     waitForStart();
 
-    HangingApparatus();
-    DrivetoLine(50, 42, 0.3, 0.3,true);
-    lineUp(50,42,0.2,0.2);
-   // DistancetoRate(20, DistanceUnit.INCH, 10);
-   // Straighten(DistanceUnit.INCH);
+
+    while(opModeIsActive()){
+        telemetry.addData("arm pos:", armPos.getVoltage());
+        telemetry.update();
+    }
 
     }
     //returns whether the left range sensor is reading less than a certain value
