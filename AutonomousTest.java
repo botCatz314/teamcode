@@ -99,12 +99,22 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo.setPosition(0.8);
 
     waitForStart();
-    deploy();
+
+    //testing auto
+    while(opModeIsActive()){
+        getAngles();
+    }
+
+
+    //bioscience auto
+   /* deploy();
     pivotMotor.setPower(0.5);
     sleep(200);
     pivotMotor.setPower(powerOff);
     driveByLander(11, 0.3);
-    sampling2();
+    sampling2();*/
+
+   //future auto
     /*driveToDepot();
     powerMotorsOff();
     leftF.setPower(0);
@@ -228,6 +238,8 @@ public class AutonomousTest extends LinearOpMode {
         }
         //turns off power to drive motors
         powerMotorsOff();
+        telemetry.addData("got here", true);
+        telemetry.update();
         //waits half a second
         sleep(500);
         //resets the value of the angle variables
