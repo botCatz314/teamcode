@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -15,19 +16,21 @@ public class LukesBruteForce extends LinearOpMode {
     private DcMotor rightF;
     private  DcMotor leftB;
     private  DcMotor rightB;
+    private Servo servoA;
 
     public void runOpMode() {
         leftF = hardwareMap.dcMotor.get("leftF");
         rightF = hardwareMap.dcMotor.get("rightF");
         leftB = hardwareMap.dcMotor.get("leftB");
         rightB = hardwareMap.dcMotor.get("rightB");
-
+        servoA = hardwareMap.servo.get("servoA");
         rightB.setDirection(DcMotorSimple.Direction.REVERSE);
         rightF.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.addData("leftF: ", leftF);
         telemetry.addData("rightF: ", rightF);
         telemetry.addData("leftB: ", leftB);
         telemetry.addData("rightB", rightB);
+        telemetry.addData("servoA", servoA);
         telemetry.update();
 
         waitForStart();
@@ -36,7 +39,12 @@ public class LukesBruteForce extends LinearOpMode {
      turnleftandright( .5, true);
      sleep(1000);
      runMotors( -1);
-     sleep(1350);
+     sleep(100);
+     runMotors(0);
+     setServoA();
+     sleep(100);
+     runMotors( -1);
+     sleep(2500);
     }
     private void runMotors(double power) {
         leftF.setPower(power);
@@ -44,6 +52,10 @@ public class LukesBruteForce extends LinearOpMode {
         leftB.setPower(power);
         rightB.setPower(power);
     }
+    private void setServoA(){
+        servoA.setPosition(.556);
+    }
+
         private void turnleftandright (double power, boolean isRight){
         if(isRight){
             leftF.setPower(power);
