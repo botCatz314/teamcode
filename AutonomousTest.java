@@ -573,20 +573,25 @@ public class AutonomousTest extends LinearOpMode {
         double wheelDiameter = 4*3.14, degrees, altPwr;
         position = position / wheelDiameter;
         position *= 1120;
-        while(leftF.getCurrentPosition() < position) {
-            degrees = checkDirection();
-            altPwr = power - (degrees *0.1);
             if (isRight) {
-                setMotorPowers(altPwr, -altPwr,
-                               -power, power);
+                while(leftF.getCurrentPosition() < position) {
+                    degrees = checkDirection();
+                    altPwr = power - (degrees * 0.1);
+                    setMotorPowers(altPwr, -altPwr,
+                            -power, power);
+                }
             }
             else{
-                setMotorPowers(-altPwr, altPwr,
-                                power, -power);
-                telemetry.addData("left pos: ", leftF.getCurrentPosition());
-                telemetry.update();
+                while(-leftF.getCurrentPosition() < position) {
+                    degrees = checkDirection();
+                    altPwr = power + (degrees * 0.1);
+                    setMotorPowers(-altPwr, altPwr,
+                            power, -power);
+
+                    telemetry.addData("left pos: ", leftF.getCurrentPosition());
+                    telemetry.update();
+                }
             }
-        }
         powerMotorsOff();
     }
 }
