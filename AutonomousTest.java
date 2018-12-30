@@ -105,7 +105,7 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //testing auto
-    strafeByEncoder(7, 0.3, true);
+    strafeByEncoder(7, 0.6, false);
 
 
     //bioscience auto
@@ -577,12 +577,14 @@ public class AutonomousTest extends LinearOpMode {
             degrees = checkDirection();
             altPwr = power - (degrees *0.1);
             if (isRight) {
-                setMotorPowers(power, -altPwr,
+                setMotorPowers(altPwr, -altPwr,
                                -power, power);
             }
             else{
-                setMotorPowers(-altPwr, power,
-                                altPwr, -power);
+                setMotorPowers(-altPwr, altPwr,
+                                power, -power);
+                telemetry.addData("left pos: ", leftF.getCurrentPosition());
+                telemetry.update();
             }
         }
         powerMotorsOff();
