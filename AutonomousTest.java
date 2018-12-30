@@ -21,6 +21,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
@@ -34,6 +35,7 @@ public class AutonomousTest extends LinearOpMode {
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
     private DigitalChannel touchUpper, magneticSwitch;
+    private AnalogInput armPos;
     private GoldAlignDetector detector;
     private String position = null;
 @Override
@@ -49,6 +51,7 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo = hardwareMap.servo.get("phoneServo");
     slideMotor = hardwareMap.dcMotor.get("slideMotor");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    armPos = hardwareMap.get(AnalogInput.class, "armPos");
    // catLauncher = hardwareMap.servo.get("catLauncher");
     //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
    // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
@@ -98,10 +101,11 @@ public class AutonomousTest extends LinearOpMode {
 
     phoneServo.setPosition(0.8);
 
+    leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     waitForStart();
 
     //testing auto
-    
+    strafeByEncoder(7, 0.3, true);
 
 
     //bioscience auto
@@ -159,8 +163,6 @@ public class AutonomousTest extends LinearOpMode {
     private void setPowerInDirection(double degrees, double power){
     degrees = checkDirection();
     double leftPwr = power - (degrees *0.1);
-    telemetry.addData("rightPower: ", leftPwr);
-    telemetry.update();
     setMotorPowers(leftPwr, power, leftPwr, power);
     }
     private void setPowerStraight(double power){
@@ -550,5 +552,39 @@ public class AutonomousTest extends LinearOpMode {
         strafe(0.3, true);
         sleep(200);
         strafe(0,false);
+    }
+    private void driveByEncoder(double position){
+        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double wheelDiameter = 4*3.14;
+        position = position / wheelDiameter;
+        position *= 1120;
+        telemetry.addData("target position: ", position);
+        telemetry.update();
+
+        while(leftF.getCurrentPosition() < position){
+            setPowerStraight(0.3);
+        }
+        powerMotorsOff();
+    }
+    private void strafeByEncoder(double position, double power, boolean isRight){
+        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double wheelDiameter = 4*3.14, degrees, altPwr;
+        position = position / wheelDiameter;
+        position *= 1120;
+        while(leftF.getCurrentPosition() < position) {
+            degrees = checkDirection();
+            altPwr = power - (degrees *0.1);
+            if (isRight) {
+                setMotorPowers(power, -altPwr,
+                               -power, power);
+            }
+            else{
+                setMotorPowers(-altPwr, power,
+                                altPwr, -power);
+            }
+        }
+        powerMotorsOff();
     }
 }
