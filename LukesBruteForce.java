@@ -16,21 +16,21 @@ public class LukesBruteForce extends LinearOpMode {
     private DcMotor rightF;
     private  DcMotor leftB;
     private  DcMotor rightB;
-    private Servo servoA;
+    private Servo rejectionServo;
 
     public void runOpMode() {
         leftF = hardwareMap.dcMotor.get("leftF");
         rightF = hardwareMap.dcMotor.get("rightF");
         leftB = hardwareMap.dcMotor.get("leftB");
         rightB = hardwareMap.dcMotor.get("rightB");
-        servoA = hardwareMap.servo.get("servoA");
+        rejectionServo = hardwareMap.servo.get("rejectionServo");
         rightB.setDirection(DcMotorSimple.Direction.REVERSE);
         rightF.setDirection(DcMotorSimple.Direction.REVERSE);
         telemetry.addData("leftF: ", leftF);
         telemetry.addData("rightF: ", rightF);
         telemetry.addData("leftB: ", leftB);
         telemetry.addData("rightB", rightB);
-        telemetry.addData("servoA", servoA);
+        telemetry.addData("servoA", rejectionServo);
         telemetry.update();
 
         waitForStart();
@@ -53,7 +53,7 @@ public class LukesBruteForce extends LinearOpMode {
         rightB.setPower(power);
     }
     private void setServoA(){
-        servoA.setPosition(.556);
+        rejectionServo.setPosition(.556);
     }
 
         private void turnleftandright (double power, boolean isRight){
