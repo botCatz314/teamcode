@@ -101,9 +101,7 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //testing auto
-    while(opModeIsActive()){
-        getAngles();
-    }
+    
 
 
     //bioscience auto
@@ -219,25 +217,31 @@ public class AutonomousTest extends LinearOpMode {
     //turns using the gyro to determine distance; works best at 0.2 power
     private void gyroTurn(int degrees, double power){
         int offset = 5;
-        degrees = degrees - offset;
         //declares two variables to hold the power of the left and right drive motors
         double leftPower, rightPower;
         //sets angle variables to starting values
         resetAngles();
         //if it is less than 0, sets drive motors to turn right
-        boolean isRight = degrees < 0;
+        boolean isRight = degrees > 0;
         setRotationPower(isRight, power);
         if(isRight){
+            degrees = degrees - offset;
             //turns until complete. First while method is to get robot off value of 0
             while(opModeIsActive() && getAngles() == 0){}
-            while(opModeIsActive() && getAngles() > degrees){}
+            while(opModeIsActive() && getAngles() < degrees){
+                telemetry.addData("is Right: ", isRight);
+                telemetry.addData("angle: ", getAngles());
+                telemetry.update();
+            }
         }
         else {
+            degrees = degrees + offset;
             //otherwise, turns until complete
-            while(opModeIsActive() && getAngles() < degrees){}
+            while(opModeIsActive() && getAngles() > degrees){}
         }
         //turns off power to drive motors
         powerMotorsOff();
+        setRotationPower(false, powerOff);
         telemetry.addData("got here", true);
         telemetry.update();
         //waits half a second
