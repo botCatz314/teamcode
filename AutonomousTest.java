@@ -105,7 +105,7 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //testing auto
-    strafeByEncoder(7, 0.6, false);
+    deploy();
 
 
     //bioscience auto
@@ -549,9 +549,7 @@ public class AutonomousTest extends LinearOpMode {
         hangingMotor.setPower(1);
         sleep(5000);
         hangingMotor.setPower(powerOff);
-        strafe(0.3, true);
-        sleep(200);
-        strafe(0,false);
+        strafeByEncoder(5, 0.5, true);
     }
     private void driveByEncoder(double position){
         leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
