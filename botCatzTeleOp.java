@@ -21,6 +21,7 @@ public class botCatzTeleOp extends LinearOpMode {
     boolean motorIsUsed = false, driveAtAngle;
     private DigitalChannel magneticSwitch;
     private DigitalChannel touchUpper;
+    private DigitalChannel up, down;
     private double powerOff = 0;
     private boolean collecting;
 @Override
@@ -34,6 +35,8 @@ public class botCatzTeleOp extends LinearOpMode {
     //finds magnetic switch and touch sensors in hardware map
     magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    up = hardwareMap.get(DigitalChannel.class, "up");
+    down = hardwareMap.get(DigitalChannel.class, "down");
     //finds the attachment motors in the hardware map
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
@@ -178,6 +181,16 @@ public class botCatzTeleOp extends LinearOpMode {
         }
         else if(gamepad2.left_bumper){
             hangingMotor.setPower(-1.0);
+        }
+
+        if(getTouch(up)){
+            hangingMotor.setPower(1);
+        }
+        else if(getTouch(down)){
+            hangingMotor.setPower(-1);
+        }
+        else if(!getTouch(up) && !getTouch(down)){
+            hangingMotor.setPower(powerOff);
         }
 
         idle();

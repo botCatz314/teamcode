@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-    private ColorSensor colorRight;
+    private ColorSensor colorRight, colorLeft;
     private DcMotor slideMotor;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
@@ -42,6 +42,7 @@ public class AutonomousTest extends LinearOpMode {
     public void runOpMode() {
    // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
+    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     leftF = hardwareMap.dcMotor.get("leftF");
     rightF = hardwareMap.dcMotor.get("rightF");
     leftB = hardwareMap.dcMotor.get("leftB");
@@ -105,7 +106,10 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //testing auto
-    deploy();
+
+    sampling2();
+    //deploy();
+    //lineUpByColorSimple();
 
 
     //bioscience auto
@@ -496,14 +500,13 @@ public class AutonomousTest extends LinearOpMode {
 
     }
     private void sampling2(){
-        strafe(0.5, true);
-        sleep(1500);
-        strafe(0, false);
+        driveByLander(10, 0.3);
+        strafeByEncoder(20, 0.7, true);
+        //strafe(0.5, true);
         if(detector.getAligned()){
+            
             position = "Right";
-            setMotorPowers(0.3, 0.3, 0.3, 0.3);
-            sleep(1060);
-            powerMotorsOff();
+            driveByEncoder(10);
         }
         else if(position == null){
             telemetry.addData("got here:", true);
@@ -530,11 +533,11 @@ public class AutonomousTest extends LinearOpMode {
             }
         }
     }
-    private boolean isTouched(){
-        return !touchUpper.getState();
+    private boolean isTouched(DigitalChannel touch){
+        return !touch.getState();
     }
     private void goToTouch(double power){
-        while(!isTouched()){
+        while(!isTouched(touchUpper)){
             telemetry.addData("get here", true);
             telemetry.update();
             hangingMotor.setPower(power);
@@ -543,7 +546,7 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void deploy(){
         hangingMotor.setPower(-1);
-        sleep(120);
+        sleep(500);
         hangingMotor.setPower(powerOff);
         sleep(3000);
         hangingMotor.setPower(1);
@@ -590,6 +593,28 @@ public class AutonomousTest extends LinearOpMode {
                     telemetry.update();
                 }
             }
+        powerMotorsOff();
+    }
+    private void lineUpByColorSimple(){
+        while(!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)){
+            if(!withinColorRange(32, 20, colorRight)){
+                rightF.setPower(0.3);
+                rightB.setPower(0.3);
+            }
+            else{
+                rightF.setPower(-0.3);
+                rightB.setPower(-0.3);
+            }
+
+            if(!withinColorRange(32, 20, colorLeft)){
+                leftF.setPower(0.3);
+                leftB.setPower(0.3);
+            }
+            else{
+                leftF.setPower(-0.3);
+                leftB.setPower(-0.3);
+            }
+        }
         powerMotorsOff();
     }
 }
