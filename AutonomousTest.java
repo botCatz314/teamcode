@@ -501,34 +501,28 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void sampling2(){
         driveByLander(10, 0.3);
-        strafeByEncoder(20, 0.7, true);
-        //strafe(0.5, true);
+        strafeByEncoder(25, 0.7, true);
+        sleep(500);
         if(detector.getAligned()){
-            
             position = "Right";
             driveByEncoder(10);
         }
         else if(position == null){
             telemetry.addData("got here:", true);
             telemetry.update();
-            strafe(0.5, false);
-            sleep(1500);
-            strafe(0, false);
+            strafeByEncoder(15, 0.7, false);
+            sleep(500);
             if(detector.getAligned()){
+                telemetry.addData("sees center", true);
+                telemetry.update();
                 position = "Center";
-                setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                sleep(950);
-                powerMotorsOff();
-
+                driveByEncoder(10);
             }
             else if(position == null){       // this thing does check if gold is in left.
-                strafe(0.5, false);
-                sleep(1000);
-                strafe(0, false);
+                strafeByEncoder(20, 0.7, false);
+                sleep(100);
                 if(detector.getAligned()){
-                    setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                    sleep(1050);
-
+                    driveByEncoder(10);
                 }
             }
         }
