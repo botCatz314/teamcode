@@ -34,7 +34,7 @@ public class AutonomousTest extends LinearOpMode {
     private BNO055IMU imu;
     private Orientation lastAngles = new Orientation();
     private double correction, globalAngle, powerOff = 0;
-    private DigitalChannel touchUpper, magneticSwitch;
+    private DigitalChannel touchUpper, magnetLower;
     private AnalogInput armPos;
     private GoldAlignDetector detector;
     private String position = null;
@@ -52,6 +52,7 @@ public class AutonomousTest extends LinearOpMode {
     phoneServo = hardwareMap.servo.get("phoneServo");
     slideMotor = hardwareMap.dcMotor.get("slideMotor");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
     armPos = hardwareMap.get(AnalogInput.class, "armPos");
    // catLauncher = hardwareMap.servo.get("catLauncher");
     //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
@@ -106,8 +107,9 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //testing auto
-
-    sampling2();
+    deploy();
+    lineUpByColorSimple();
+   // sampling2();
     //deploy();
     //lineUpByColorSimple();
 
@@ -530,22 +532,24 @@ public class AutonomousTest extends LinearOpMode {
     private boolean isTouched(DigitalChannel touch){
         return !touch.getState();
     }
-    private void goToTouch(double power){
-        while(!isTouched(touchUpper)){
+    private void goToTouch(double power, DigitalChannel sensor){
+        while(!isTouched(sensor)){
             telemetry.addData("get here", true);
             telemetry.update();
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
     }
+    private boolean foundMagnet(DigitalChannel sensor){return !sensor.getState();}
+    private void goToMagnetLimitSensor(double power, DigitalChannel sensor){
+        while(!foundMagnet(sensor)){
+            hangingMotor.setPower(power);
+        }
+        hangingMotor.setPower(powerOff);
+    }
     private void deploy(){
-        hangingMotor.setPower(-1);
-        sleep(500);
-        hangingMotor.setPower(powerOff);
-        sleep(3000);
-        hangingMotor.setPower(1);
-        sleep(5000);
-        hangingMotor.setPower(powerOff);
+        goToMagnetLimitSensor(-1, magnetLower);
+        goToTouch(1, touchUpper);
         strafeByEncoder(5, 0.5, true);
     }
     private void driveByEncoder(double position){

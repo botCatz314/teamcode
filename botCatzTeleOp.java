@@ -54,6 +54,7 @@ public class botCatzTeleOp extends LinearOpMode {
     telemetry.update();
     while (opModeIsActive())
     {
+        slideMotor.setPower(0);
         //drive mode 1
       /*  motorIsUsed = false;
         velX = 0;
@@ -147,8 +148,8 @@ public class botCatzTeleOp extends LinearOpMode {
         if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
             pivotMotor.setPower(-gamepad2.right_stick_y);
         }
-        // slide motor
-        slideMotor.setPower(gamepad2.left_stick_y);
+
+
 
         // arm elevation
         pivotMotor.setPower(-gamepad2.right_stick_y);
