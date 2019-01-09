@@ -513,6 +513,7 @@ public class AutonomousTest extends LinearOpMode {
                 }
             }
         }
+        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral
     }
     private boolean isTouched(DigitalChannel touch){
         return !touch.getState();
