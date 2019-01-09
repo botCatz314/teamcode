@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -22,6 +23,7 @@ public class botCatzTeleOp extends LinearOpMode {
     private DigitalChannel magneticSwitch;
     private DigitalChannel touchUpper;
     private DigitalChannel up, down;
+    private AnalogInput armPos;
     private double powerOff = 0;
     private boolean collecting;
 @Override
@@ -35,6 +37,7 @@ public class botCatzTeleOp extends LinearOpMode {
     //finds magnetic switch and touch sensors in hardware map
     magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    armPos = hardwareMap.get(AnalogInput.class, "armPos");
     up = hardwareMap.get(DigitalChannel.class, "up");
     down = hardwareMap.get(DigitalChannel.class, "down");
     //finds the attachment motors in the hardware map
@@ -145,6 +148,10 @@ public class botCatzTeleOp extends LinearOpMode {
         if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
             slideMotor.setPower(gamepad2.left_stick_y);
         }
+
+        telemetry.addData("arm pos: ", armPos);
+        telemetry.update();
+
         if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
             pivotMotor.setPower(-gamepad2.right_stick_y);
         }
