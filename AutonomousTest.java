@@ -488,7 +488,10 @@ public class AutonomousTest extends LinearOpMode {
         sleep(500);
         if(detector.getAligned()){
             position = "Right";
-            driveByEncoder(10);
+            driveByEncoder(10, 0.3);
+            sleep(100);
+            driveByEncoder(-10, 0.3);
+            strafeByEncoder(35, 0.7, false);
         }
         else if(position == null){
             telemetry.addData("got here:", true);
@@ -496,16 +499,17 @@ public class AutonomousTest extends LinearOpMode {
             strafeByEncoder(15, 0.7, false);
             sleep(500);
             if(detector.getAligned()){
-                telemetry.addData("sees center", true);
-                telemetry.update();
                 position = "Center";
-                driveByEncoder(10);
+                driveByEncoder(10, 0.3);
+                sleep(100);
+                driveByEncoder(-10, 0.3);
+                strafeByEncoder(20, 0.7, false);
             }
             else if(position == null){       // this thing does check if gold is in left.
                 strafeByEncoder(20, 0.7, false);
                 sleep(100);
                 if(detector.getAligned()){
-                    driveByEncoder(10);
+                    driveByEncoder(10, 0.3);
                 }
             }
         }
@@ -533,7 +537,7 @@ public class AutonomousTest extends LinearOpMode {
         goToTouch(1, touchUpper);
         strafeByEncoder(5, 0.5, true);
     }
-    private void driveByEncoder(double position){
+    private void driveByEncoder(double position, double power){
         leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double wheelDiameter = 4*3.14;
@@ -541,11 +545,17 @@ public class AutonomousTest extends LinearOpMode {
         position *= 1120;
         telemetry.addData("target position: ", position);
         telemetry.update();
-
-        while(leftF.getCurrentPosition() < position){
-            setPowerStraight(0.3);
+        if(position >=0) {
+            while (leftF.getCurrentPosition() < position) {
+                setPowerStraight(power);
+            }
+            powerMotorsOff();
         }
-        powerMotorsOff();
+        else{
+            while(leftF.getCurrentPosition() > position){
+                setPowerStraight(-power);
+            }
+        }
     }
     private void strafeByEncoder(double position, double power, boolean isRight){
         leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
