@@ -109,8 +109,10 @@ public class AutonomousTest extends LinearOpMode {
     //testing auto
     deploy();
     lineUpByColorSimple();
-   // sampling2();
-    //deploy();
+    sampling2();
+    driveToDepot();
+    dropCat();
+    park();
     //lineUpByColorSimple();
 
 
@@ -466,40 +468,19 @@ public class AutonomousTest extends LinearOpMode {
         }
     }
     private void driveToDepot(){
-       strafe(0.4, false);    //strafes from seeing gold
-       sleep(6000);
-       strafe(powerOff, false);
-
-       setRotationPower(false, 0.3);    // makes a slight turn
-       sleep(1500);
-       powerMotorsOff();
-
-       setMotorPowers(-0.3, -0.3, -0.3, -0.3);   // goes to depot
-       sleep(2000);
-       powerMotorsOff();
+       gyroTurn(70, 0.3);
+       distanceToRate(10, DistanceUnit.INCH, 10);
+       straighten(DistanceUnit.INCH);
+       gyroTurn(90, 0.3);
+       drivebyRange(15, 0.5, rangeLeft);
     }
     private void dropCat(){
-        pivotMotor.setPower(0.4);
+        pivotMotor.setPower(0.3);
         sleep(1000);
-        slideMotor.setPower(.5);
-        sleep(700);
-        pivotMotor.setPower(-0.4);
-        sleep(200);
-        pivotMotor.setPower(0.4);
-        sleep(200);
-        pivotMotor.setPower(-0.4);
-        sleep(200);
-        pivotMotor.setPower(0.4);
-        sleep(200);
-        pivotMotor.setPower(-0.4);
-        sleep(200);
-        pivotMotor.setPower(0.4);
-        sleep(200);
-        pivotMotor.setPower(0);
-
+        pivotMotor.setPower(powerOff);
     }
     private void park(){
-
+        setMotorPowers(-1, -1, -1, -1);
     }
     private void sampling2(){
         driveByLander(10, 0.3);
