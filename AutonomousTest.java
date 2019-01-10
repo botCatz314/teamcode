@@ -108,11 +108,12 @@ public class AutonomousTest extends LinearOpMode {
 
     //testing auto
     deploy();
-    lineUpByColorSimple();
+    //lineUpByColorSimple();
+    sleep(1000);
     sampling2();
-    driveToDepot();
-    dropCat();
-    park();
+    //driveToDepot();
+    //dropCat();
+    //park();
     //lineUpByColorSimple();
 
 
@@ -483,37 +484,38 @@ public class AutonomousTest extends LinearOpMode {
         setMotorPowers(-1, -1, -1, -1);
     }
     private void sampling2(){
-        driveByLander(10, 0.3);
-        strafeByEncoder(25, 0.7, true);
-        sleep(500);
+        driveByLander(7, 0.3);
+        strafe(0.3, true);
+        sleep(1000);
+        strafe(0, false);
         if(detector.getAligned()){
             position = "Right";
-            driveByEncoder(10, 0.3);
+            driveByEncoder(9, 0.2);
             sleep(100);
-            driveByEncoder(-10, 0.3);
-            strafeByEncoder(35, 0.7, false);
-        }
+            driveByEncoder(-6, 0.3);
+            strafeByEncoder(35, 0.3, false);
+        }/*
         else if(position == null){
             telemetry.addData("got here:", true);
             telemetry.update();
-            strafeByEncoder(15, 0.7, false);
+            strafeByEncoder(15, 0.3, false);
             sleep(500);
             if(detector.getAligned()){
                 position = "Center";
                 driveByEncoder(10, 0.3);
                 sleep(100);
                 driveByEncoder(-10, 0.3);
-                strafeByEncoder(20, 0.7, false);
+                strafeByEncoder(20, 0.3, false);
             }
             else if(position == null){       // this thing does check if gold is in left.
-                strafeByEncoder(20, 0.7, false);
+                strafeByEncoder(20, 0.3, false);
                 sleep(100);
                 if(detector.getAligned()){
                     driveByEncoder(10, 0.3);
                 }
             }
         }
-        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral
+        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral*/
     }
     private boolean isTouched(DigitalChannel touch){
         return !touch.getState();
@@ -534,9 +536,10 @@ public class AutonomousTest extends LinearOpMode {
         hangingMotor.setPower(powerOff);
     }
     private void deploy(){
-        goToMagnetLimitSensor(-1, magnetLower);
         goToTouch(1, touchUpper);
-        strafeByEncoder(5, 0.5, true);
+        strafe( 0.5, true);
+        sleep(1000);
+        strafe(0, false);
     }
     private void driveByEncoder(double position, double power){
         leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -568,7 +571,7 @@ public class AutonomousTest extends LinearOpMode {
                 while(leftF.getCurrentPosition() < position) {
                     degrees = checkDirection();
                     altPwr = power - (degrees * 0.1);
-                    setMotorPowers(altPwr, -altPwr,
+                    setMotorPowers(power, -power,
                             -power, power);
                 }
             }
@@ -576,7 +579,7 @@ public class AutonomousTest extends LinearOpMode {
                 while(-leftF.getCurrentPosition() < position) {
                     degrees = checkDirection();
                     altPwr = power + (degrees * 0.1);
-                    setMotorPowers(-altPwr, altPwr,
+                    setMotorPowers(-power, power,
                             power, -power);
 
                     telemetry.addData("left pos: ", leftF.getCurrentPosition());
