@@ -1,27 +1,30 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.robotcore.util.Hardware;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutoTest")
-public class AutoTest extends LinearOpMode {
+public class AutonomousTest extends LinearOpMode {
     private ColorSensor colorRight, colorLeft;
     private DcMotor slideMotor;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
@@ -35,85 +38,91 @@ public class AutoTest extends LinearOpMode {
     private AnalogInput armPos;
     private GoldAlignDetector detector;
     private String position = null;
-@Override
+    @Override
     public void runOpMode() {
-   // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
-    colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
-    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    leftF = hardwareMap.dcMotor.get("leftF");
-    rightF = hardwareMap.dcMotor.get("rightF");
-    leftB = hardwareMap.dcMotor.get("leftB");
-    rightB = hardwareMap.dcMotor.get("rightB");
-    hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
-    pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
-    phoneServo = hardwareMap.servo.get("phoneServo");
-    slideMotor = hardwareMap.dcMotor.get("slideMotor");
-    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
-    magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
-    armPos = hardwareMap.get(AnalogInput.class, "armPos");
-   // catLauncher = hardwareMap.servo.get("catLauncher");
-    //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
-   // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
-   // magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
-    rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
-    rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
-    rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
-    leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    rightF.setDirection(DcMotorSimple.Direction.REVERSE);
-    rightB.setDirection(DcMotorSimple.Direction.REVERSE);
-    hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
+        colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
+        colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+        leftF = hardwareMap.dcMotor.get("leftF");
+        rightF = hardwareMap.dcMotor.get("rightF");
+        leftB = hardwareMap.dcMotor.get("leftB");
+        rightB = hardwareMap.dcMotor.get("rightB");
+        hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
+        pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
+        phoneServo = hardwareMap.servo.get("phoneServo");
+        slideMotor = hardwareMap.dcMotor.get("slideMotor");
+        touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+        magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
+        armPos = hardwareMap.get(AnalogInput.class, "armPos");
+        // catLauncher = hardwareMap.servo.get("catLauncher");
+        //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
+        // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+        // magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
+        rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
+        rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
+        rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
+        leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightF.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightB.setDirection(DcMotorSimple.Direction.REVERSE);
+        hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    detector = new GoldAlignDetector();
-    detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
-    detector.useDefaults();
-    detector.alignSize = 10;
-    detector.alignPosOffset = 5000;
-    detector.downscale = 0.4;
-    detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
-    detector.maxAreaScorer.weight = 0.005;
-    detector.ratioScorer.weight = 5;
-    detector.ratioScorer.perfectRatio = 0.8;
-    detector.setAlignSettings(0,800); //1000
-    detector.enable();
+        detector = new GoldAlignDetector();
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+        detector.useDefaults();
+        detector.alignSize = 10;
+        detector.alignPosOffset = 5000;
+        detector.downscale = 0.4;
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
+        detector.maxAreaScorer.weight = 0.005;
+        detector.ratioScorer.weight = 5;
+        detector.ratioScorer.perfectRatio = 0.8;
+        detector.setAlignSettings(0,800); //1000
+        detector.enable();
 
-    BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-    parameters.mode = BNO055IMU.SensorMode.IMU;
-    parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-    parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-    parameters.loggingEnabled = false;
-    imu = hardwareMap.get(BNO055IMU.class, "imu");
-    imu.initialize(parameters);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
-    telemetry.addData("mode: ", "calibrating...");
-    telemetry.update();
+        telemetry.addData("mode: ", "calibrating...");
+        telemetry.update();
 
-    while(!isStopRequested() && !imu.isGyroCalibrated()){
-        sleep(50);
-        idle();
-    }
-    telemetry.addData("mode: ", "ready");
-    telemetry.update();
+        while(!isStopRequested() && !imu.isGyroCalibrated()){
+            sleep(50);
+            idle();
+        }
+        telemetry.addData("mode: ", "ready");
+        telemetry.update();
 
-    telemetry.addData("servo: ", phoneServo.getPosition());
-    telemetry.update();
+        telemetry.addData("servo: ", phoneServo.getPosition());
+        telemetry.update();
 
-    phoneServo.setPosition(0.8);
+        phoneServo.setPosition(0.8);
 
-    leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    waitForStart();
-
-    //testing auto
-    deploy();
-    lineUpByColorSimple();
-    sampling2();
-    driveToDepot();
-    dropCat();
-    park();
-    //lineUpByColorSimple();
+        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        waitForStart();
 
 
-    //bioscience auto
+        lineUpAgainstWall(100,1000);
+        dropCat(10,50,0);
+        //testing auto
+       // deploy();
+        //lineUpByColorSimple();
+      //  sleep(1000);
+       // sampling2();
+        //driveToDepot();
+        //dropCat();
+        //park();
+        //lineUpByColorSimple();
+
+
+
+
+        //bioscience auto
    /* deploy();
     pivotMotor.setPower(0.5);
     sleep(200);
@@ -121,18 +130,18 @@ public class AutoTest extends LinearOpMode {
     driveByLander(11, 0.3);
     sampling2();*/
 
-   //future auto
+        //future auto
     /*driveToDepot();
     powerMotorsOff();
     leftF.setPower(0);
     leftB.setPower(0);
     dropCat();
     park();*/
-    //getAngles();
-   // telemetry.addData("position of gold: ", position);
+        //getAngles();
+        // telemetry.addData("position of gold: ", position);
 //   //drivebyColor(0.3, colorRight);
-  // driveByChangeInRange(false);
-    //sleep(1000);
+        // driveByChangeInRange(false);
+        //sleep(1000);
      /* DrivebyColor(0.4, colorLeft);
         Sampling();
         telemetry.addData("gold:", GetPosition());
@@ -158,31 +167,31 @@ public class AutoTest extends LinearOpMode {
     private void setRotationPower(boolean isRight, double power){
         if(isRight){
             setMotorPowers(-power, power,
-                           -power, power);
+                    -power, power);
         }
         else{
             setMotorPowers(power, -power,
-                           power, -power);
+                    power, -power);
         }
     }
     private void setPowerInDirection(double degrees, double power){
-    degrees = checkDirection();
-    double leftPwr = power - (degrees *0.1);
-    setMotorPowers(leftPwr, power, leftPwr, power);
+        degrees = checkDirection();
+        double leftPwr = power - (degrees *0.1);
+        setMotorPowers(leftPwr, power, leftPwr, power);
     }
     private void setPowerStraight(double power){
-    setPowerInDirection(0, power);
- }
+        setPowerInDirection(0, power);
+    }
     private void powerMotorsOff(){
-    setPowerInDirection(0,powerOff);
- }
+        setPowerInDirection(0,powerOff);
+    }
     //gets the reading from the imu and converts the angle to be cumulative
     private double getAngles(){
         //declares and sets a variable to the reading of the imu
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //declares and sets a variable to the change of the angle that is and the angle that was before
         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-            //sets delta angle itself plus 360 if it is less than -180 degrees
+        //sets delta angle itself plus 360 if it is less than -180 degrees
         if (deltaAngle < -180){
             deltaAngle += 360;
         }
@@ -257,7 +266,7 @@ public class AutoTest extends LinearOpMode {
         resetAngles();
     }
     //returns true if touch sensor is pressed
-  //  private boolean leftPressed(){return !touchLeft.getState(); }
+    //  private boolean leftPressed(){return !touchLeft.getState(); }
     //private boolean rightPressed(){ return !touchRight.getState();}
     //a method that drives until both touch sensors are pressed
  /*   private void driveUntilTouch(double power) {
@@ -381,7 +390,7 @@ public class AutoTest extends LinearOpMode {
 
                 break;
         }
-}
+    }
     //sets all the motors power to the inputs
     private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
         leftF.setPower(leftFPwr);
@@ -396,13 +405,13 @@ public class AutoTest extends LinearOpMode {
         if(right){
             //sets front left and back right motors to negative power, sets front right and back left motors to positive power
             setMotorPowers(power, -power,
-                            -power, power);
+                    -power, power);
         }
         //if strafing left
         else{
             //sets front left and back right motors to positive power and sets front right and back left motors to negative power
             setMotorPowers(-power, power,
-                            power, -power);
+                    power, -power);
         }
     }
     //
@@ -428,13 +437,13 @@ public class AutoTest extends LinearOpMode {
             angularRateRight = linearRateRight / radius;
             //sets drive motors to the angular rate value
             setMotorPowers(angularRateLeft, angularRateRight,
-                           angularRateLeft, angularRateRight);
+                    angularRateLeft, angularRateRight);
         }
         //turns off drive motors
         powerMotorsOff();
         //waits one second to give robot to fully stop
         sleep(1000);
-        }
+    }
     private void straighten(DistanceUnit units){
         //declares variables to hold range sensor reading
         double rightRange, leftRange;
@@ -450,7 +459,7 @@ public class AutoTest extends LinearOpMode {
             if(rightRange < leftRange){
                 //sets motor powers
                 setMotorPowers(0.25, -0.25,
-                               0.25, -0.25);
+                        0.25, -0.25);
             }
             //turns off motor power
             powerMotorsOff();
@@ -458,18 +467,18 @@ public class AutoTest extends LinearOpMode {
             if(leftRange < rightRange){
                 //sets motor power
                 setMotorPowers(-0.25, 0.25,
-                               -0.25, 0.25);
+                        -0.25, 0.25);
             }
             //turns drive motor power off
             powerMotorsOff();
         }
     }
     private void driveToDepot(){
-       gyroTurn(70, 0.3);
-       distanceToRate(10, DistanceUnit.INCH, 10);
-       straighten(DistanceUnit.INCH);
-       gyroTurn(90, 0.3);
-       drivebyRange(15, 0.5, rangeLeft);
+        gyroTurn(70, 0.3);
+        distanceToRate(10, DistanceUnit.INCH, 10);
+        straighten(DistanceUnit.INCH);
+        gyroTurn(90, 0.3);
+        drivebyRange(15, 0.5, rangeLeft);
     }
     private void dropCat(){
         pivotMotor.setPower(0.3);
@@ -480,37 +489,38 @@ public class AutoTest extends LinearOpMode {
         setMotorPowers(-1, -1, -1, -1);
     }
     private void sampling2(){
-        driveByLander(10, 0.3);
-        strafeByEncoder(25, 0.7, true);
-        sleep(500);
+        driveByLander(7, 0.3);
+        strafe(0.3, true);
+        sleep(1000);
+        strafe(0, false);
         if(detector.getAligned()){
             position = "Right";
-            driveByEncoder(10, 0.3);
+            driveByEncoder(9, 0.2);
             sleep(100);
-            driveByEncoder(-10, 0.3);
-            strafeByEncoder(35, 0.7, false);
-        }
+            driveByEncoder(-6, 0.3);
+            strafeByEncoder(35, 0.3, false);
+        }/*
         else if(position == null){
             telemetry.addData("got here:", true);
             telemetry.update();
-            strafeByEncoder(15, 0.7, false);
+            strafeByEncoder(15, 0.3, false);
             sleep(500);
             if(detector.getAligned()){
                 position = "Center";
                 driveByEncoder(10, 0.3);
                 sleep(100);
                 driveByEncoder(-10, 0.3);
-                strafeByEncoder(20, 0.7, false);
+                strafeByEncoder(20, 0.3, false);
             }
             else if(position == null){       // this thing does check if gold is in left.
-                strafeByEncoder(20, 0.7, false);
+                strafeByEncoder(20, 0.3, false);
                 sleep(100);
                 if(detector.getAligned()){
                     driveByEncoder(10, 0.3);
                 }
             }
         }
-        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral
+        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral*/
     }
     private boolean isTouched(DigitalChannel touch){
         return !touch.getState();
@@ -531,9 +541,10 @@ public class AutoTest extends LinearOpMode {
         hangingMotor.setPower(powerOff);
     }
     private void deploy(){
-        goToMagnetLimitSensor(-1, magnetLower);
         goToTouch(1, touchUpper);
-        strafeByEncoder(5, 0.5, true);
+        strafe( 0.5, true);
+        sleep(1000);
+        strafe(0, false);
     }
     private void driveByEncoder(double position, double power){
         leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -561,25 +572,25 @@ public class AutoTest extends LinearOpMode {
         double wheelDiameter = 4*3.14, degrees, altPwr;
         position = position / wheelDiameter;
         position *= 1120;
-            if (isRight) {
-                while(leftF.getCurrentPosition() < position) {
-                    degrees = checkDirection();
-                    altPwr = power - (degrees * 0.1);
-                    setMotorPowers(altPwr, -altPwr,
-                            -power, power);
-                }
+        if (isRight) {
+            while(leftF.getCurrentPosition() < position) {
+                degrees = checkDirection();
+                altPwr = power - (degrees * 0.1);
+                setMotorPowers(power, -power,
+                        -power, power);
             }
-            else{
-                while(-leftF.getCurrentPosition() < position) {
-                    degrees = checkDirection();
-                    altPwr = power + (degrees * 0.1);
-                    setMotorPowers(-altPwr, altPwr,
-                            power, -power);
+        }
+        else{
+            while(-leftF.getCurrentPosition() < position) {
+                degrees = checkDirection();
+                altPwr = power + (degrees * 0.1);
+                setMotorPowers(-power, power,
+                        power, -power);
 
-                    telemetry.addData("left pos: ", leftF.getCurrentPosition());
-                    telemetry.update();
-                }
+                telemetry.addData("left pos: ", leftF.getCurrentPosition());
+                telemetry.update();
             }
+        }
         powerMotorsOff();
     }
     private void lineUpByColorSimple(){
@@ -604,4 +615,38 @@ public class AutoTest extends LinearOpMode {
         }
         powerMotorsOff();
     }
+
+    private void lineUpAgainstWall(double power, double time){
+        strafe(power, false);
+        sleep(time);
+        leftB.setPower(0);
+        leftF.setPower(0);
+        rightB.setPower(0);
+        rightF.setPower(0);
+    }
+
+    private void dropCat( double distance, double secondDistance, double angle){
+        while(rangeLeft.getDistance() >= distance ){
+            setMotorPowers(1,1,1,1);
+        }
+        setMotorPowers(0,0,0,0);
+        strafe(100,true);
+        sleep(200);
+        setMotorPowers(0,0,0,0);
+        pivotMotor.setPower(-.3);
+        sleep(200);
+        pivotMotor.setPower(0);
+        while(rangeLeft.getDistance() <= secondDistance ){
+            setMotorPowers(-1,-1,-1,-1);
+        }
+        setMotorPowers(0,0,0,0);
+        setMotorPowers(-1,1,-1,1);
+        sleep(1000);
+        setMotorPowers(0,0,0,0);
+        slideMotor.setPower(100);
+        sleep(5000);
+        slideMotor.setPower(0);
+
+    }
+
 }
