@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutoTest")
-public class AutonomousTest extends LinearOpMode {
+public class AutoTest extends LinearOpMode {
     private ColorSensor colorRight, colorLeft;
     private DcMotor slideMotor;
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
@@ -616,7 +616,7 @@ public class AutonomousTest extends LinearOpMode {
         powerMotorsOff();
     }
 
-    private void lineUpAgainstWall(double power, double time){
+    private void lineUpAgainstWall(double power, long time){
         strafe(power, false);
         sleep(time);
         leftB.setPower(0);
@@ -626,7 +626,7 @@ public class AutonomousTest extends LinearOpMode {
     }
 
     private void dropCat( double distance, double secondDistance, double angle){
-        while(rangeLeft.getDistance() >= distance ){
+        while(rangeLeft.getDistance(DistanceUnit.INCH) >= distance ){
             setMotorPowers(1,1,1,1);
         }
         setMotorPowers(0,0,0,0);
@@ -636,7 +636,7 @@ public class AutonomousTest extends LinearOpMode {
         pivotMotor.setPower(-.3);
         sleep(200);
         pivotMotor.setPower(0);
-        while(rangeLeft.getDistance() <= secondDistance ){
+        while(rangeLeft.getDistance(DistanceUnit.INCH) <= secondDistance ){
             setMotorPowers(-1,-1,-1,-1);
         }
         setMotorPowers(0,0,0,0);
