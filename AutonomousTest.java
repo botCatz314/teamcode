@@ -109,6 +109,7 @@ public class AutonomousTest extends LinearOpMode {
     //testing auto
     deploy();
     //lineUpByColorSimple();
+
     sleep(1000);
     sampling2();
     //driveToDepot();
