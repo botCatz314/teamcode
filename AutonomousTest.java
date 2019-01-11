@@ -25,12 +25,8 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-<<<<<<< HEAD
     private ColorSensor colorRight, colorLeft;
     private DcMotor slideMotor;
-=======
-    private ColorSensor colorRight;
->>>>>>> parent of 3e5f191... BioScience code
     private DistanceSensor rangeLeft, rangeRight, rangeHigh;
     private DcMotor leftF, rightF, leftB, rightB;
     private DcMotor hangingMotor, pivotMotor;
@@ -127,11 +123,17 @@ public class AutonomousTest extends LinearOpMode {
     sleep(200);
     pivotMotor.setPower(powerOff);
 <<<<<<< HEAD
+<<<<<<< HEAD
     driveByLander(11, 0.3);
     sampling2();*/
 
    //future auto
     /*driveToDepot();
+=======
+    driveByLander(15, 0.3);
+    sampling2();
+    driveToDepot();
+>>>>>>> parent of 3e5f191... BioScience code
 =======
     driveByLander(15, 0.3);
     sampling2();
@@ -488,9 +490,7 @@ public class AutonomousTest extends LinearOpMode {
     private void dropCat(){
         pivotMotor.setPower(0.3);
         sleep(1000);
-<<<<<<< HEAD
         pivotMotor.setPower(powerOff);
-=======
         pivotMotor.setPower(-0.4);
         sleep(200);
         pivotMotor.setPower(0.4);
@@ -504,8 +504,6 @@ public class AutonomousTest extends LinearOpMode {
         pivotMotor.setPower(0.4);
         sleep(200);
         pivotMotor.setPower(0);
-
->>>>>>> parent of 3e5f191... BioScience code
     }
     private void park(){
         setMotorPowers(-1, -1, -1, -1);
@@ -517,7 +515,6 @@ public class AutonomousTest extends LinearOpMode {
         strafe(0, false);
         if(detector.getAligned()){
             position = "Right";
-<<<<<<< HEAD
             driveByEncoder(9, 0.2);
             sleep(100);
             driveByEncoder(-6, 0.3);
@@ -551,6 +548,14 @@ public class AutonomousTest extends LinearOpMode {
                 setMotorPowers(-0.3, -0.3, -0.3, -0.3);
                 sleep(550);
                 powerMotorsOff();
+<<<<<<< HEAD
+=======
+                strafe(0.5, false);
+                sleep(1400);
+                strafe(0, false);
+            }
+            else if(position == null){       // this thing does check if gold is in left.
+>>>>>>> parent of 3e5f191... BioScience code
                 strafe(0.5, false);
                 sleep(1400);
                 strafe(0, false);
@@ -568,6 +573,9 @@ public class AutonomousTest extends LinearOpMode {
                     setMotorPowers(-0.3, -0.3, -0.3, -0.3);
                     sleep(530);
                     setMotorPowers(0,0,0,0);
+<<<<<<< HEAD
+>>>>>>> parent of 3e5f191... BioScience code
+=======
 >>>>>>> parent of 3e5f191... BioScience code
                 }
             }
@@ -585,7 +593,6 @@ public class AutonomousTest extends LinearOpMode {
         }
         hangingMotor.setPower(powerOff);
     }
-<<<<<<< HEAD
     private boolean foundMagnet(DigitalChannel sensor){return !sensor.getState();}
     private void goToMagnetLimitSensor(double power, DigitalChannel sensor){
         while(!foundMagnet(sensor)){
@@ -646,36 +653,24 @@ public class AutonomousTest extends LinearOpMode {
             }
         powerMotorsOff();
     }
-    private void lineUpByColorSimple(){
-        while(!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)){
-            if(!withinColorRange(32, 20, colorRight)){
+    private void lineUpByColorSimple() {
+        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
+            if (!withinColorRange(32, 20, colorRight)) {
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
-            }
-            else{
+            } else {
                 rightF.setPower(-0.3);
                 rightB.setPower(-0.3);
             }
 
-            if(!withinColorRange(32, 20, colorLeft)){
+            if (!withinColorRange(32, 20, colorLeft)) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
-            }
-            else{
+            } else {
                 leftF.setPower(-0.3);
                 leftB.setPower(-0.3);
             }
         }
         powerMotorsOff();
-=======
-    private void deploy(){
-        hangingMotor.setPower(-1);
-        sleep(80);
-        hangingMotor.setPower(powerOff);
-        sleep(3000);
-        strafe(0.3, true);
-        sleep(200);
-        strafe(0,false);
->>>>>>> parent of 3e5f191... BioScience code
     }
 }
