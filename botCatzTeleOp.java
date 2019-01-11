@@ -136,15 +136,6 @@ public class botCatzTeleOp extends LinearOpMode {
             driveMotors(-gamepad1.left_trigger, gamepad1.left_trigger, -gamepad1.left_trigger, gamepad1.left_trigger);
 
         }
-        if(gamepad2.right_bumper){
-            collector.setPower(9.0);
-        }
-        else if(gamepad2.left_bumper){
-            collector.setPower(powerOff);
-        }
-        else if(gamepad2.a){
-            collector.setPower(-0.9);
-        }
         if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
             slideMotor.setPower(gamepad2.left_stick_y);
         }
@@ -162,12 +153,6 @@ public class botCatzTeleOp extends LinearOpMode {
         pivotMotor.setPower(-gamepad2.right_stick_y);
 
         // arm driver enhancement: scoring position
-        if(gamepad2.b){
-            armToScoringPosition(0.5);
-        }
-        if(gamepad2.x){
-            armToScoringPosition(-0.5);
-        }
 
         // hanging
         //if(gamepad2.y && !getTouch(touchUpper)){
