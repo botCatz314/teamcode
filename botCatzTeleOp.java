@@ -150,7 +150,7 @@ public class botCatzTeleOp extends LinearOpMode {
 
 
         // arm elevation
-        pivotMotor.setPower(-gamepad2.right_stick_y);
+        //pivotMotor.setPower(-gamepad2.right_stick_y);
 
         // arm driver enhancement: scoring position
 

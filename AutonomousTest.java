@@ -508,140 +508,111 @@ public class AutonomousTest extends LinearOpMode {
     private void park(){
         setMotorPowers(-1, -1, -1, -1);
     }
-    private void sampling2(){
+    private void sampling2() {
         driveByLander(7, 0.3);
-        strafe(0.3, true);
-        sleep(1000);
+        strafe(0.5, true);
+        sleep(1700);
         strafe(0, false);
-        if(detector.getAligned()){
+        if (detector.getAligned()) {
             position = "Right";
-            driveByEncoder(9, 0.2);
-            sleep(100);
-            driveByEncoder(-6, 0.3);
-            strafeByEncoder(35, 0.3, false);
-        }/*
-=======
             setMotorPowers(0.3, 0.3, 0.3, 0.3);
-            sleep(760);
+            sleep(800);
             setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-            sleep(760);
+            sleep(800);
             strafe(0.5, false);
             sleep(2400);
             strafe(0, false);
+
         }
->>>>>>> parent of 3e5f191... BioScience code
+        telemetry.addData("got here:", true);
+        telemetry.update();
+        strafe(0.5, false);
+        sleep(1700);
+        strafe(0, false);
+        if(detector.getAligned()){
+            position = "Center";
+            setMotorPowers(0.3, 0.3, 0.3, 0.3);
+            sleep(550);
+            setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+            sleep(550);
+            powerMotorsOff();
+            strafe(0.5, false);
+            sleep(1400);
+            strafe(0, false);
+        }
         else if(position == null){
-            telemetry.addData("got here:", true);
-            telemetry.update();
-            strafeByEncoder(15, 0.3, false);
-            sleep(500);
+            strafe(0.5, false);
+            sleep(1000);
+            strafe(0, false);
             if(detector.getAligned()){
-                position = "Center";
-<<<<<<< HEAD
-                driveByEncoder(10, 0.3);
-                sleep(100);
-                driveByEncoder(-10, 0.3);
-                strafeByEncoder(20, 0.3, false);
-=======
                 setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                sleep(550);
+                sleep(540);
                 setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-                sleep(550);
+                sleep(620);
+                setMotorPowers(0,0,0,0);
+            }
+        }
+    }
+        private boolean isTouched (DigitalChannel touch){
+            return !touch.getState();
+        }
+        private void goToTouch ( double power, DigitalChannel sensor){
+            while (!isTouched(sensor)) {
+                telemetry.addData("get here", true);
+                telemetry.update();
+                hangingMotor.setPower(power);
+            }
+            hangingMotor.setPower(powerOff);
+        }
+        private boolean foundMagnet (DigitalChannel sensor){
+            return !sensor.getState();
+        }
+        private void goToMagnetLimitSensor ( double power, DigitalChannel sensor){
+            while (!foundMagnet(sensor)) {
+                hangingMotor.setPower(power);
+            }
+            hangingMotor.setPower(powerOff);
+        }
+        private void deploy () {
+            goToTouch(1, touchUpper);
+            strafe(0.5, true);
+            sleep(1000);
+            strafe(0, false);
+        }
+        private void driveByEncoder ( double position, double power){
+            leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            double wheelDiameter = 4 * 3.14;
+            position = position / wheelDiameter;
+            position *= 1120;
+            telemetry.addData("target position: ", position);
+            telemetry.update();
+            if (position >= 0) {
+                while (leftF.getCurrentPosition() < position) {
+                    setPowerStraight(power);
+                }
                 powerMotorsOff();
-<<<<<<< HEAD
-=======
-                strafe(0.5, false);
-                sleep(1400);
-                strafe(0, false);
-            }
-            else if(position == null){       // this thing does check if gold is in left.
->>>>>>> parent of 3e5f191... BioScience code
-                strafe(0.5, false);
-                sleep(1400);
-                strafe(0, false);
->>>>>>> parent of 3e5f191... BioScience code
-            }
-            else if(position == null){       // this thing does check if gold is in left.
-                strafeByEncoder(20, 0.3, false);
-                sleep(100);
-                if(detector.getAligned()){
-<<<<<<< HEAD
-                    driveByEncoder(10, 0.3);
-=======
-                    setMotorPowers(0.3, 0.3, 0.3, 0.3);
-                    sleep(650);
-                    setMotorPowers(-0.3, -0.3, -0.3, -0.3);
-                    sleep(530);
-                    setMotorPowers(0,0,0,0);
-<<<<<<< HEAD
->>>>>>> parent of 3e5f191... BioScience code
-=======
->>>>>>> parent of 3e5f191... BioScience code
+            } else {
+                while (leftF.getCurrentPosition() > position) {
+                    setPowerStraight(-power);
                 }
             }
         }
-        driveByEncoder(-3, 0.3); //goes back to ensure robot does not hit left mineral*/
-    }
-    private boolean isTouched(DigitalChannel touch){
-        return !touch.getState();
-    }
-    private void goToTouch(double power, DigitalChannel sensor){
-        while(!isTouched(sensor)){
-            telemetry.addData("get here", true);
-            telemetry.update();
-            hangingMotor.setPower(power);
-        }
-        hangingMotor.setPower(powerOff);
-    }
-    private boolean foundMagnet(DigitalChannel sensor){return !sensor.getState();}
-    private void goToMagnetLimitSensor(double power, DigitalChannel sensor){
-        while(!foundMagnet(sensor)){
-            hangingMotor.setPower(power);
-        }
-        hangingMotor.setPower(powerOff);
-    }
-    private void deploy(){
-        goToTouch(1, touchUpper);
-        strafe( 0.5, true);
-        sleep(1000);
-        strafe(0, false);
-    }
-    private void driveByEncoder(double position, double power){
-        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        double wheelDiameter = 4*3.14;
-        position = position / wheelDiameter;
-        position *= 1120;
-        telemetry.addData("target position: ", position);
-        telemetry.update();
-        if(position >=0) {
-            while (leftF.getCurrentPosition() < position) {
-                setPowerStraight(power);
-            }
-            powerMotorsOff();
-        }
-        else{
-            while(leftF.getCurrentPosition() > position){
-                setPowerStraight(-power);
-            }
-        }
-    }
-    private void strafeByEncoder(double position, double power, boolean isRight){
-        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        double wheelDiameter = 4*3.14, degrees, altPwr;
-        position = position / wheelDiameter;
-        position *= 1120;
+        private void strafeByEncoder ( double position, double power, boolean isRight){
+            leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            double wheelDiameter = 4 * 3.14, degrees, altPwr;
+            position = position / wheelDiameter;
+            position *= 1120;
             if (isRight) {
-                while(leftF.getCurrentPosition() < position) {
+                while (leftF.getCurrentPosition() < position) {
                     degrees = checkDirection();
                     altPwr = power - (degrees * 0.1);
                     setMotorPowers(power, -power,
                             -power, power);
                 }
-            }
-            else{
-                while(-leftF.getCurrentPosition() < position) {
+            } else {
+                while (-leftF.getCurrentPosition() < position) {
                     degrees = checkDirection();
                     altPwr = power + (degrees * 0.1);
                     setMotorPowers(-power, power,
@@ -651,8 +622,8 @@ public class AutonomousTest extends LinearOpMode {
                     telemetry.update();
                 }
             }
-        powerMotorsOff();
-    }
+            powerMotorsOff();
+        }
     private void lineUpByColorSimple() {
         while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
             if (!withinColorRange(32, 20, colorRight)) {
