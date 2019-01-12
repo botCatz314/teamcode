@@ -103,12 +103,19 @@ public class AutoTest extends LinearOpMode {
 
         phoneServo.setPosition(0.8);
 
-        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
 
 
-        lineUpAgainstWall(100,1000);
-        dropCat(10,50,0);
+leftB.setPower(1);
+rightF.setPower(1);
+leftF.setPower(-0.4);
+rightB.setPower(-0.4);
+sleep(2000);
+leftB.setPower(0);
+rightF.setPower(0);
+leftF.setPower(0);
+rightB.setPower(0);
+
         //testing auto
        // deploy();
         //lineUpByColorSimple();

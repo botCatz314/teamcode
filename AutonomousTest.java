@@ -102,15 +102,11 @@ public class AutonomousTest extends LinearOpMode {
 
     phoneServo.setPosition(0.8);
 
-    leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     waitForStart();
 
     //testing auto
-    deploy();
-    //lineUpByColorSimple();
-
-    sleep(1000);
-    sampling2();
+leftF.setPower(1);
+sleep(30000);
     //driveToDepot();
     //dropCat();
     //park();

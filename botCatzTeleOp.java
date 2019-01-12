@@ -59,7 +59,7 @@ public class botCatzTeleOp extends LinearOpMode {
     {
         slideMotor.setPower(0);
         //drive mode 1
-      /*  motorIsUsed = false;
+       motorIsUsed = false;
         velX = 0;
         velY = 0;
         if(gamepad1.dpad_up){
@@ -84,16 +84,16 @@ public class botCatzTeleOp extends LinearOpMode {
         }
         if((gamepad1.right_trigger >=0.1 && !motorIsUsed) || (gamepad2.dpad_right && !motorIsUsed)){
             motorIsUsed = true;
-            velX = gamepad1.right_trigger;
-            driveMotors( -velX,  velX,
-                          velX,  -velX);
+            velX = 0.5;
+            driveMotors( -0.5,  0.5,
+                          0.5,  -0.5); //1, 0.6, 0.6, 0.7
         }
 
         if((gamepad1.left_trigger >= 0.1 && !motorIsUsed) || (gamepad2.dpad_left && !motorIsUsed)){
             motorIsUsed = true;
-            velX = gamepad1.left_trigger;
-            driveMotors(  velX,  -velX,
-                         -velX,  velX);
+            velX = 0.5;
+            driveMotors(  0.5,  -0.5,
+                         -0.5,  0.5);
         }
     if(!motorIsUsed) {
             double velL = 0;
@@ -117,9 +117,9 @@ public class botCatzTeleOp extends LinearOpMode {
         driveMotors(velL, velR,
                     velL, velR);
     }
-*/
+
       //drive mode 2
-        velX = 0;
+    /*    velX = 0;
         velY = 0;
         slideMotor.setPower(0);
         if(gamepad1.left_stick_y > 0.1 || gamepad1.left_stick_y < -0.1){
@@ -141,13 +141,17 @@ public class botCatzTeleOp extends LinearOpMode {
         }
 
         telemetry.addData("arm pos: ", armPos);
-        telemetry.update();
+        telemetry.update();*/
 
         if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
             pivotMotor.setPower(-gamepad2.right_stick_y);
         }
 
-
+        telemetry.addData("leftF: ", leftF.getPower());
+        telemetry.addData("leftB: ", leftB.getPower());
+        telemetry.addData("rightF: ", rightF.getPower());
+        telemetry.addData("rightB: ", leftB.getPower());
+        telemetry.update();
 
         // arm elevation
         //pivotMotor.setPower(-gamepad2.right_stick_y);
