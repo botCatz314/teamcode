@@ -1,20 +1,14 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-@TeleOp(name = "botCatzTeleOp", group = "Default")
-public class botCatzTeleOp extends LinearOpMode {
+@TeleOp(name = "JudgingTeleop", group = "Default")
+public class JudgingTeleop extends LinearOpMode {
 
     private DcMotor leftF, rightF, leftB, rightB; //hangingMotor, pivotMotor, slideMotor, collector; //declares
     private DcMotor hangingMotor, pivotMotor, slideMotor, collector;
@@ -59,8 +53,7 @@ public class botCatzTeleOp extends LinearOpMode {
     {
         slideMotor.setPower(0);
         //drive mode 1
-        /*
-       motorIsUsed = false;
+      /*  motorIsUsed = false;
         velX = 0;
         velY = 0;
         if(gamepad1.dpad_up){
@@ -85,16 +78,16 @@ public class botCatzTeleOp extends LinearOpMode {
         }
         if((gamepad1.right_trigger >=0.1 && !motorIsUsed) || (gamepad2.dpad_right && !motorIsUsed)){
             motorIsUsed = true;
-            velX = 0.5;
-            driveMotors( -0.5,  0.5,
-                          0.5,  -0.5); //1, 0.6, 0.6, 0.7
+            velX = gamepad1.right_trigger;
+            driveMotors( -velX,  velX,
+                          velX,  -velX);
         }
 
         if((gamepad1.left_trigger >= 0.1 && !motorIsUsed) || (gamepad2.dpad_left && !motorIsUsed)){
             motorIsUsed = true;
-            velX = 0.5;
-            driveMotors(  0.5,  -0.5,
-                         -0.5,  0.5);
+            velX = gamepad1.left_trigger;
+            driveMotors(  velX,  -velX,
+                         -velX,  velX);
         }
     if(!motorIsUsed) {
             double velL = 0;
@@ -120,72 +113,11 @@ public class botCatzTeleOp extends LinearOpMode {
     }
 */
       //drive mode 2
-        velX = 0;
-        velY = 0;
-        slideMotor.setPower(0);
-        if(gamepad1.left_stick_y > 0.1 || gamepad1.left_stick_y < -0.1){
-            velY = -gamepad1.left_stick_y;
-        }
-        if (gamepad1.right_stick_y > 0.1 || gamepad1.right_stick_y < -0.1){
-            velX = -gamepad1.right_stick_y;
-        }
-        driveMotors(velX, velY, velY, velX);
-        if (gamepad1.right_trigger > 0.1){
-            driveMotors(gamepad1.right_trigger, -gamepad1.right_trigger, gamepad1.right_trigger, -gamepad1.right_trigger);
-        }
-        if(gamepad1.left_trigger > 0.1){
-            driveMotors(-gamepad1.left_trigger, gamepad1.left_trigger, -gamepad1.left_trigger, gamepad1.left_trigger);
-
-        }
-        if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
-            slideMotor.setPower(gamepad2.left_stick_y);
-        }
-
-        telemetry.addData("arm pos: ", armPos);
-        telemetry.update();
-
-        if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
-            pivotMotor.setPower(-gamepad2.right_stick_y);
-        }
-
-        telemetry.addData("leftF: ", leftF.getPower());
-        telemetry.addData("leftB: ", leftB.getPower());
-        telemetry.addData("rightF: ", rightF.getPower());
-        telemetry.addData("rightB: ", leftB.getPower());
-        telemetry.update();
-
-        // arm elevation
-        //pivotMotor.setPower(-gamepad2.right_stick_y);
-
-        // arm driver enhancement: scoring position
-
-        // hanging
-        //if(gamepad2.y && !getTouch(touchUpper)){
-        //    driveUntilTouch(1.0, hangingMotor, touchUpper);
-        //}
-
-        if(gamepad2.right_trigger > 0.1) {
-            collector.setPower(gamepad2.right_trigger);
-        }
-        else if(gamepad2.left_trigger > 0.1){
-            collector.setPower(-gamepad2.left_trigger);
-        }
-        else{
-            collector.setPower(0);
-        }
-
-        if(gamepad2.right_bumper){
-            hangingMotor.setPower(1.0);
-        }
-        else if(gamepad2.left_bumper){
-            hangingMotor.setPower(-1.0);
-        }
-
         if(getTouch(up)){
             hangingMotor.setPower(1);
         }
         else if(getTouch(down)){
-            hangingMotor.setPower(-1);
+            collector.setPower(1);
         }
         else if(!getTouch(up) && !getTouch(down)){
             hangingMotor.setPower(powerOff);
