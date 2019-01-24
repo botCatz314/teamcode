@@ -100,71 +100,19 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.addData("servo: ", phoneServo.getPosition());
     telemetry.update();
 
-    phoneServo.setPosition(0.8);
-
     waitForStart();
 
+
     //testing auto
-leftF.setPower(1);
-sleep(30000);
+        deploy();
+        setMotorPowers(0.7,0.7,0.7,0.7);
+        sleep(3000);
+        powerMotorsOff();
     //driveToDepot();
     //dropCat();
     //park();
     //lineUpByColorSimple();
 
-
-    //bioscience auto
-   /* deploy();
-    pivotMotor.setPower(0.5);
-    sleep(200);
-    pivotMotor.setPower(powerOff);
-<<<<<<< HEAD
-<<<<<<< HEAD
-    driveByLander(11, 0.3);
-    sampling2();*/
-
-   //future auto
-    /*driveToDepot();
-=======
-    driveByLander(15, 0.3);
-    sampling2();
-    driveToDepot();
->>>>>>> parent of 3e5f191... BioScience code
-=======
-    driveByLander(15, 0.3);
-    sampling2();
-    driveToDepot();
->>>>>>> parent of 3e5f191... BioScience code
-    powerMotorsOff();
-    leftF.setPower(0);
-    leftB.setPower(0);
-    dropCat();
-    park();
-    //getAngles();
-   // telemetry.addData("position of gold: ", position);
-//   //drivebyColor(0.3, colorRight);
-  // driveByChangeInRange(false);
-    //sleep(1000);
-     /* DrivebyColor(0.4, colorLeft);
-        Sampling();
-        telemetry.addData("gold:", GetPosition());
-        telemetry.update();
-        phoneServo.setPosition(0.5);
-
-        GyroTurn(70, 0.2);
-        DrivebyRange(10,0.4, rangeLeft);
-        DriveUntilTouch(0.4);
-        ResetAngles();
-        DrivebyRangeReverse(3, 0.4, rangeLeft);
-        GyroTurn(90, 0.2);
-        DrivebyRange(23, 1.0, rangeLeft);
-        catLauncher.setPosition(1);
-
-        right.setPower(-0.9);
-        left.setPower(-1);
-        sleep(3000);
-        right.setPower(powerOff);
-        left.setPower(powerOff);*/
     }
 
     private void setRotationPower(boolean isRight, double power){
@@ -572,7 +520,7 @@ sleep(30000);
         private void deploy () {
             goToTouch(1, touchUpper);
             strafe(0.5, true);
-            sleep(1000);
+            sleep(2000);
             strafe(0, false);
         }
         private void driveByEncoder ( double position, double power){
