@@ -25,47 +25,54 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 
 @Autonomous (name = "AutonomousTest")
 public class AutonomousTest extends LinearOpMode {
-    private ColorSensor colorRight, colorLeft;
-    private DcMotor slideMotor;
-    private DistanceSensor rangeLeft, rangeRight, rangeHigh;
-    private DcMotor leftF, rightF, leftB, rightB;
-    private DcMotor hangingMotor, pivotMotor;
-    private Servo phoneServo;// catLauncher;
-    private BNO055IMU imu;
-    private Orientation lastAngles = new Orientation();
-    private double correction, globalAngle, powerOff = 0;
-    private DigitalChannel touchUpper, magnetLower;
-    private AnalogInput armPos;
-    private GoldAlignDetector detector;
-    private String position = null;
+    //motors
+    private DcMotor leftF, rightF, leftB, rightB; //declares drive motors
+    private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
+    //sensors
+    private ColorSensor colorRight, colorLeft; //declares color sensors
+    private DistanceSensor rangeLeft, rangeRight, rangeHigh; //declares range sensors
+    private BNO055IMU imu; //declares REV imu
+    private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
+    private AnalogInput armPos; //declares potentiometer
+    private GoldAlignDetector detector; // declares Doge CV detector
+    //servos
+    private Servo phoneServo; //TO DO: replace with collector and any other servos we add
+    //other variables
+    private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
+    private double correction, globalAngle; //imu related doubles.
+    private double powerOff = 0; //turns power off
+    private String position = null; //string to hold the gold's position
 @Override
     public void runOpMode() {
-   // colorLe711hardwareMap.get(ColorSensor.class, "colorLeft");
-    colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
-    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
+    //sets value of drive motors
     leftF = hardwareMap.dcMotor.get("leftF");
     rightF = hardwareMap.dcMotor.get("rightF");
     leftB = hardwareMap.dcMotor.get("leftB");
     rightB = hardwareMap.dcMotor.get("rightB");
+    //sets value of attachment motor
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
-    phoneServo = hardwareMap.servo.get("phoneServo");
+    slideMotor = hardwareMap.dcMotor.get("slideMotor");
+    //sets value of color sensors
+    colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
+    colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
     touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
     magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
     armPos = hardwareMap.get(AnalogInput.class, "armPos");
-   // catLauncher = hardwareMap.servo.get("catLauncher");
-    //touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
-   // touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
-   // magneticSwitch = hardwareMap.get(DigitalChannel.class, "magneticSwitch");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
+    //sets value of servos
+    phoneServo = hardwareMap.servo.get("phoneServo"); //TO DO: account for added servos
+
+    //set parameters of motors
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+    //set parameters of Doge CV detector
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
     detector.useDefaults();
@@ -101,8 +108,6 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 
     waitForStart();
-
-
     //testing auto
         deploy();
         setMotorPowers(0.7,0.7,0.7,0.7);
