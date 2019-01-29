@@ -139,7 +139,7 @@ public class botCatzTeleOp extends LinearOpMode {
         }
 
 
-        */
+
         if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
             slideMotor.setPower(gamepad2.left_stick_y);
         }
