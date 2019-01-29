@@ -108,6 +108,7 @@ public class AutonomousTest extends LinearOpMode {
 
     waitForStart();
     //Actual Autonomous
+    sampling3();
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -426,6 +427,36 @@ public class AutonomousTest extends LinearOpMode {
                 setMotorPowers(-0.3, -0.3, -0.3, -0.3);
                 sleep(620);
                 setMotorPowers(0,0,0,0);
+            }
+        }
+    }
+    private void sampling3(){
+        lineUpByColorSimple();
+        driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
+        gyroTurn(-30, 0.3);
+        if(detector.getAligned()){
+            position="Right";
+            driveByEncoder(15, 0.3);
+            driveByEncoder(-10,0.3);//15............!
+            gyroTurn(30,0.3);
+        }
+        else if(position == null){
+            gyroTurn(75,.3);
+            driveByEncoder(5, 0.3);
+            if (detector.getAligned()){
+                telemetry.addData("got here", true);
+                telemetry.update();
+                sleep(1000);
+                position="Left";
+                driveByEncoder(8,.3);
+                driveByEncoder(-13,.3);
+                gyroTurn(-45,.3);
+            }
+            else{
+                driveByEncoder(-3, 0.3);
+                gyroTurn(-45, 0.3);
+                driveByEncoder(10, 0.3);
+                driveByEncoder(-10, 0.3);
             }
         }
     }
