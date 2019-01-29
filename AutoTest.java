@@ -106,16 +106,34 @@ public class AutoTest extends LinearOpMode {
         waitForStart();
 
 
-leftB.setPower(1);
-rightF.setPower(1);
-leftF.setPower(-0.4);
-rightB.setPower(-0.4);
-sleep(2000);
-leftB.setPower(0);
-rightF.setPower(0);
-leftF.setPower(0);
-rightB.setPower(0);
+//leftB.setPower(1);
+//rightF.setPower(1);
+//leftF.setPower(-0.3);
+//rightB.setPower(-0.3);
+//sleep(2000);
+//leftB.setPower(0);
+//rightF.setPower(0);
+//leftF.setPower(0);
+//rightB.setPower(0);
 
+
+        leftF.setPower(1);
+
+
+
+        leftB.setPower(1);
+
+
+
+        rightF.setPower(1);
+
+
+        rightB.setPower(1);
+        sleep(2000);
+        rightB.setPower(0);
+        leftF.setPower(0);
+        leftB.setPower(0);
+        rightF.setPower(0);
         //testing auto
        // deploy();
         //lineUpByColorSimple();

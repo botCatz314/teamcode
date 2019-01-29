@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 @TeleOp(name = "botCatzTeleOp", group = "Default")
 public class botCatzTeleOp extends LinearOpMode {
 
-    private DcMotor leftF, rightF, leftB, rightB; //hangingMotor, pivotMotor, slideMotor, collector; //declares
+    private DcMotor leftF, rightF, leftB, rightB;
     private DcMotor hangingMotor, pivotMotor, slideMotor, collector;
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
@@ -138,6 +138,9 @@ public class botCatzTeleOp extends LinearOpMode {
             driveMotors(-gamepad1.left_trigger, gamepad1.left_trigger, -gamepad1.left_trigger, gamepad1.left_trigger);
 
         }
+
+
+
         if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
             slideMotor.setPower(gamepad2.left_stick_y);
         }
