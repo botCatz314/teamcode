@@ -109,6 +109,7 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
     //Actual Autonomous
     sampling3();
+    goToWall();
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -341,16 +342,16 @@ public class AutonomousTest extends LinearOpMode {
             //turns right if the right distance is less than the left
             if(rightRange < leftRange){
                 //sets motor powers
-                setMotorPowers(0.25, -0.25,
-                               0.25, -0.25);
+                setMotorPowers(-0.3, 0.3,
+                               -.3, 0.3);
             }
             //turns off motor power
             powerMotorsOff();
             //turns left if the left range is less than the right
             if(leftRange < rightRange){
                 //sets motor power
-                setMotorPowers(-0.25, 0.25,
-                               -0.25, 0.25);
+                setMotorPowers(0.3, -0.3,
+                               0.3, -0.3);
             }
             //turns drive motor power off
             powerMotorsOff();
@@ -436,6 +437,7 @@ public class AutonomousTest extends LinearOpMode {
         gyroTurn(-30, 0.3);
         if(detector.getAligned()){
             position="Right";
+            gyroTurn(-10, 0.3);
             driveByEncoder(15, 0.3);
             driveByEncoder(-10,0.3);//15............!
             gyroTurn(30,0.3);
@@ -459,6 +461,12 @@ public class AutonomousTest extends LinearOpMode {
                 driveByEncoder(-10, 0.3);
             }
         }
+    }
+    private void goToWall(){
+        driveByEncoder(-2, 0.3);
+        gyroTurn(60, 0.3);
+        drivebyRange(15, 0.5, rangeRight);
+        straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
     private boolean isTouched (DigitalChannel touch){
