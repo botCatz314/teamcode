@@ -1,30 +1,27 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.robotcore.util.Hardware;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 
-@Autonomous (name = "AutonomousTest")
-public class AutonomousTest extends LinearOpMode {
+@Autonomous (name = "AutonomousDepot")
+public class AutonomousDepot extends LinearOpMode {
     //motors
     private DcMotor leftF, rightF, leftB, rightB; //declares drive motors
     private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
@@ -109,9 +106,8 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
     //Actual Autonomous
     sampling3();
-    goToWall();
     driveToDepot();
-    park();
+
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -362,12 +358,23 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot into position to drop the team marker
     private void driveToDepot(){
         //turns towards the wall
-        gyroTurn(80, 0.3);
-        sleep(500);
-        telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
-        telemetry.update();
-        drivebyRange(20, 0.3, rangeLeft);
-        sleep(1000);
+        switch(position){
+            case("Center"):
+                driveByEncoder(10, 0.3);
+                dropCat();
+                driveByEncoder(-25, 0.3);
+                break;
+            case("Right"):
+                gyroTurn(75, 0.3);
+                drivebyRange(10, 0.3, rangeLeft);
+                dropCat();
+                break;
+            case("Left"):
+                gyroTurn(-75, 0.3);
+                drivebyRange(10, 0.3, rangeLeft);
+                dropCat();
+                break;
+        }
     }
     private void dropCat(){
         //To Do: program robot to drop cat
@@ -437,36 +444,28 @@ public class AutonomousTest extends LinearOpMode {
         gyroTurn(-30, 0.3);
         if(detector.getAligned()){
             position="Right";
-            gyroTurn(-10, 0.3);
-            driveByEncoder(15, 0.3);
-            driveByEncoder(-10,0.3);//15............!
-            gyroTurn(30,0.3);
+            gyroTurn(-15, 0.3);
+            driveByEncoder(20, 0.3);
+
         }
         else if(position == null){
-            gyroTurn(75,.3);
-            driveByEncoder(5, 0.3);
+            gyroTurn(80,.3);
+            driveByEncoder(6, 0.3);
             if (detector.getAligned()){
                 telemetry.addData("got here", true);
                 telemetry.update();
                 sleep(1000);
                 position="Left";
                 driveByEncoder(8,.3);
-                driveByEncoder(-13,.3);
-                gyroTurn(-45,.3);
+
             }
             else{
-                driveByEncoder(-3, 0.3);
+                position = "Center";
+                driveByEncoder(-5, 0.3);
                 gyroTurn(-45, 0.3);
                 driveByEncoder(10, 0.3);
-                driveByEncoder(-10, 0.3);
             }
         }
-    }
-    private void goToWall(){
-        driveByEncoder(-2, 0.3);
-        gyroTurn(60, 0.3);
-        drivebyRange(10, 0.4, rangeRight);
-        straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
     private boolean isTouched (DigitalChannel touch){
