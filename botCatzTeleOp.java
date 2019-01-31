@@ -57,6 +57,7 @@ public class botCatzTeleOp extends LinearOpMode {
     telemetry.update();
     while (opModeIsActive())
     {
+        driveMotors(powerOff, powerOff, powerOff, powerOff);
         slideMotor.setPower(0);
         //drive mode 1
         /*
