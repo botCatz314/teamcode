@@ -33,7 +33,7 @@ public class AutonomousDepot extends LinearOpMode {
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
-    private Servo phoneServo; //TO DO: replace with collector and any other servos we add
+    private Servo catLauncher; //TO DO: replace with collector and any other servos we add
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
     private double correction, globalAngle; //imu related doubles.
@@ -60,7 +60,7 @@ public class AutonomousDepot extends LinearOpMode {
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
-    phoneServo = hardwareMap.servo.get("phoneServo"); //TO DO: account for added servos
+    catLauncher = hardwareMap.servo.get("phoneServo"); //TO DO: account for added servos
 
     //set parameters of motors
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -377,7 +377,7 @@ public class AutonomousDepot extends LinearOpMode {
         }
     }
     private void dropCat(){
-        //To Do: program robot to drop cat
+        catLauncher.setPosition(0);
     }
     //drives to and parks on crater
     private void park(){
