@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.AnalogInput;
@@ -17,7 +18,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class botCatzTeleOp extends LinearOpMode {
 
     private DcMotor leftF, rightF, leftB, rightB;
-    private DcMotor hangingMotor, pivotMotor, slideMotor, collector;
+    private DcMotor hangingMotor, pivotMotor, slideMotor;
+    private CRServo collector;
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
     private DigitalChannel magneticSwitch;
@@ -44,7 +46,7 @@ public class botCatzTeleOp extends LinearOpMode {
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
     slideMotor = hardwareMap.dcMotor.get("slideMotor");
-    collector = hardwareMap.dcMotor.get("collector");
+    collector = hardwareMap.crservo.get("collector");
 
     touchUpper.setMode(DigitalChannel.Mode.INPUT);
 
@@ -194,6 +196,7 @@ public class botCatzTeleOp extends LinearOpMode {
         else if(!getTouch(up) && !getTouch(down)){
             hangingMotor.setPower(powerOff);
         }
+
 
         idle();
     }

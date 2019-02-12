@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -37,6 +38,7 @@ public class AutonomousTest extends LinearOpMode {
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
     private Servo catLauncher;
+    private CRServo collector;
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
     private double correction, globalAngle; //imu related doubles.
@@ -64,6 +66,7 @@ public class AutonomousTest extends LinearOpMode {
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
     catLauncher = hardwareMap.servo.get("catLauncher");
+    collector = hardwareMap.crservo.get("collector");
 
     //set parameters of motors
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -71,7 +74,7 @@ public class AutonomousTest extends LinearOpMode {
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
+    slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     //set parameters of Doge CV detector
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -107,9 +110,11 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 
     waitForStart();
+    sampling4();
     //Actual Autonomous
-    sampling3();
-    goToWall();
+    //deploy();
+   // sampling3();
+     goToWall();
     driveToDepot();
     dropCat();
     park();
@@ -363,11 +368,11 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot into position to drop the team marker
     private void driveToDepot(){
         //turns towards the wall
-        gyroTurn(80, 0.3);
+        gyroTurn(72, 0.3);
         sleep(500);
         telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
         telemetry.update();
-        drivebyRange(20, 0.3, rangeLeft);
+        drivebyColor(0.3, 32, 20, colorLeft);
         sleep(1000);
     }
     private void dropCat(){
@@ -377,8 +382,8 @@ public class AutonomousTest extends LinearOpMode {
     }
     //drives to and parks on crater
     private void park(){
-    gyroTurn(12, 0.3);
-    driveByEncoder(-60, 1);
+    gyroTurn(12, 0.4);
+    driveByEncoder(-42, 1);
     }
     private void sampling2() {
         driveByLander(7, 0.3);// moves away from lander
@@ -465,11 +470,55 @@ public class AutonomousTest extends LinearOpMode {
             }
         }
     }
+    private void sampling4(){
+        lineUpByColorSimple();
+        driveByLander(3, 0.4);
+        if(detector.getAligned()){
+            if(detector.getAligned()) {
+                position = "Center";
+                // driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)-3, -0.4);
+
+                //grabs sampling mineral
+            /*gyroTurn(-15, 0.3);
+            setScoringArmToPosition(2, 0.7);
+            collector.setPower(-1);
+            telemetry.addData("collector: ", collector.getPower());
+            telemetry.update();
+            sleep(3000);*/
+
+                driveByEncoder(15, 0.3);
+                driveByEncoder(-10, 0.3);
+            }
+        }
+        else if(position == null) {
+           gyroTurn(-30, 0.3);
+           if(detector.getAligned()){
+               if(detector.getAligned()) {
+                   position = "Right";
+                   gyroTurn(-10, 0.3);
+                   driveByEncoder(15, 0.3);
+                   driveByEncoder(-10, 0.3);//15............!
+                   gyroTurn(30, 0.3);
+               }
+
+           }
+        }
+
+        if(position == null){
+            position = "Left";
+            gyroTurn(55,.4);
+            driveByEncoder(15, 0.3);
+            driveByEncoder(-15, 0.3);
+            gyroTurn(-30, 0.3);
+        }
+    }
+
     private void goToWall(){
-        driveByEncoder(-2, 0.3);
+        //driveByEncoder(-2, 0.3);
         gyroTurn(60, 0.3);
         drivebyRange(10, 0.4, rangeRight);
-        straighten(DistanceUnit.INCH);
+        driveByEncoder(2, 0.3);
+       // straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
     private boolean isTouched (DigitalChannel touch){
@@ -499,9 +548,7 @@ public class AutonomousTest extends LinearOpMode {
         //drops
         goToTouch(1, touchUpper);
         //strafes just a tiny bit to ensure we don't catch
-        strafe(0.5, true);
-        sleep(2000);
-        strafe(0, false);
+        strafeByEncoder(5, 0.3, true );
     }
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
@@ -583,5 +630,18 @@ public class AutonomousTest extends LinearOpMode {
         }
         //turns off motors
         powerMotorsOff();
+    }
+    private void setScoringArmToPosition(double position, double power){
+    slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(slideMotor.getCurrentPosition() < position){
+            while(slideMotor.getCurrentPosition() < position){
+                slideMotor.setPower(power);
+            }
+        }
+        else{
+            while(slideMotor.getCurrentPosition() > position){
+                slideMotor.setPower(-power);
+            }
+        }
     }
 }
