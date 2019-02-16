@@ -107,6 +107,11 @@ public class AutonomousDepot extends LinearOpMode {
     //Actual Autonomous
     sampling3();
     driveToDepot();
+    driveByEncoder(30, 0.5);
+    sleep(1000);
+    catLauncher.setPosition(0);
+    sleep(1000);
+    driveByEncoder(-10, 0.5);
 
     }
     //turns without gyro
@@ -493,11 +498,9 @@ public class AutonomousDepot extends LinearOpMode {
     //moves the robot off the hook
     private void deploy () {
         //drops
-        goToTouch(1, touchUpper);
-        //strafes just a tiny bit to ensure we don't catch
-        strafe(0.5, true);
-        sleep(2000);
-        strafe(0, false);
+        hangingMotor.setPower(-1);
+        sleep(2500);
+        hangingMotor.setPower(powerOff);
     }
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
