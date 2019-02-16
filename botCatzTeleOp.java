@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class botCatzTeleOp extends LinearOpMode {
 
     private DcMotor leftF, rightF, leftB, rightB;
-    private DcMotor hangingMotor, pivotMotor, slideMotor;
+    private DcMotor hangingMotor, pivotMotor, pivotMotor2, slideMotor;
     private CRServo collector;
     double velX = 0, velY, velR;
     boolean motorIsUsed = false, driveAtAngle;
@@ -45,6 +45,7 @@ public class botCatzTeleOp extends LinearOpMode {
     //finds the attachment motors in the hardware map
     hangingMotor = hardwareMap.dcMotor.get("hangingMotor");
     pivotMotor = hardwareMap.dcMotor.get("pivotMotor");
+    pivotMotor2 = hardwareMap.dcMotor.get("pivotMotor2");
     slideMotor = hardwareMap.dcMotor.get("slideMotor");
     collector = hardwareMap.crservo.get("collector");
 
@@ -59,8 +60,11 @@ public class botCatzTeleOp extends LinearOpMode {
     telemetry.update();
     while (opModeIsActive())
     {
+        collector.setPower(-1);
         driveMotors(powerOff, powerOff, powerOff, powerOff);
         slideMotor.setPower(0);
+        pivotMotor.setPower(0);
+        pivotMotor2.setPower(0);
         //drive mode 1
         /*
        motorIsUsed = false;
@@ -150,8 +154,17 @@ public class botCatzTeleOp extends LinearOpMode {
         telemetry.addData("arm pos: ", armPos);
         telemetry.update();
 
-        if(gamepad2.right_stick_y > 0.1 || gamepad2.right_stick_y < -0.1) {
+        if(gamepad2.right_stick_y > 0.2 || gamepad2.right_stick_y < -0.1) {
+            if(gamepad2.right_stick_y > 0.6){
+                gamepad2.right_stick_y = 0.6f;
+            }
             pivotMotor.setPower(-gamepad2.right_stick_y);
+            pivotMotor2.setPower(-gamepad2.right_stick_y);
+        }
+
+
+        if(gamepad2.left_trigger > 0){
+            collector.setPower(1);
         }
 
         telemetry.addData("leftF: ", leftF.getPower());
@@ -170,15 +183,7 @@ public class botCatzTeleOp extends LinearOpMode {
         //    driveUntilTouch(1.0, hangingMotor, touchUpper);
         //}
 
-        if(gamepad2.right_trigger > 0.1) {
-            collector.setPower(gamepad2.right_trigger);
-        }
-        else if(gamepad2.left_trigger > 0.1){
-            collector.setPower(-gamepad2.left_trigger);
-        }
-        else{
-            collector.setPower(0);
-        }
+
 
         if(gamepad2.right_bumper){
             hangingMotor.setPower(1.0);
@@ -196,6 +201,7 @@ public class botCatzTeleOp extends LinearOpMode {
         else if(!getTouch(up) && !getTouch(down)){
             hangingMotor.setPower(powerOff);
         }
+
 
 
         idle();
@@ -225,6 +231,19 @@ public class botCatzTeleOp extends LinearOpMode {
             slideMotor.setPower(power);
         }
         slideMotor.setPower(powerOff);
+    }
+    private void setScoringArmToPosition(double position, double power){
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(slideMotor.getCurrentPosition() < position){
+            while(slideMotor.getCurrentPosition() < position){
+                slideMotor.setPower(power);
+            }
+        }
+        else{
+            while(slideMotor.getCurrentPosition() > position){
+                slideMotor.setPower(-power);
+            }
+        }
     }
 
 }

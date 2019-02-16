@@ -1,31 +1,28 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.robotcore.util.Hardware;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 
-@Autonomous (name = "AutonomousTest")
-public class AutonomousTest extends LinearOpMode {
+@Autonomous (name = "AutonomousTestRed")
+public class AutonomousTestRed extends LinearOpMode {
     //motors
     private DcMotor leftF, rightF, leftB, rightB; //declares drive motors
     private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
@@ -110,6 +107,7 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 
     waitForStart();
+
     deploy();
     sampling4();
     //Actual Autonomous
@@ -256,7 +254,7 @@ public class AutonomousTest extends LinearOpMode {
     //returns true if color sensor reads within the maximum and minimum values
     private boolean withinColorRange(int max, int min, ColorSensor sensor) {
         //declares and sets a variable equal to the color sensor reading
-        int color = sensor.blue();
+        int color = sensor.red();
         //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
         return (color <= max && color >= min);
     }
@@ -619,9 +617,9 @@ public class AutonomousTest extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
+        while (!withinColorRange(65, 25, colorRight) && !withinColorRange(65, 25, colorLeft)) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(32, 20, colorRight)) {
+            if (!withinColorRange(65, 25, colorRight)) {
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -629,7 +627,7 @@ public class AutonomousTest extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(32, 20, colorLeft)) {
+            if (!withinColorRange(65, 25, colorLeft)) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards
