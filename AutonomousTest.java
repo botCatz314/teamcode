@@ -501,7 +501,7 @@ public class AutonomousTest extends LinearOpMode {
                if(detector.getAligned()) {
                    telemetry.addData("sees right: ", true);
                    position = "Right";
-                   gyroTurn(-8, 0.3);
+                   gyroTurn(-11, 0.3);
                    driveByEncoder(20, 0.3);
                    driveByEncoder(-15 , 0.3);//15............!
                    gyroTurn(30, 0.3);
@@ -513,7 +513,7 @@ public class AutonomousTest extends LinearOpMode {
         if(position == null){
             position = "Left";
             telemetry.addData("going left: ", true);
-            gyroTurn(55,.4);
+            gyroTurn(60,.4);
             driveByEncoder(15, 0.3);
             driveByEncoder(-13, 0.3);
             gyroTurn(-30, 0.3);
@@ -563,8 +563,8 @@ public class AutonomousTest extends LinearOpMode {
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
         //sets motors drive mode
-        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //converts encoder ticks to approximately inches
         double wheelDiameter = 4 * 3.14;
         position = position / wheelDiameter;
@@ -574,13 +574,13 @@ public class AutonomousTest extends LinearOpMode {
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() < position) {
+            while (rightF.getCurrentPosition() < position) {
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() > position) {
+            while (rightF.getCurrentPosition() > position) {
                 setPowerStraight(-power);
             }
         powerMotorsOff();

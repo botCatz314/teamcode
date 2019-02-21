@@ -54,13 +54,14 @@ public class botCatzTeleOp extends LinearOpMode {
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+    slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     waitForStart();
     telemetry.addData("happening: ", true);
     telemetry.update();
     while (opModeIsActive())
     {
-        collector.setPower(-1);
+
         driveMotors(powerOff, powerOff, powerOff, powerOff);
         slideMotor.setPower(0);
         pivotMotor.setPower(0);
@@ -165,6 +166,9 @@ public class botCatzTeleOp extends LinearOpMode {
 
         if(gamepad2.left_trigger > 0){
             collector.setPower(1);
+        }
+        else{
+            collector.setPower(-1);
         }
 
         telemetry.addData("leftF: ", leftF.getPower());

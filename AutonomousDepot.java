@@ -105,14 +105,64 @@ public class AutonomousDepot extends LinearOpMode {
 
     waitForStart();
     //Actual Autonomous
-    sampling3();
-    driveToDepot();
-    driveByEncoder(30, 0.5);
-    sleep(1000);
+    deploy();
+    lineUpByColorSimple();
+    driveByEncoder(10,.3);
+    sampling4();
+    gyroTurn(90,.2);
+    drivebyRange(10,.3,rangeLeft);
+    straighten(DistanceUnit.INCH);
+    gyroTurn(90,.2);
+    drivebyRange(10,.2,rangeRight);
+    sleep(300);
     catLauncher.setPosition(0);
-    sleep(1000);
-    driveByEncoder(-10, 0.5);
+    driveByEncoder(-60,.3);
 
+
+    }
+    private void sampling4(){
+        telemetry.addData("got here", true);
+        telemetry.update();
+        lineUpByColorSimple();
+        sleep(200);
+        if(detector.getAligned()){
+            if(detector.getAligned()) {
+                telemetry.addData("Sees center: ", true);
+                telemetry.update();
+                position = "Center";
+                sleep(300);
+                driveByEncoder(15, 0.3);
+                sleep(100);
+                driveByEncoder(-10, 0.3);
+                sleep(300);
+            }
+        }
+        else if(position == null) {
+
+            sleep(100);
+            gyroTurn(-35, 0.3);
+            sleep(500);
+            if(detector.getAligned()){
+                if(detector.getAligned()) {
+                    telemetry.addData("sees right: ", true);
+                    position = "Right";
+                    gyroTurn(-11, 0.3);
+                    driveByEncoder(20, 0.3);
+                    driveByEncoder(-15 , 0.3);//15............!
+                    gyroTurn(30, 0.3);
+                }
+
+            }
+        }
+
+        if(position == null){
+            position = "Left";
+            telemetry.addData("going left: ", true);
+            gyroTurn(60,.4);
+            driveByEncoder(15, 0.3);
+            driveByEncoder(-13, 0.3);
+            gyroTurn(-30, 0.3);
+        }
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -501,6 +551,9 @@ public class AutonomousDepot extends LinearOpMode {
         hangingMotor.setPower(-1);
         sleep(2500);
         hangingMotor.setPower(powerOff);
+
+        //strafes just a tiny bit to ensure we don't catch
+        //strafeByEncoder(5, 0.3, true );
     }
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
