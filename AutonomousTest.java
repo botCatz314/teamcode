@@ -579,13 +579,13 @@ public class AutonomousTest extends LinearOpMode {
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
+            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() > position && opModeIsActive()) {
+            while (-leftF.getCurrentPosition() > position && opModeIsActive()) {
                 setPowerStraight(-power);
             }
         powerMotorsOff();
@@ -603,7 +603,7 @@ public class AutonomousTest extends LinearOpMode {
         //if strafing right
         if (isRight) {
             //strafes right correcting with gyro
-            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
+            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power - (degrees * 0.1);
                 setMotorPowers(power, -power,
@@ -612,7 +612,7 @@ public class AutonomousTest extends LinearOpMode {
         }
         else {
             //drives until the negative of the left encoder's value is less than the position correcting with the gyro
-            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
+            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power + (degrees * 0.1);
                 setMotorPowers(-power, power,
@@ -642,6 +642,8 @@ public class AutonomousTest extends LinearOpMode {
                 leftB.setPower(-0.3);
             }
             telemetry.addData("left", leftF.getCurrentPosition());
+            telemetry.addData(" actual power: ", leftF.getPower());
+            telemetry.addData("rightF", rightF.getPower());
             telemetry.update();
         }
         //turns off motors
