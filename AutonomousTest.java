@@ -37,7 +37,7 @@ public class AutonomousTest extends LinearOpMode {
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
-    private Servo catLauncher;
+    private Servo catapult;
     private CRServo collector;
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
@@ -65,7 +65,7 @@ public class AutonomousTest extends LinearOpMode {
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
     rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
-    catLauncher = hardwareMap.servo.get("catLauncher");
+    catapult = hardwareMap.servo.get("catapult");
     collector = hardwareMap.crservo.get("collector");
 
     //set parameters of motors
@@ -110,11 +110,13 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 
     waitForStart();
-    deploy();
+
+    //deploy();
     sampling4();
     //Actual Autonomous
     //deploy();
    // sampling3();
+
     sleep(1000);
      goToWall();
      sleep(1000);
@@ -238,7 +240,7 @@ public class AutonomousTest extends LinearOpMode {
         //determines whether the robot is travelling towards or away from the target.
         if(power > 0) {
             //if driving towards target, keeps driving until the actual range is less than the target range
-            while (!inRange(distance, DistanceUnit.INCH, range)) {
+            while (!inRange(distance, DistanceUnit.INCH, range) && opModeIsActive()) {
                 setPowerStraight(power);
             }
             //turns off drive motors
@@ -246,7 +248,7 @@ public class AutonomousTest extends LinearOpMode {
         }
         else{
             //if moving away from the target, drive until the actual distance is greater than the target position
-            while(inRange(distance, DistanceUnit.INCH, range)){
+            while(inRange(distance, DistanceUnit.INCH, range) && opModeIsActive()){
                 setPowerStraight(-power);
             }
             //powers off drive motors
@@ -262,7 +264,7 @@ public class AutonomousTest extends LinearOpMode {
     }
    //drives robot until color sensor reads within two specified values
     private void drivebyColor(double power, int max, int min, ColorSensor colorSensor){
-        while(!withinColorRange(max, min, colorSensor)){
+        while(!withinColorRange(max, min, colorSensor) && opModeIsActive()){
             setPowerStraight(power);
         }
         powerMotorsOff();
@@ -273,7 +275,7 @@ public class AutonomousTest extends LinearOpMode {
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
-            while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
+            while(!inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -281,7 +283,7 @@ public class AutonomousTest extends LinearOpMode {
         //if the robot wants to drive forwards
         else if(power > 0){
             //drive until the range sensor is not within a range
-            while(inRange(target, DistanceUnit.INCH, rangeHigh)){
+            while(inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -321,7 +323,7 @@ public class AutonomousTest extends LinearOpMode {
         //the radius of the wheel in inches
         double radius = 2;
         //runs until range sensor reads a specified distance at which point the robot stops
-        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight)){
+        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight) && opModeIsActive()){
             //sets the distance variables to the range sensor to the difference of the range sensor reading and target location
             distanceLeft = rangeLeft.getDistance(unit) - stoptarget;
             distanceRight = rangeRight.getDistance(unit) - stoptarget;
@@ -348,7 +350,7 @@ public class AutonomousTest extends LinearOpMode {
         rightRange = rangeRight.getDistance(units);
         leftRange = rangeLeft.getDistance(units);
         //runs until we are straight
-        while(rightRange != leftRange){
+        while(rightRange != leftRange && opModeIsActive()){
             //updates values of range variables
             rightRange = rangeRight.getDistance(units);
             leftRange = rangeLeft.getDistance(units);
@@ -382,7 +384,7 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void dropCat(){
         sleep(1000);
-        catLauncher.setPosition(0);
+        catapult.setPosition(0);
         sleep(2000);
     }
     //drives to and parks on crater
@@ -525,6 +527,7 @@ public class AutonomousTest extends LinearOpMode {
         gyroTurn(60, 0.3);
         drivebyRange(10, 0.4, rangeRight);
         driveByEncoder(2, 0.3);
+        driveByEncoder(-5, 0.3);
        // straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
@@ -534,7 +537,7 @@ public class AutonomousTest extends LinearOpMode {
 
     private void goToTouch ( double power, DigitalChannel sensor){
         //drives hanging motors until touch sensor is pressed
-        while (!isTouched(sensor)) {
+        while (!isTouched(sensor) && opModeIsActive()) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
@@ -545,7 +548,7 @@ public class AutonomousTest extends LinearOpMode {
     }
     //moves hangingmotor until the magnetic limit sensor on the hanging motor reads true
     private void goToMagnetLimitSensor ( double power, DigitalChannel sensor){
-        while (!foundMagnet(sensor)) {
+        while (!foundMagnet(sensor) && opModeIsActive()) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
@@ -553,6 +556,8 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot off the hook
     private void deploy () {
         //drops
+        hangingMotor.setPower(1);
+        sleep(200);
         hangingMotor.setPower(-1);
         sleep(2500);
         hangingMotor.setPower(powerOff);
@@ -563,8 +568,8 @@ public class AutonomousTest extends LinearOpMode {
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
         //sets motors drive mode
-        rightF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftF.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftF.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //converts encoder ticks to approximately inches
         double wheelDiameter = 4 * 3.14;
         position = position / wheelDiameter;
@@ -574,13 +579,13 @@ public class AutonomousTest extends LinearOpMode {
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while (rightF.getCurrentPosition() < position) {
+            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while (rightF.getCurrentPosition() > position) {
+            while (leftF.getCurrentPosition() > position && opModeIsActive()) {
                 setPowerStraight(-power);
             }
         powerMotorsOff();
@@ -598,7 +603,7 @@ public class AutonomousTest extends LinearOpMode {
         //if strafing right
         if (isRight) {
             //strafes right correcting with gyro
-            while (leftF.getCurrentPosition() < position) {
+            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power - (degrees * 0.1);
                 setMotorPowers(power, -power,
@@ -607,7 +612,7 @@ public class AutonomousTest extends LinearOpMode {
         }
         else {
             //drives until the negative of the left encoder's value is less than the position correcting with the gyro
-            while (-leftF.getCurrentPosition() < position) {
+            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power + (degrees * 0.1);
                 setMotorPowers(-power, power,
@@ -619,9 +624,9 @@ public class AutonomousTest extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
+        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft) && opModeIsActive()) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(32, 20, colorRight)) {
+            if (!withinColorRange(32, 20, colorRight) && opModeIsActive()){
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -629,13 +634,15 @@ public class AutonomousTest extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(32, 20, colorLeft)) {
+            if (!withinColorRange(32, 20, colorLeft) && opModeIsActive()) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards
                 leftF.setPower(-0.3);
                 leftB.setPower(-0.3);
             }
+            telemetry.addData("left", leftF.getCurrentPosition());
+            telemetry.update();
         }
         //turns off motors
         powerMotorsOff();
@@ -643,12 +650,12 @@ public class AutonomousTest extends LinearOpMode {
     private void setScoringArmToPosition(double position, double power){
     slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if(slideMotor.getCurrentPosition() < position){
-            while(slideMotor.getCurrentPosition() < position){
+            while(slideMotor.getCurrentPosition() < position && opModeIsActive()){
                 slideMotor.setPower(power);
             }
         }
         else{
-            while(slideMotor.getCurrentPosition() > position){
+            while(slideMotor.getCurrentPosition() > position && opModeIsActive()){
                 slideMotor.setPower(-power);
             }
         }

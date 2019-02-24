@@ -55,6 +55,7 @@ public class botCatzTeleOp extends LinearOpMode {
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    pivotMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
     telemetry.addData("happening: ", true);
