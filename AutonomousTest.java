@@ -377,7 +377,7 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot into position to drop the team marker
     private void driveToDepot(){
         //turns towards the wall
-        gyroTurn(72, 0.3);
+        gyroTurn(80, 0.4);
         sleep(500);
         telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
         telemetry.update();
@@ -451,16 +451,16 @@ public class AutonomousTest extends LinearOpMode {
     private void sampling3(){
         lineUpByColorSimple();
         driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
-        gyroTurn(-30, 0.3);
+        gyroTurn(-30, 0.4);
         if(detector.getAligned()){
             position="Right";
-            gyroTurn(-10, 0.3);
+            gyroTurn(-10, 0.4);
             driveByEncoder(15, 0.6);
             driveByEncoder(-10,0.6);//15............!
-            gyroTurn(30,0.3);
+            gyroTurn(30,0.4);
         }
         else if(position == null){
-            gyroTurn(75,.3);
+            gyroTurn(75,.4);
             driveByEncoder(5, 0.6);
             if (detector.getAligned()){
                 telemetry.addData("got here", true);
@@ -469,11 +469,11 @@ public class AutonomousTest extends LinearOpMode {
                 position="Left";
                 driveByEncoder(8,.6);
                 driveByEncoder(-13,.6);
-                gyroTurn(-45,.3);
+                gyroTurn(-45,.4);
             }
             else{
                 driveByEncoder(-3, 0.6);
-                gyroTurn(-45, 0.3);
+                gyroTurn(-45, 0.4);
                 driveByEncoder(10, 0.6);
                 driveByEncoder(-10, 0.6);
             }
@@ -499,16 +499,15 @@ public class AutonomousTest extends LinearOpMode {
         else if(position == null) {
 
             sleep(100);
-           gyroTurn(-35, 0.3);
+           gyroTurn(-40, 0.4);
            sleep(500);
            if(detector.getAligned()){
                if(detector.getAligned()) {
                    telemetry.addData("sees right: ", true);
                    position = "Right";
-                   gyroTurn(-11, 0.3);
                    driveByEncoder(20, 0.6);
-                   driveByEncoder(-15 , 0.6);//15............!
-                   gyroTurn(30, 0.3);
+                   driveByEncoder(-10 , 0.6);//15............!
+                   gyroTurn(25, 0.4);
                }
 
            }
@@ -520,13 +519,13 @@ public class AutonomousTest extends LinearOpMode {
             gyroTurn(60,.4);
             driveByEncoder(15, 0.6);
             driveByEncoder(-13, 0.6);
-            gyroTurn(-30, 0.3);
+            gyroTurn(-30, 0.4);
         }
     }
 
     private void goToWall(){
         //driveByEncoder(-2, 0.3);
-        gyroTurn(60, 0.3);
+        gyroTurn(60, 0.4);
         drivebyRange(10, 0.6, rangeRight);
         driveByEncoder(2, 0.6);
         driveByEncoder(-1, 0.6);
@@ -594,7 +593,7 @@ public class AutonomousTest extends LinearOpMode {
             }
         powerMotorsOff();
             inertiaCorrection = (int) getAngles();
-            gyroTurn(inertiaCorrection, 0.3);
+            gyroTurn(inertiaCorrection, 0.4);
         }
     }
     //strafes using the front left motor's encoder as a reference point to the robot's position

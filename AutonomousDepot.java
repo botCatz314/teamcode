@@ -146,7 +146,7 @@ public class AutonomousDepot extends LinearOpMode {
                     position = "Right";
                     gyroTurn(-11, 0.3);
                     driveByEncoder(20, 0.6);
-                    driveByEncoder(-15 , 0.6);//15............!
+                    driveByEncoder(-7 , 0.6);//-15............!
                     gyroTurn(30, 0.3);
                 }
 
