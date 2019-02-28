@@ -37,6 +37,8 @@ public class AutonomousDepot extends LinearOpMode {
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
     private double correction, globalAngle; //imu related doubles.
+    private double thirtyPercentPower = 0.3, fiftyPercentPower = 0.5, sixtyPercentPower = .6, oneHundredPercentPower = 1;
+    private double negativeThirtyPercentPower =-0.3, negativeFiftyPercentPower = -0.5, negativeSixtyPercentPower = -0.6, negativeHundredPercentPower = 1;
     private double powerOff = 0; //turns power off
     private String position = null; //string to hold the gold's position
 @Override
@@ -129,9 +131,9 @@ public class AutonomousDepot extends LinearOpMode {
                 telemetry.update();
                 position = "Center";
                 sleep(300);
-                driveByEncoder(15, 0.6);
+                driveByEncoder(15, sixtyPercentPower);
                 sleep(100);
-                driveByEncoder(-10, 0.6);
+                driveByEncoder(-10, sixtyPercentPower);
                 sleep(300);
             }
         }
@@ -393,16 +395,16 @@ public class AutonomousDepot extends LinearOpMode {
             //turns right if the right distance is less than the left
             if(rightRange < leftRange){
                 //sets motor powers
-                setMotorPowers(-0.3, 0.3,
-                               -.3, 0.3);
+                setMotorPowers(negativeThirtyPercentPower, thirtyPercentPower,
+                               negativeThirtyPercentPower, thirtyPercentPower);
             }
             //turns off motor power
             powerMotorsOff();
             //turns left if the left range is less than the right
             if(leftRange < rightRange){
                 //sets motor power
-                setMotorPowers(0.3, -0.3,
-                               0.3, -0.3);
+                setMotorPowers(thirtyPercentPower, negativeThirtyPercentPower,
+                               thirtyPercentPower, negativeThirtyPercentPower);
             }
             //turns drive motor power off
             powerMotorsOff();
@@ -445,9 +447,9 @@ public class AutonomousDepot extends LinearOpMode {
         if (detector.getAligned()) {// if sees gold
             position = "Right";//sets position
             //scores gold and returns to original position
-            setMotorPowers(0.3, 0.3, 0.3, 0.3);
+            setMotorPowers(thirtyPercentPower, thirtyPercentPower, thirtyPercentPower, thirtyPercentPower);
             sleep(800);
-            setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+            setMotorPowers(negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower);
             sleep(800);
             //goes to common known position
             strafe(0.5, false);
@@ -464,9 +466,9 @@ public class AutonomousDepot extends LinearOpMode {
             //sets position to Center mineral
             position = "Center";
             //scores center mineral and returns to original position
-            setMotorPowers(0.3, 0.3, 0.3, 0.3);
+            setMotorPowers(thirtyPercentPower, thirtyPercentPower, thirtyPercentPower, thirtyPercentPower);
             sleep(550);
-            setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+            setMotorPowers(negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower);
             sleep(550);
             powerMotorsOff();
             //strafes to known place
@@ -483,9 +485,9 @@ public class AutonomousDepot extends LinearOpMode {
             //double checks
             if(detector.getAligned()){
                 //scores the mineral and returns to original position
-                setMotorPowers(0.3, 0.3, 0.3, 0.3);
+                setMotorPowers(thirtyPercentPower, thirtyPercentPower, thirtyPercentPower, thirtyPercentPower);
                 sleep(540);
-                setMotorPowers(-0.3, -0.3, -0.3, -0.3);
+                setMotorPowers(negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower, negativeThirtyPercentPower);
                 sleep(620);
                 setMotorPowers(0,0,0,0);
             }
