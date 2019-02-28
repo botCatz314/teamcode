@@ -42,6 +42,7 @@ public class AutonomousTest extends LinearOpMode {
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
     private double correction, globalAngle; //imu related doubles.
+    private int inertiaCorrection;
     private double powerOff = 0; //turns power off
     private String position = null; //string to hold the gold's position
 @Override
@@ -112,6 +113,7 @@ public class AutonomousTest extends LinearOpMode {
     waitForStart();
 
     //deploy();
+    double angleStart = getAngles();
     sampling4();
     //Actual Autonomous
     //deploy();
@@ -379,7 +381,7 @@ public class AutonomousTest extends LinearOpMode {
         sleep(500);
         telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
         telemetry.update();
-        drivebyRange(20,.4,rangeRight);
+        drivebyRange(20,.6,rangeRight);
         sleep(1000);
     }
     private void dropCat(){
@@ -453,27 +455,27 @@ public class AutonomousTest extends LinearOpMode {
         if(detector.getAligned()){
             position="Right";
             gyroTurn(-10, 0.3);
-            driveByEncoder(15, 0.3);
-            driveByEncoder(-10,0.3);//15............!
+            driveByEncoder(15, 0.6);
+            driveByEncoder(-10,0.6);//15............!
             gyroTurn(30,0.3);
         }
         else if(position == null){
             gyroTurn(75,.3);
-            driveByEncoder(5, 0.3);
+            driveByEncoder(5, 0.6);
             if (detector.getAligned()){
                 telemetry.addData("got here", true);
                 telemetry.update();
                 sleep(1000);
                 position="Left";
-                driveByEncoder(8,.3);
-                driveByEncoder(-13,.3);
+                driveByEncoder(8,.6);
+                driveByEncoder(-13,.6);
                 gyroTurn(-45,.3);
             }
             else{
-                driveByEncoder(-3, 0.3);
+                driveByEncoder(-3, 0.6);
                 gyroTurn(-45, 0.3);
-                driveByEncoder(10, 0.3);
-                driveByEncoder(-10, 0.3);
+                driveByEncoder(10, 0.6);
+                driveByEncoder(-10, 0.6);
             }
         }
     }
@@ -488,9 +490,9 @@ public class AutonomousTest extends LinearOpMode {
                 telemetry.update();
                 position = "Center";
                 sleep(300);
-                driveByEncoder(15, 0.3);
+                driveByEncoder(15, 0.6);
                 sleep(100);
-                driveByEncoder(-10, 0.3);
+                driveByEncoder(-8, 0.6);
                 sleep(300);
             }
         }
@@ -504,8 +506,8 @@ public class AutonomousTest extends LinearOpMode {
                    telemetry.addData("sees right: ", true);
                    position = "Right";
                    gyroTurn(-11, 0.3);
-                   driveByEncoder(20, 0.3);
-                   driveByEncoder(-15 , 0.3);//15............!
+                   driveByEncoder(20, 0.6);
+                   driveByEncoder(-15 , 0.6);//15............!
                    gyroTurn(30, 0.3);
                }
 
@@ -516,8 +518,8 @@ public class AutonomousTest extends LinearOpMode {
             position = "Left";
             telemetry.addData("going left: ", true);
             gyroTurn(60,.4);
-            driveByEncoder(15, 0.3);
-            driveByEncoder(-13, 0.3);
+            driveByEncoder(15, 0.6);
+            driveByEncoder(-13, 0.6);
             gyroTurn(-30, 0.3);
         }
     }
@@ -525,9 +527,9 @@ public class AutonomousTest extends LinearOpMode {
     private void goToWall(){
         //driveByEncoder(-2, 0.3);
         gyroTurn(60, 0.3);
-        drivebyRange(10, 0.4, rangeRight);
-        driveByEncoder(2, 0.3);
-        driveByEncoder(-5, 0.3);
+        drivebyRange(10, 0.6, rangeRight);
+        driveByEncoder(2, 0.6);
+        driveByEncoder(-1, 0.6);
        // straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
@@ -580,15 +582,19 @@ public class AutonomousTest extends LinearOpMode {
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
             while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
+                //setPowerStraight(power);
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
             while (-leftF.getCurrentPosition() > position && opModeIsActive()) {
+                //setPowerStraight(-power);
                 setPowerStraight(-power);
             }
         powerMotorsOff();
+            inertiaCorrection = (int) getAngles();
+            gyroTurn(inertiaCorrection, 0.3);
         }
     }
     //strafes using the front left motor's encoder as a reference point to the robot's position
@@ -662,4 +668,7 @@ public class AutonomousTest extends LinearOpMode {
             }
         }
     }
+    /*private void gyroTurn2(int turnDegree,double power ){
+    while getAngles() != angleStart
+    }*/
 }

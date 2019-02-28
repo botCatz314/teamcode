@@ -96,7 +96,7 @@ public class AutonomousDepot extends LinearOpMode {
     telemetry.addData("mode: ", "calibrating...");
     telemetry.update();
 
-    while(!isStopRequested() && !imu.isGyroCalibrated()){
+    while(!isStopRequested() && !imu.isGyroCalibrated()&&opModeIsActive()){
         sleep(50);
         idle();
     }
@@ -105,19 +105,17 @@ public class AutonomousDepot extends LinearOpMode {
 
     waitForStart();
     //Actual Autonomous
-    deploy();
-    lineUpByColorSimple();
-    driveByEncoder(10,.3);
+   // deploy();
     sampling4();
-    gyroTurn(90,.2);
-    drivebyRange(10,.3,rangeLeft);
-    straighten(DistanceUnit.INCH);
-    gyroTurn(90,.2);
-    drivebyRange(10,.2,rangeRight);
-    sleep(300);
-    catapult.setPosition(0);
-    driveByEncoder(-60,.3);
-
+   /* gyroTurn(90,.2); sleep(100);
+    drivebyRange(10,.3,rangeLeft); sleep(100);
+    straighten(DistanceUnit.INCH); sleep(100);
+    gyroTurn(90,.2); sleep(100);
+    drivebyRange(10,.2,rangeRight); sleep(100);
+    sleep(300); sleep(100);cvs
+    catapult.setPosition(0); sleep(100);
+    driveByEncoder(-60,.3); sleep(100);
+    */
 
     }
     private void sampling4(){
@@ -131,9 +129,9 @@ public class AutonomousDepot extends LinearOpMode {
                 telemetry.update();
                 position = "Center";
                 sleep(300);
-                driveByEncoder(15, 0.3);
+                driveByEncoder(15, 0.6);
                 sleep(100);
-                driveByEncoder(-10, 0.3);
+                driveByEncoder(-10, 0.6);
                 sleep(300);
             }
         }
@@ -147,8 +145,8 @@ public class AutonomousDepot extends LinearOpMode {
                     telemetry.addData("sees right: ", true);
                     position = "Right";
                     gyroTurn(-11, 0.3);
-                    driveByEncoder(20, 0.3);
-                    driveByEncoder(-15 , 0.3);//15............!
+                    driveByEncoder(20, 0.6);
+                    driveByEncoder(-15 , 0.6);//15............!
                     gyroTurn(30, 0.3);
                 }
 
@@ -159,8 +157,8 @@ public class AutonomousDepot extends LinearOpMode {
             position = "Left";
             telemetry.addData("going left: ", true);
             gyroTurn(60,.4);
-            driveByEncoder(15, 0.3);
-            driveByEncoder(-13, 0.3);
+            driveByEncoder(15, 0.6);
+            driveByEncoder(-13, 0.6);
             gyroTurn(-30, 0.3);
         }
     }
@@ -278,7 +276,7 @@ public class AutonomousDepot extends LinearOpMode {
         //determines whether the robot is travelling towards or away from the target.
         if(power > 0) {
             //if driving towards target, keeps driving until the actual range is less than the target range
-            while (!inRange(distance, DistanceUnit.INCH, range)) {
+            while (!inRange(distance, DistanceUnit.INCH, range)&&opModeIsActive()) {
                 setPowerStraight(power);
             }
             //turns off drive motors
@@ -286,7 +284,7 @@ public class AutonomousDepot extends LinearOpMode {
         }
         else{
             //if moving away from the target, drive until the actual distance is greater than the target position
-            while(inRange(distance, DistanceUnit.INCH, range)){
+            while(inRange(distance, DistanceUnit.INCH, range)&&opModeIsActive()){
                 setPowerStraight(-power);
             }
             //powers off drive motors
@@ -302,7 +300,7 @@ public class AutonomousDepot extends LinearOpMode {
     }
    //drives robot until color sensor reads within two specified values
     private void drivebyColor(double power, int max, int min, ColorSensor colorSensor){
-        while(!withinColorRange(max, min, colorSensor)){
+        while(!withinColorRange(max, min, colorSensor)&&opModeIsActive()){
             setPowerStraight(power);
         }
         powerMotorsOff();
@@ -313,7 +311,7 @@ public class AutonomousDepot extends LinearOpMode {
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
-            while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
+            while(!inRange(target, DistanceUnit.INCH, rangeHigh)&&opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -321,7 +319,7 @@ public class AutonomousDepot extends LinearOpMode {
         //if the robot wants to drive forwards
         else if(power > 0){
             //drive until the range sensor is not within a range
-            while(inRange(target, DistanceUnit.INCH, rangeHigh)){
+            while(inRange(target, DistanceUnit.INCH, rangeHigh)&&opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -361,7 +359,7 @@ public class AutonomousDepot extends LinearOpMode {
         //the radius of the wheel in inches
         double radius = 2;
         //runs until range sensor reads a specified distance at which point the robot stops
-        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight)){
+        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight)&&opModeIsActive()){
             //sets the distance variables to the range sensor to the difference of the range sensor reading and target location
             distanceLeft = rangeLeft.getDistance(unit) - stoptarget;
             distanceRight = rangeRight.getDistance(unit) - stoptarget;
@@ -388,7 +386,7 @@ public class AutonomousDepot extends LinearOpMode {
         rightRange = rangeRight.getDistance(units);
         leftRange = rangeLeft.getDistance(units);
         //runs until we are straight
-        while(rightRange != leftRange){
+        while(rightRange != leftRange&&opModeIsActive()){
             //updates values of range variables
             rightRange = rangeRight.getDistance(units);
             leftRange = rangeLeft.getDistance(units);
@@ -415,9 +413,9 @@ public class AutonomousDepot extends LinearOpMode {
         //turns towards the wall
         switch(position){
             case("Center"):
-                driveByEncoder(10, 0.3);
+                driveByEncoder(10, 0.6);
                 dropCat();
-                driveByEncoder(-25, 0.3);
+                driveByEncoder(-25, 0.6);
                 break;
             case("Right"):
                 gyroTurn(75, 0.3);
@@ -500,25 +498,25 @@ public class AutonomousDepot extends LinearOpMode {
         if(detector.getAligned()){
             position="Right";
             gyroTurn(-15, 0.3);
-            driveByEncoder(20, 0.3);
+            driveByEncoder(20, 0.6);
 
         }
         else if(position == null){
             gyroTurn(80,.3);
-            driveByEncoder(6, 0.3);
+            driveByEncoder(6, 0.6);
             if (detector.getAligned()){
                 telemetry.addData("got here", true);
                 telemetry.update();
                 sleep(1000);
                 position="Left";
-                driveByEncoder(8,.3);
+                driveByEncoder(8,0.6);
 
             }
             else{
                 position = "Center";
-                driveByEncoder(-5, 0.3);
+                driveByEncoder(-5, 0.6);
                 gyroTurn(-45, 0.3);
-                driveByEncoder(10, 0.3);
+                driveByEncoder(10, 0.6);
             }
         }
     }
@@ -529,7 +527,7 @@ public class AutonomousDepot extends LinearOpMode {
 
     private void goToTouch ( double power, DigitalChannel sensor){
         //drives hanging motors until touch sensor is pressed
-        while (!isTouched(sensor)) {
+        while (!isTouched(sensor)&&opModeIsActive()) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
@@ -540,7 +538,7 @@ public class AutonomousDepot extends LinearOpMode {
     }
     //moves hangingmotor until the magnetic limit sensor on the hanging motor reads true
     private void goToMagnetLimitSensor ( double power, DigitalChannel sensor){
-        while (!foundMagnet(sensor)) {
+        while (!foundMagnet(sensor)&&opModeIsActive()) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
@@ -570,13 +568,13 @@ public class AutonomousDepot extends LinearOpMode {
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() < position) {
+            while ((-leftF.getCurrentPosition() < position)&&opModeIsActive()) {
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while (leftF.getCurrentPosition() > position) {
+            while ((-leftF.getCurrentPosition() > position)&&opModeIsActive()) {
                 setPowerStraight(-power);
             }
         powerMotorsOff();
@@ -594,7 +592,7 @@ public class AutonomousDepot extends LinearOpMode {
         //if strafing right
         if (isRight) {
             //strafes right correcting with gyro
-            while (leftF.getCurrentPosition() < position) {
+            while ((leftF.getCurrentPosition() < position)&&opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power - (degrees * 0.1);
                 setMotorPowers(power, -power,
@@ -603,7 +601,7 @@ public class AutonomousDepot extends LinearOpMode {
         }
         else {
             //drives until the negative of the left encoder's value is less than the position correcting with the gyro
-            while (-leftF.getCurrentPosition() < position) {
+            while ((-leftF.getCurrentPosition() < position)&&opModeIsActive()) {
                 degrees = checkDirection();
                 altPwr = power + (degrees * 0.1);
                 setMotorPowers(-power, power,
@@ -615,7 +613,7 @@ public class AutonomousDepot extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
+        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)&&opModeIsActive()) {
             //if the right color sensor is not in the desired value, drive forwards.
             if (!withinColorRange(32, 20, colorRight)) {
                 rightF.setPower(0.3);
