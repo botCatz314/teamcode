@@ -524,6 +524,7 @@ public class AutonomousTestRed extends LinearOpMode {
         drivebyRange(10, 0.4, rangeRight);
         driveByEncoder(2, 0.3);
         driveByEncoder(-5, 0.3);
+        driveByEncoder(-5, 0.3);
        // straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor

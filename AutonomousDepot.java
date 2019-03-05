@@ -27,9 +27,9 @@ public class AutonomousDepot extends LinearOpMode {
     private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
     //sensors
     private ColorSensor colorRight, colorLeft; //declares color sensors
-    private DistanceSensor rangeLeft, rangeRight, rangeHigh; //declares range sensors
+    private DistanceSensor rangeLeft, rangeRight; //declares range sensors
     private BNO055IMU imu; //declares REV imu
-    private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
+ //   private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
@@ -55,12 +55,12 @@ public class AutonomousDepot extends LinearOpMode {
     //sets value of color sensors
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
-    magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
+   // touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    //magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
     armPos = hardwareMap.get(AnalogInput.class, "armPos");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
-    rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
+  //  rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
     catapult = hardwareMap.servo.get("catapult"); //TO DO: account for added servos
 
@@ -309,11 +309,11 @@ public class AutonomousDepot extends LinearOpMode {
 
     }
     //drive by range for the rangeHigh relative to the lander
-    private void driveByLander(double target, double power){
+   /* private void driveByLander(double target, double power){
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
-            while(!inRange(target, DistanceUnit.INCH, rangeHigh)&&opModeIsActive()){
+           // while(!inRange(target, DistanceUnit.INCH, rangeHigh)&&opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -326,7 +326,7 @@ public class AutonomousDepot extends LinearOpMode {
             }
             powerMotorsOff();
         }
-    }
+    }*/
     //sets all the motors power to the inputs
     private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
         leftF.setPower(leftFPwr);
@@ -440,7 +440,7 @@ public class AutonomousDepot extends LinearOpMode {
     driveByEncoder(-60, 1);
     }
     private void sampling2() {
-        driveByLander(7, 0.3);// moves away from lander
+       // driveByLander(7, 0.3);// moves away from lander
         strafe(0.5, true);// move to the right gold
         sleep(1700);// stop 1.7 seconds
         strafe(0, false);// stops
@@ -495,7 +495,7 @@ public class AutonomousDepot extends LinearOpMode {
     }
     private void sampling3(){
         lineUpByColorSimple();
-        driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
+        //driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
         gyroTurn(-30, 0.3);
         if(detector.getAligned()){
             position="Right";

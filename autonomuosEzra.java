@@ -33,7 +33,7 @@ public class autonomuosEzra extends LinearOpMode {
     private ColorSensor colorRight, colorLeft; //declares color sensors
     private DistanceSensor rangeLeft, rangeRight, rangeHigh; //declares range sensors
     private BNO055IMU imu; //declares REV imu
-    private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
+   // private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
@@ -60,8 +60,8 @@ public class autonomuosEzra extends LinearOpMode {
         //sets value of color sensors
         colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
         colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-        touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
-        magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
+        //touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+        //magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
         armPos = hardwareMap.get(AnalogInput.class, "armPos");
         rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
         rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");

@@ -31,9 +31,10 @@ public class AutonomousTest extends LinearOpMode {
     private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
     //sensors
     private ColorSensor colorRight, colorLeft; //declares color sensors
-    private DistanceSensor rangeLeft, rangeRight, rangeHigh; //declares range sensors
+    private DistanceSensor rangeLeft, rangeRight; //declares range sensors
     private BNO055IMU imu; //declares REV imu
-    private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
+    private DigitalChannel up, down;
+ //   private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
@@ -59,12 +60,12 @@ public class AutonomousTest extends LinearOpMode {
     //sets value of color sensors
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
-    magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
+    up = hardwareMap.get(DigitalChannel.class, "up");
+    down = hardwareMap.get(DigitalChannel.class, "down");
     armPos = hardwareMap.get(AnalogInput.class, "armPos");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
-    rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
+    //rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
     catapult = hardwareMap.servo.get("catapult");
     collector = hardwareMap.crservo.get("collector");
@@ -109,16 +110,12 @@ public class AutonomousTest extends LinearOpMode {
     }
     telemetry.addData("mode: ", "ready");
     telemetry.update();
-
+//7726 MAX HANG
     waitForStart();
 
-    //deploy();
-    double angleStart = getAngles();
+    deploy();
+    sleep(1000);
     sampling4();
-    //Actual Autonomous
-    //deploy();
-   // sampling3();
-
     sleep(1000);
      goToWall();
      sleep(1000);
@@ -273,11 +270,11 @@ public class AutonomousTest extends LinearOpMode {
 
     }
     //drive by range for the rangeHigh relative to the lander
-    private void driveByLander(double target, double power){
+   /* private void driveByLander(double target, double power){
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
-            while(!inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
+            //while(!inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -285,12 +282,12 @@ public class AutonomousTest extends LinearOpMode {
         //if the robot wants to drive forwards
         else if(power > 0){
             //drive until the range sensor is not within a range
-            while(inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
+          //  while(inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
                 setPowerStraight(power);
             }
             powerMotorsOff();
         }
-    }
+*/
     //sets all the motors power to the inputs
     private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
         leftF.setPower(leftFPwr);
@@ -395,7 +392,7 @@ public class AutonomousTest extends LinearOpMode {
     driveByEncoder(-37, 1);
     }
     private void sampling2() {
-        driveByLander(7, 0.3);// moves away from lander
+       // driveByLander(7, 0.3);// moves away from lander
         strafe(0.5, true);// move to the right gold
         sleep(1700);// stop 1.7 seconds
         strafe(0, false);// stops
@@ -450,7 +447,7 @@ public class AutonomousTest extends LinearOpMode {
     }
     private void sampling3(){
         lineUpByColorSimple();
-        driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
+       // driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
         gyroTurn(-30, 0.4);
         if(detector.getAligned()){
             position="Right";
@@ -556,11 +553,12 @@ public class AutonomousTest extends LinearOpMode {
     }
     //moves the robot off the hook
     private void deploy () {
+        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        hangingMotor.setPower(1);
-        sleep(200);
-        hangingMotor.setPower(-1);
-        sleep(2500);
+        while(opModeIsActive() && hangingMotor.getCurrentPosition() > 7700) {
+            hangingMotor.setPower(-1);
+        }
         hangingMotor.setPower(powerOff);
 
         //strafes just a tiny bit to ensure we don't catch
