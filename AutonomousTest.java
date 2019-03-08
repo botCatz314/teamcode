@@ -112,7 +112,10 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 //7726 MAX HANG
     waitForStart();
-
+    while(opModeIsActive()){
+        telemetry.addData("arm pos: ", armPos.getVoltage());
+        telemetry.update();
+    }
     deploy();
     sleep(1000);
     sampling4();
@@ -375,6 +378,9 @@ public class AutonomousTest extends LinearOpMode {
     private void driveToDepot(){
         //turns towards the wall
         gyroTurn(80, 0.4);
+        if(position == "Left"){
+            gyroTurn(-5, 0.4);
+        }
         sleep(500);
         telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
         telemetry.update();
@@ -496,12 +502,13 @@ public class AutonomousTest extends LinearOpMode {
         else if(position == null) {
 
             sleep(100);
-           gyroTurn(-40, 0.4);
+           gyroTurn(-25, 0.4);
            sleep(500);
            if(detector.getAligned()){
                if(detector.getAligned()) {
                    telemetry.addData("sees right: ", true);
                    position = "Right";
+                   gyroTurn(-15, 0.4);
                    driveByEncoder(20, 0.6);
                    driveByEncoder(-10 , 0.6);//15............!
                    gyroTurn(25, 0.4);
@@ -515,8 +522,8 @@ public class AutonomousTest extends LinearOpMode {
             telemetry.addData("going left: ", true);
             gyroTurn(60,.4);
             driveByEncoder(15, 0.6);
-            driveByEncoder(-13, 0.6);
-            gyroTurn(-30, 0.4);
+            driveByEncoder(-9 , 0.6);
+            gyroTurn(-25, 0.4);
         }
     }
 
@@ -524,7 +531,9 @@ public class AutonomousTest extends LinearOpMode {
         //driveByEncoder(-2, 0.3);
         gyroTurn(60, 0.4);
         drivebyRange(10, 0.6, rangeRight);
-        driveByEncoder(2, 0.6);
+        if(position != "Left") {
+            driveByEncoder(2, 0.4);
+        }
         driveByEncoder(-1, 0.6);
        // straighten(DistanceUnit.INCH);
     }

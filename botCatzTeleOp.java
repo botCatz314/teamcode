@@ -153,6 +153,11 @@ public class botCatzTeleOp extends LinearOpMode {
             slideMotor.setPower(gamepad2.left_stick_y);
         }
 
+        if(gamepad2.left_trigger > 0.1 && (armPos.getVoltage() < 1.6)){
+            pivotMotor.setPower(0.4);
+            pivotMotor2.setPower(0.4);
+        }
+
         telemetry.addData("arm pos: ", armPos);
         telemetry.update();
 
@@ -162,14 +167,18 @@ public class botCatzTeleOp extends LinearOpMode {
             }
             pivotMotor.setPower(-gamepad2.right_stick_y);
             pivotMotor2.setPower(-gamepad2.right_stick_y);
+            if(armPos.getVoltage() >= 2.9){
+                pivotMotor.setPower(pivotMotor.getPower() * 0.1);
+                pivotMotor2.setPower(pivotMotor2.getPower() * 0.1);
+            }
         }
 
 
-        if(gamepad2.left_trigger > 0){
-            collector.setPower(1);
+        if(gamepad2.right_trigger > 0){
+            collector.setPower(0.8);
         }
         else{
-            collector.setPower(-1);
+            collector.setPower(-0.8);
         }
 
         telemetry.addData("leftF: ", leftF.getPower());
