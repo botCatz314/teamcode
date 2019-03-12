@@ -112,10 +112,7 @@ public class AutonomousTest extends LinearOpMode {
     telemetry.update();
 //7726 MAX HANG
     waitForStart();
-    while(opModeIsActive()){
-        telemetry.addData("arm pos: ", armPos.getVoltage());
-        telemetry.update();
-    }
+
     deploy();
     sleep(1000);
     sampling4();

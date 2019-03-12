@@ -39,6 +39,7 @@ public class AutonomousDepot extends LinearOpMode {
     private double correction, globalAngle; //imu related doubles.
     private double thirtyPercentPower = 0.3, fiftyPercentPower = 0.5, sixtyPercentPower = .6, oneHundredPercentPower = 1;
     private double negativeThirtyPercentPower =-0.3, negativeFiftyPercentPower = -0.5, negativeSixtyPercentPower = -0.6, negativeHundredPercentPower = 1;
+    private int inertiaCorrection;
     private double powerOff = 0; //turns power off
     private String position = null; //string to hold the gold's position
 @Override
@@ -109,12 +110,14 @@ public class AutonomousDepot extends LinearOpMode {
     //Actual Autonomous
    // deploy();
     sampling4();
+    goToWall();
+    goToDepot();
    /* gyroTurn(90,.2); sleep(100);
     drivebyRange(10,.3,rangeLeft); sleep(100);
     straighten(DistanceUnit.INCH); sleep(100);
     gyroTurn(90,.2); sleep(100);
     drivebyRange(10,.2,rangeRight); sleep(100);
-    sleep(300); sleep(100);cvs
+    sleep(300); sleep(100);
     catapult.setPosition(0); sleep(100);
     driveByEncoder(-60,.3); sleep(100);
     */
@@ -131,25 +134,25 @@ public class AutonomousDepot extends LinearOpMode {
                 telemetry.update();
                 position = "Center";
                 sleep(300);
-                driveByEncoder(15, sixtyPercentPower);
+                driveByEncoder(15, 0.6);
                 sleep(100);
-                driveByEncoder(-10, sixtyPercentPower);
+                driveByEncoder(-8, 0.6);
                 sleep(300);
             }
         }
         else if(position == null) {
 
             sleep(100);
-            gyroTurn(-35, 0.3);
+            gyroTurn(-25, 0.4);
             sleep(500);
             if(detector.getAligned()){
                 if(detector.getAligned()) {
                     telemetry.addData("sees right: ", true);
                     position = "Right";
-                    gyroTurn(-11, 0.3);
+                    gyroTurn(-15, 0.4);
                     driveByEncoder(20, 0.6);
-                    driveByEncoder(-7 , 0.6);//-15............!
-                    gyroTurn(30, 0.3);
+                    driveByEncoder(-15 , 0.6);//15............!
+                    gyroTurn(25, 0.4);
                 }
 
             }
@@ -160,9 +163,21 @@ public class AutonomousDepot extends LinearOpMode {
             telemetry.addData("going left: ", true);
             gyroTurn(60,.4);
             driveByEncoder(15, 0.6);
-            driveByEncoder(-13, 0.6);
-            gyroTurn(-30, 0.3);
+            driveByEncoder(-9 , 0.6);
+            gyroTurn(-25, 0.4);
         }
+    }
+    void goToWall(){
+        gyroTurn(55,.5);
+        drivebyRange(10,sixtyPercentPower,rangeLeft);
+        if(position != "Left") {
+            driveByEncoder(2, 0.4);
+        }
+        driveByEncoder(-1, 0.6);
+    }
+    void goToDepot(){
+        gyroTurn(-110,0.5);
+        drivebyRange(10, 0.6,rangeRight);
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -565,21 +580,24 @@ public class AutonomousDepot extends LinearOpMode {
         position = position / wheelDiameter;
         position *= 1120;
         //prints target to phone
-        telemetry.addData("target position: ", position);
-        telemetry.update();
+
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while ((-leftF.getCurrentPosition() < position)&&opModeIsActive()) {
+            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
+                //setPowerStraight(power);
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while ((-leftF.getCurrentPosition() > position)&&opModeIsActive()) {
+            while (-leftF.getCurrentPosition() > position && opModeIsActive()) {
+                //setPowerStraight(-power);
                 setPowerStraight(-power);
             }
-        powerMotorsOff();
+            powerMotorsOff();
+            inertiaCorrection = (int) getAngles();
+            gyroTurn(inertiaCorrection, 0.4);
         }
     }
     //strafes using the front left motor's encoder as a reference point to the robot's position
