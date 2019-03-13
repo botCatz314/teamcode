@@ -108,10 +108,12 @@ public class AutonomousDepot extends LinearOpMode {
 
     waitForStart();
     //Actual Autonomous
-   // deploy();
+    deploy();
     sampling4();
     goToWall();
     goToDepot();
+    CatapultTeamMarker();
+    Park();
    /* gyroTurn(90,.2); sleep(100);
     drivebyRange(10,.3,rangeLeft); sleep(100);
     straighten(DistanceUnit.INCH); sleep(100);
@@ -152,7 +154,7 @@ public class AutonomousDepot extends LinearOpMode {
                     gyroTurn(-15, 0.4);
                     driveByEncoder(20, 0.6);
                     driveByEncoder(-15 , 0.6);//15............!
-                    gyroTurn(25, 0.4);
+                    gyroTurn(30, 0.4);
                 }
 
             }
@@ -164,20 +166,31 @@ public class AutonomousDepot extends LinearOpMode {
             gyroTurn(60,.4);
             driveByEncoder(15, 0.6);
             driveByEncoder(-9 , 0.6);
-            gyroTurn(-25, 0.4);
+            gyroTurn(-30, 0.4);
         }
     }
     void goToWall(){
         gyroTurn(55,.5);
-        drivebyRange(10,sixtyPercentPower,rangeLeft);
+        drivebyRange(15,sixtyPercentPower,rangeRight);
         if(position != "Left") {
             driveByEncoder(2, 0.4);
         }
-        driveByEncoder(-1, 0.6);
+        //driveByEncoder(-1, 0.6);
+        sleep(1000);
     }
     void goToDepot(){
-        gyroTurn(-110,0.5);
-        drivebyRange(10, 0.6,rangeRight);
+        gyroTurn(-90,0.5);
+        driveByEncoder(20, 0.6);
+    }
+    void CatapultTeamMarker(){
+    sleep(1000);
+    catapult.setPosition(0);
+    sleep(1000);
+    }
+    private void Park(){
+        gyroTurn(-7, 0.3);
+        driveByEncoder(-50, 1);
+        driveByEncoder(-5, 0.4);
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -410,16 +423,16 @@ public class AutonomousDepot extends LinearOpMode {
             //turns right if the right distance is less than the left
             if(rightRange < leftRange){
                 //sets motor powers
-                setMotorPowers(negativeThirtyPercentPower, thirtyPercentPower,
-                               negativeThirtyPercentPower, thirtyPercentPower);
+                setMotorPowers(negativeFiftyPercentPower, fiftyPercentPower,
+                               negativeFiftyPercentPower, fiftyPercentPower);
             }
             //turns off motor power
             powerMotorsOff();
             //turns left if the left range is less than the right
             if(leftRange < rightRange){
                 //sets motor power
-                setMotorPowers(thirtyPercentPower, negativeThirtyPercentPower,
-                               thirtyPercentPower, negativeThirtyPercentPower);
+                setMotorPowers(fiftyPercentPower, negativeFiftyPercentPower,
+                               fiftyPercentPower, negativeFiftyPercentPower);
             }
             //turns drive motor power off
             powerMotorsOff();
@@ -450,10 +463,7 @@ public class AutonomousDepot extends LinearOpMode {
         catapult.setPosition(0);
     }
     //drives to and parks on crater
-    private void park(){
-    gyroTurn(12, 0.3);
-    driveByEncoder(-60, 1);
-    }
+
     private void sampling2() {
        // driveByLander(7, 0.3);// moves away from lander
         strafe(0.5, true);// move to the right gold
@@ -562,9 +572,12 @@ public class AutonomousDepot extends LinearOpMode {
     }
     //moves the robot off the hook
     private void deploy () {
+        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        hangingMotor.setPower(-1);
-        sleep(2500);
+        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 7700) {
+            hangingMotor.setPower(-1);
+        }
         hangingMotor.setPower(powerOff);
 
         //strafes just a tiny bit to ensure we don't catch
