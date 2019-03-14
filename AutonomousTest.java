@@ -374,14 +374,13 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot into position to drop the team marker
     private void driveToDepot(){
         //turns towards the wall
-        gyroTurn(80, 0.4);
+        gyroTurn(75, 0.4);
         if(position == "Left"){
-            gyroTurn(-5, 0.4);
+            gyroTurn(-7, 0.4);
         }
-        sleep(500);
-        telemetry.addData("range Left: ", rangeLeft.getDistance(DistanceUnit.INCH));
-        telemetry.update();
-        drivebyRange(20,.6,rangeRight);
+        sleep(1000);
+        driveByEncoder(2, 0.6);
+        drivebyRange(15,.6,rangeLeft);
         sleep(1000);
     }
     private void dropCat(){
@@ -392,7 +391,9 @@ public class AutonomousTest extends LinearOpMode {
     //drives to and parks on crater
     private void park(){
     gyroTurn(7, 0.4);
-    driveByEncoder(-37, 1);
+        driveByEncoder(-50, 1);
+        sleep(500);
+        driveByEncoder(-4, 0.4);
     }
     private void sampling2() {
        // driveByLander(7, 0.3);// moves away from lander
@@ -526,12 +527,13 @@ public class AutonomousTest extends LinearOpMode {
 
     private void goToWall(){
         //driveByEncoder(-2, 0.3);
-        gyroTurn(60, 0.4);
-        drivebyRange(10, 0.6, rangeRight);
+        gyroTurn(55, 0.4);
+        drivebyRange(10,.6,rangeRight);
         if(position != "Left") {
             driveByEncoder(2, 0.4);
         }
-        driveByEncoder(-1, 0.6);
+        //driveByEncoder(-1, 0.6);
+        sleep(1000);
        // straighten(DistanceUnit.INCH);
     }
     //returns the opposite of the state of a specified touch sensor
@@ -559,10 +561,13 @@ public class AutonomousTest extends LinearOpMode {
     }
     //moves the robot off the hook
     private void deploy () {
+        telemetry.addData("made it here", true);
+        telemetry.update();
+        sleep(500);
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        while(opModeIsActive() && hangingMotor.getCurrentPosition() > 7700) {
+        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 7700) {
             hangingMotor.setPower(-1);
         }
         hangingMotor.setPower(powerOff);
