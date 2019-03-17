@@ -23,7 +23,8 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+@Disabled
 @Autonomous (name = "AutonomuosEzra")
 public class autonomuosEzra extends LinearOpMode {
     //motors

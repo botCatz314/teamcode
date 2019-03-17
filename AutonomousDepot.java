@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
+import android.graphics.Color;
+
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
@@ -321,12 +323,11 @@ public class AutonomousDepot extends LinearOpMode {
             powerMotorsOff();
         }
     }
-    //returns true if color sensor reads within the maximum and minimum values
     private boolean withinColorRange(int max, int min, ColorSensor sensor) {
-        //declares and sets a variable equal to the color sensor reading
-        int color = sensor.blue();
-        //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
-        return (color <= max && color >= min);
+            //declares and sets a variable equal to the color sensor reading
+            int color = colorLeft.blue();
+            //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
+            return (color <= max && color >= min);
     }
    //drives robot until color sensor reads within two specified values
     private void drivebyColor(double power, int max, int min, ColorSensor colorSensor){
@@ -644,11 +645,12 @@ public class AutonomousDepot extends LinearOpMode {
         powerMotorsOff();
     }
     //straightens the robot using the two color sensors
+    //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)&&opModeIsActive()) {
+        while ((!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft) )&& opModeIsActive()) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(32, 20, colorRight)) {
+            if (!withinColorRange(32, 20, colorRight)&& opModeIsActive()){
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -656,13 +658,17 @@ public class AutonomousDepot extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(32, 20, colorLeft)) {
+            if (!withinColorRange(32, 20, colorLeft)&& opModeIsActive()) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards
                 leftF.setPower(-0.3);
                 leftB.setPower(-0.3);
             }
+            telemetry.addData("left", leftF.getCurrentPosition());
+            telemetry.addData(" actual power: ", leftF.getPower());
+            telemetry.addData("rightF", rightF.getPower());
+            telemetry.update();
         }
         //turns off motors
         powerMotorsOff();
