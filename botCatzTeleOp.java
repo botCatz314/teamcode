@@ -132,10 +132,10 @@ public class botCatzTeleOp extends LinearOpMode {
         velX = 0;
         velY = 0;
         slideMotor.setPower(0);
-        if(gamepad1.left_stick_y > 0.1 || gamepad1.left_stick_y < -0.1){
+        if(gamepad1.left_stick_y > 0.3 || gamepad1.left_stick_y < -0.3){
             velY = -gamepad1.left_stick_y;
         }
-        if (gamepad1.right_stick_y > 0.1 || gamepad1.right_stick_y < -0.1){
+        if (gamepad1.right_stick_y > 0.3 || gamepad1.right_stick_y < -0.3){
             velX = -gamepad1.right_stick_y;
         }
         driveMotors(velX, velY, velY, velX);
@@ -162,8 +162,8 @@ public class botCatzTeleOp extends LinearOpMode {
         telemetry.update();
 
         if(gamepad2.right_stick_y > 0.2 || gamepad2.right_stick_y < -0.1) {
-            if(gamepad2.right_stick_y > 0.6){
-                gamepad2.right_stick_y = 0.6f;
+            if(gamepad2.right_stick_y > 0.4){
+                gamepad2.right_stick_y = 0.4f;
             }
             pivotMotor.setPower(-gamepad2.right_stick_y);
             pivotMotor2.setPower(-gamepad2.right_stick_y);

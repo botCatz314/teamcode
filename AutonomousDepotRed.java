@@ -130,7 +130,8 @@ public class AutonomousDepotRed extends LinearOpMode {
         telemetry.update();
         lineUpByColorSimple();
         sleep(200);
-        driveByEncoder(2, 0.6);
+        //driveByEncoder(3, 0.6);
+        sleep(500);
         if(detector.getAligned()){
             if(detector.getAligned()) {
                 telemetry.addData("Sees center: ", true);
@@ -155,7 +156,7 @@ public class AutonomousDepotRed extends LinearOpMode {
                     gyroTurn(-15, 0.4);
                     driveByEncoder(20, 0.6);
                     driveByEncoder(-15 , 0.6);//15............!
-                    gyroTurn(30, 0.4);
+                    gyroTurn(25, 0.4);
                 }
 
             }
@@ -169,6 +170,7 @@ public class AutonomousDepotRed extends LinearOpMode {
             driveByEncoder(-9 , 0.6);
             gyroTurn(-30, 0.4);
         }
+        detector.disable();
     }
     void goToWall(){
         gyroTurn(55,.5);
@@ -646,30 +648,30 @@ public class AutonomousDepotRed extends LinearOpMode {
     //straightens the robot using the two color sensors
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
-        //while both color sensors are within a certain range, the following process continues to happen
-        while ((!withinColorRange(50, 35, colorRight) && !withinColorRange(50, 35, colorLeft) )&& opModeIsActive()) {
-            //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(50, 35, colorRight)&& opModeIsActive()){
-                rightF.setPower(0.3);
-                rightB.setPower(0.3);
-            } else { //if it is not within the specified range, it drives backwards
-                rightF.setPower(-0.3);
-                rightB.setPower(-0.3);
-            }
-            //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(50, 35, colorLeft)&& opModeIsActive()) {
-                leftF.setPower(0.3);
-                leftB.setPower(0.3);
-            } else { //if the left color sensor is not within the specified color range, the robot drives backwards
-                leftF.setPower(-0.3);
-                leftB.setPower(-0.3);
-            }
-            telemetry.addData("left", leftF.getCurrentPosition());
-            telemetry.addData(" actual power: ", leftF.getPower());
-            telemetry.addData("rightF", rightF.getPower());
-            telemetry.update();
+    //while both color sensors are within a certain range, the following process continues to happen
+    while ((!withinColorRange(50, 35, colorRight) && !withinColorRange(50, 35, colorLeft) )&& opModeIsActive()) {
+        //if the right color sensor is not in the desired value, drive forwards.
+        if (!withinColorRange(50, 35, colorRight)&& opModeIsActive()){
+            rightF.setPower(0.3);
+            rightB.setPower(0.3);
+        } else { //if it is not within the specified range, it drives backwards
+            rightF.setPower(-0.3);
+            rightB.setPower(-0.3);
         }
-        //turns off motors
-        powerMotorsOff();
+        //if the left color sensor is not within the specified color range, the robot drives forwards
+        if (!withinColorRange(50, 35, colorLeft)&& opModeIsActive()) {
+            leftF.setPower(0.3);
+            leftB.setPower(0.3);
+        } else { //if the left color sensor is not within the specified color range, the robot drives backwards
+            leftF.setPower(-0.3);
+            leftB.setPower(-0.3);
+        }
+        telemetry.addData("left", leftF.getCurrentPosition());
+        telemetry.addData(" actual power: ", leftF.getPower());
+        telemetry.addData("rightF", rightF.getPower());
+        telemetry.update();
     }
+    //turns off motors
+    powerMotorsOff();
+}
 }

@@ -255,21 +255,15 @@ public class AutonomousTestRed extends LinearOpMode {
         }
     }
     //returns true if color sensor reads within the maximum and minimum values
-    private boolean withinColorRange(int max, int min, boolean blue, ColorSensor sensor) {
-        if(blue) {
-            //declares and sets a variable equal to the color sensor reading
-            int color = sensor.blue();
-            //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
-            return (color <= max && color >= min);
-        }
-        else{
-            int color = sensor.red();
-            return (color <= max && color >= min);
-        }
+    private boolean withinColorRange(int max, int min, ColorSensor sensor) {
+        //declares and sets a variable equal to the color sensor reading
+        int color = sensor.red();
+        //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
+        return (color <= max && color >= min);
     }
     //drives robot until color sensor reads within two specified values
     private void drivebyColor(double power, int max, int min, ColorSensor colorSensor){
-        while(!withinColorRange(max, min, true, colorSensor) && opModeIsActive()){
+        while(!withinColorRange(max, min, colorSensor) && opModeIsActive()){
             setPowerStraight(power);
         }
         powerMotorsOff();
@@ -529,6 +523,7 @@ public class AutonomousTestRed extends LinearOpMode {
             driveByEncoder(-9 , 0.6);
             gyroTurn(-25, 0.4);
         }
+        detector.disable();
     }
 
     private void goToWall(){
@@ -644,10 +639,9 @@ public class AutonomousTestRed extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while (((!withinColorRange(32, 20, true, colorRight) && !withinColorRange(30, 20, true, colorLeft)) ||
-                (!withinColorRange(65, 25, false, colorLeft) &&!withinColorRange(65, 25, false, colorRight)) )&& opModeIsActive()) {
+        while ((!withinColorRange(50, 35, colorRight) && !withinColorRange(50, 35, colorLeft) )&& opModeIsActive()) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if ((!withinColorRange(32, 20, true, colorRight) || !withinColorRange(65, 25, false, colorRight))  && opModeIsActive()){
+            if (!withinColorRange(50, 35, colorRight)&& opModeIsActive()){
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -655,7 +649,7 @@ public class AutonomousTestRed extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if ((!withinColorRange(32, 20, true, colorLeft) || !withinColorRange(65, 25, false, colorLeft)) && opModeIsActive()) {
+            if (!withinColorRange(50, 35, colorLeft)&& opModeIsActive()) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards
