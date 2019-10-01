@@ -5,6 +5,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
+@Disabled
 @Autonomous (name = "AutonomousDepotRed")
 public class AutonomousDepotRed extends LinearOpMode {
     //motors
@@ -128,8 +129,10 @@ public class AutonomousDepotRed extends LinearOpMode {
     private void sampling4(){
         telemetry.addData("got here", true);
         telemetry.update();
+        sleep(1000);
         lineUpByColorSimple();
-        sleep(200);
+        //driveByEncoder(7, 0.6);
+        sleep(1000);
         //driveByEncoder(3, 0.6);
         sleep(500);
         if(detector.getAligned()){
@@ -174,7 +177,7 @@ public class AutonomousDepotRed extends LinearOpMode {
     }
     void goToWall(){
         gyroTurn(55,.5);
-        drivebyRange(15,sixtyPercentPower,rangeRight);
+        drivebyRange(15,sixtyPercentPower,rangeLeft);
         if(position != "Left") {
             driveByEncoder(2, 0.4);
         }
@@ -577,7 +580,7 @@ public class AutonomousDepotRed extends LinearOpMode {
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 7700) {
+        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 4000) {
             hangingMotor.setPower(-1);
         }
         hangingMotor.setPower(powerOff);
@@ -649,9 +652,9 @@ public class AutonomousDepotRed extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
     //while both color sensors are within a certain range, the following process continues to happen
-    while ((!withinColorRange(50, 35, colorRight) && !withinColorRange(50, 35, colorLeft) )&& opModeIsActive()) {
+    while ((!withinColorRange(40, 25, colorRight) && !withinColorRange(40, 25, colorLeft) )&& opModeIsActive()) {
         //if the right color sensor is not in the desired value, drive forwards.
-        if (!withinColorRange(50, 35, colorRight)&& opModeIsActive()){
+        if (!withinColorRange(40, 25, colorRight)&& opModeIsActive()){
             rightF.setPower(0.3);
             rightB.setPower(0.3);
         } else { //if it is not within the specified range, it drives backwards
@@ -659,7 +662,7 @@ public class AutonomousDepotRed extends LinearOpMode {
             rightB.setPower(-0.3);
         }
         //if the left color sensor is not within the specified color range, the robot drives forwards
-        if (!withinColorRange(50, 35, colorLeft)&& opModeIsActive()) {
+        if (!withinColorRange(40, 25, colorLeft)&& opModeIsActive()) {
             leftF.setPower(0.3);
             leftB.setPower(0.3);
         } else { //if the left color sensor is not within the specified color range, the robot drives backwards

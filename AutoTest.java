@@ -676,3 +676,29 @@ public class AutoTest extends LinearOpMode {
     }
 
 }
+
+//P algorithm turn only ok
+/*
+        while (getAngles() != degrees && opModeIsActive()) {
+            error = degrees - getAngles();
+            turnRobot(error * kP, isRight);
+
+            if (Math.abs(error) < 1) {
+                sleep(500);
+                if (Math.abs(error) < 1) {
+                    break;
+                }
+            }
+            if (getAngles() > degrees - 1 && getAngles() < degrees + 1) {
+                while (getAngles() != degrees && opModeIsActive()) {
+                    error = degrees - getAngles();
+                    turnRobot(error * kP, isRight);
+
+                    if (Math.abs(error) < 1) {
+                        sleep(500);
+                        if (Math.abs(error) < 1) {
+                            break;
+                        }
+                    }
+                }
+            }*/

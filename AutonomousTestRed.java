@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,7 +24,7 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.util.Hardware;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.AnalogInput;
-
+@Disabled
 @Autonomous (name = "AutonomousTestRed")
 public class AutonomousTestRed extends LinearOpMode {
     //motors
@@ -109,6 +110,8 @@ public class AutonomousTestRed extends LinearOpMode {
             idle();
         }
         telemetry.addData("mode: ", "ready");
+        telemetry.addData("left:", colorLeft.red());
+        telemetry.addData("right: ", colorRight);
         telemetry.update();
 //7726 MAX HANG
         waitForStart();
@@ -378,6 +381,9 @@ public class AutonomousTestRed extends LinearOpMode {
         if(position == "Left"){
             gyroTurn(-7, 0.4);
         }
+        if(position.equals("Right")){
+            gyroTurn(13, 0.4);
+        }
         sleep(1000);
         driveByEncoder(2, 0.6);
         drivebyRange(15,.6,rangeLeft);
@@ -391,9 +397,12 @@ public class AutonomousTestRed extends LinearOpMode {
     //drives to and parks on crater
     private void park(){
         gyroTurn(7, 0.4);
+        if(position.equals("Right")){
+            gyroTurn(5, 0.4);
+        }
         driveByEncoder(-50, 1);
         sleep(500);
-        driveByEncoder(-4, 0.4);
+       // driveByEncoder(-4, 0.4);
     }
     private void sampling2() {
         // driveByLander(7, 0.3);// moves away from lander
@@ -483,8 +492,9 @@ public class AutonomousTestRed extends LinearOpMode {
     private void sampling4(){
         telemetry.addData("got here", true);
         telemetry.update();
+        sleep(1000);
         lineUpByColorSimple();
-        sleep(200);
+        sleep(1000);
         if(detector.getAligned()){
             if(detector.getAligned()) {
                 telemetry.addData("Sees center: ", true);
@@ -493,7 +503,7 @@ public class AutonomousTestRed extends LinearOpMode {
                 sleep(300);
                 driveByEncoder(15, 0.6);
                 sleep(100);
-                driveByEncoder(-8, 0.6);
+                driveByEncoder(-10, 0.6);
                 sleep(300);
             }
         }
@@ -508,7 +518,7 @@ public class AutonomousTestRed extends LinearOpMode {
                     position = "Right";
                     gyroTurn(-15, 0.4);
                     driveByEncoder(20, 0.6);
-                    driveByEncoder(-10 , 0.6);//15............!
+                    driveByEncoder(-15 , 0.6);//15............!
                     gyroTurn(25, 0.4);
                 }
 
@@ -568,7 +578,7 @@ public class AutonomousTestRed extends LinearOpMode {
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 7700) {
+        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 4000) {
             hangingMotor.setPower(-1);
         }
         hangingMotor.setPower(powerOff);
@@ -639,9 +649,9 @@ public class AutonomousTestRed extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while ((!withinColorRange(50, 35, colorRight) && !withinColorRange(50, 35, colorLeft) )&& opModeIsActive()) {
+        while ((!withinColorRange(40, 25, colorRight) && !withinColorRange(50, 25, colorLeft) )&& opModeIsActive()) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(50, 35, colorRight)&& opModeIsActive()){
+            if (!withinColorRange(40, 25, colorRight)&& opModeIsActive()){
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -649,7 +659,7 @@ public class AutonomousTestRed extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(50, 35, colorLeft)&& opModeIsActive()) {
+            if (!withinColorRange(40, 25, colorLeft)&& opModeIsActive()) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards

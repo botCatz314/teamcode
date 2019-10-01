@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
+@Disabled
 @TeleOp(name = "botCatzTeleOp", group = "Default")
 public class botCatzTeleOp extends LinearOpMode {
 
@@ -54,12 +55,13 @@ public class botCatzTeleOp extends LinearOpMode {
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+    hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    hangingMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     pivotMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
     waitForStart();
-    telemetry.addData("happening: ", true);
-    telemetry.update();
     while (opModeIsActive())
     {
 
@@ -150,27 +152,37 @@ public class botCatzTeleOp extends LinearOpMode {
 
 
         if(gamepad2.left_stick_y > 0.1 || gamepad2.left_stick_y < -0.1) {
-            slideMotor.setPower(gamepad2.left_stick_y);
+            slideMotor.setPower(-gamepad2.left_stick_y);
         }
-
+        telemetry.addData("slide pos: ", slideMotor.getCurrentPosition());
         if(gamepad2.left_trigger > 0.1 && (armPos.getVoltage() < 1.6)){
             pivotMotor.setPower(0.4);
             pivotMotor2.setPower(0.4);
         }
-
         telemetry.addData("arm pos: ", armPos);
-        telemetry.update();
+
 
         if(gamepad2.right_stick_y > 0.2 || gamepad2.right_stick_y < -0.1) {
-            if(gamepad2.right_stick_y > 0.4){
-                gamepad2.right_stick_y = 0.4f;
+            if(gamepad2.right_stick_y > 0.7){
+                gamepad2.right_stick_y = 0.7f;
             }
             pivotMotor.setPower(-gamepad2.right_stick_y);
             pivotMotor2.setPower(-gamepad2.right_stick_y);
+
+            if(pivotMotor.getPower() > 0.7){
+                pivotMotor.setPower(0.7);
+                pivotMotor2.setPower(0.7);
+            }else if(pivotMotor.getPower() < -0.7){
+                pivotMotor.setPower(-0.7);
+                pivotMotor2.setPower(-0.7);
+            }
             if(armPos.getVoltage() >= 2.9){
                 pivotMotor.setPower(pivotMotor.getPower() * 0.1);
                 pivotMotor2.setPower(pivotMotor2.getPower() * 0.1);
             }
+        }
+        if(gamepad2.x){
+            setScoringArmToPosition(10, .8);
         }
 
 
@@ -185,7 +197,7 @@ public class botCatzTeleOp extends LinearOpMode {
         telemetry.addData("leftB: ", leftB.getPower());
         telemetry.addData("rightF: ", rightF.getPower());
         telemetry.addData("rightB: ", leftB.getPower());
-        telemetry.update();
+
 
         // arm elevation
         //pivotMotor.setPower(-gamepad2.right_stick_y);
@@ -205,6 +217,10 @@ public class botCatzTeleOp extends LinearOpMode {
         else if(gamepad2.left_bumper){
             hangingMotor.setPower(-1.0);
         }
+        if(gamepad2.y){
+            SetHangerToScoringPosition(3000, -1);
+        }
+
 
         if(getTouch(up)){
             hangingMotor.setPower(1);
@@ -215,8 +231,8 @@ public class botCatzTeleOp extends LinearOpMode {
         else if(!getTouch(up) && !getTouch(down)){
             hangingMotor.setPower(powerOff);
         }
-
-
+        telemetry.addData("hanger: ", hangingMotor.getCurrentPosition());
+        telemetry.update();
 
         idle();
     }
@@ -242,7 +258,7 @@ public class botCatzTeleOp extends LinearOpMode {
     private boolean getMagneticSwitch(){ return !magneticSwitch.getState();}
     private void armToScoringPosition(double power){
         while(!getMagneticSwitch()){
-            slideMotor.setPower(power);
+            slideMotor.setPower(-power);
         }
         slideMotor.setPower(powerOff);
     }
@@ -250,12 +266,20 @@ public class botCatzTeleOp extends LinearOpMode {
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if(slideMotor.getCurrentPosition() < position){
             while(slideMotor.getCurrentPosition() < position){
-                slideMotor.setPower(power);
+                slideMotor.setPower(-power);
             }
         }
         else{
             while(slideMotor.getCurrentPosition() > position){
-                slideMotor.setPower(-power);
+                slideMotor.setPower(power);
+            }
+        }
+    }
+    private void SetHangerToScoringPosition(double position, double power){
+        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(hangingMotor.getCurrentPosition() > position){
+            while(hangingMotor.getCurrentPosition() < position){
+                hangingMotor.setPower(1);
             }
         }
     }
