@@ -6,17 +6,19 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
+@Disabled
 @Autonomous (name = "Sensors")
+
 public class Sensors extends LinearOpMode {
 
     private GoldAlignDetector detector;
@@ -27,6 +29,8 @@ public class Sensors extends LinearOpMode {
     public static ColorSensor colorLeft, colorRight; //declares color sensor variables
 
     private DigitalChannel touchLeft, touchRight; //declares touch sensor variables
+
+    private AnalogInput armPos;
 
     public static String position = null;
 
@@ -46,6 +50,8 @@ public class Sensors extends LinearOpMode {
     //sets touch sensor variables
     touchLeft = hardwareMap.get(DigitalChannel.class, "touchLeft");
     touchRight = hardwareMap.get(DigitalChannel.class, "touchRight");
+
+    armPos = hardwareMap.get(AnalogInput.class, "armPos");
 
    //sets up drive motors to our specification
     left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -73,11 +79,11 @@ public class Sensors extends LinearOpMode {
     detector.enable();
     waitForStart();
 
-    HangingApparatus();
-    DrivetoLine(50, 42, 0.3, 0.3,true);
-    LineUp(50,42,0.2,0.2);
-   // DistancetoRate(20, DistanceUnit.INCH, 10);
-   // Straighten(DistanceUnit.INCH);
+
+    while(opModeIsActive()){
+        telemetry.addData("arm pos:", armPos.getVoltage());
+        telemetry.update();
+    }
 
     }
     //returns whether the left range sensor is reading less than a certain value
@@ -117,7 +123,7 @@ public class Sensors extends LinearOpMode {
     right.setPower(powerOff);
     }
     //converts the distance read by the range sensor to a speed for drive motors
-    private void DistancetoRate(double stoptarget, DistanceUnit unit, double time){
+    private void distanceToRate(double stoptarget, DistanceUnit unit, double time){
     //sets variables to hold the values of the distance that the robot needs to travel
     double distanceRight, distanceLeft;
     //declares a variable to hold the linear rate
@@ -176,7 +182,7 @@ public class Sensors extends LinearOpMode {
 
     }
     //uses color sensors to square along a colored line
-    public static void LineUp(int max, int min, double leftPower, double rightPower){
+    public static void lineUp(int max, int min, double leftPower, double rightPower){
    //moves right wheel until it is on the color sensor reads the line's color range
     while(!WithinColorRange(max, min, colorRight)){
         //sets right drive power
@@ -233,7 +239,7 @@ public class Sensors extends LinearOpMode {
         }
     }
     //uses the range sensor to square robot relative to a surface
-    private void Straighten(DistanceUnit units){
+    private void straighten(DistanceUnit units){
     //declares variables to hold range sensor reading
     double rightRange, leftRange;
     //sets the initial values of the variables to the range sensors reading
@@ -288,6 +294,18 @@ public class Sensors extends LinearOpMode {
         }
         hangingMotor.setPower(powerOff);
     }
+   /*
+    private void colorStraightenSimple(double power){
+        if(withinColorRange(50, 42, colorLeft)){
+            /*while(!WithinColorRange(50, 42, colorLeft)){
+                left.setPower(power);
+                right.setPower(-power);
+            }
+            leftF.setPower(powerOff);
+            rightF.setPower(powerOff);
+        }
+    }
+    */
 
 }
 

@@ -1,50 +1,43 @@
 package org.firstinspires.ftc.teamcode.teamcode;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.qualcomm.robotcore.util.Hardware;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 @Disabled
-@Autonomous (name = "AutonomousTest")
-public class AutonomousTest extends LinearOpMode {
+@Autonomous (name = "LukeandEmma")
+public class LukeandEmma extends LinearOpMode {
     //motors
     private DcMotor leftF, rightF, leftB, rightB; //declares drive motors
     private DcMotor hangingMotor, pivotMotor, slideMotor; //declares attachment motors
     //sensors
     private ColorSensor colorRight, colorLeft; //declares color sensors
-    private DistanceSensor rangeLeft, rangeRight; //declares range sensors
+    private DistanceSensor rangeLeft, rangeRight, rangeHigh; //declares range sensors
     private BNO055IMU imu; //declares REV imu
-    private DigitalChannel up, down;
- //   private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
+    private DigitalChannel touchUpper, magnetLower; //declares touch sensor and magnetic limit sensor
     private AnalogInput armPos; //declares potentiometer
     private GoldAlignDetector detector; // declares Doge CV detector
     //servos
-    private Servo catapult;
-    private CRServo collector;
+    private Servo phoneServo; //TO DO: replace with collector and any other servos we add
     //other variables
     private Orientation lastAngles = new Orientation(); //variable for imu to hold its previous reading
     private double correction, globalAngle; //imu related doubles.
-    private int inertiaCorrection;
     private double powerOff = 0; //turns power off
     private String position = null; //string to hold the gold's position
 @Override
@@ -61,15 +54,14 @@ public class AutonomousTest extends LinearOpMode {
     //sets value of color sensors
     colorRight = hardwareMap.get(ColorSensor.class, "colorRight");
     colorLeft = hardwareMap.get(ColorSensor.class, "colorLeft");
-    up = hardwareMap.get(DigitalChannel.class, "up");
-    down = hardwareMap.get(DigitalChannel.class, "down");
+    touchUpper = hardwareMap.get(DigitalChannel.class, "touchUpper");
+    magnetLower = hardwareMap.get(DigitalChannel.class, "magnetLower");
     armPos = hardwareMap.get(AnalogInput.class, "armPos");
     rangeLeft = hardwareMap.get(DistanceSensor.class, "rangeLeft");
     rangeRight = hardwareMap.get(DistanceSensor.class, "rangeRight");
-    //rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
+    rangeHigh = hardwareMap.get(DistanceSensor.class, "rangeHigh");
     //sets value of servos
-    catapult = hardwareMap.servo.get("catapult");
-    collector = hardwareMap.crservo.get("collector");
+    phoneServo = hardwareMap.servo.get("phoneServo"); //TO DO: account for added servos
 
     //set parameters of motors
     leftF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -77,7 +69,7 @@ public class AutonomousTest extends LinearOpMode {
     rightF.setDirection(DcMotorSimple.Direction.REVERSE);
     rightB.setDirection(DcMotorSimple.Direction.REVERSE);
     hangingMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-    slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
     //set parameters of Doge CV detector
     detector = new GoldAlignDetector();
     detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
@@ -111,23 +103,17 @@ public class AutonomousTest extends LinearOpMode {
     }
     telemetry.addData("mode: ", "ready");
     telemetry.update();
-//7726 MAX HANG
-    telemetry.addData("left: ", colorLeft.blue());
-    telemetry.addData("right: ", colorRight);
-    telemetry.update();
-    waitForStart();
 
-    deploy();
-    sleep(1000);
-    sampling4();
-    sleep(1000);
-     goToWall();
-     sleep(1000);
-    driveToDepot();
-    sleep(1000);
-    dropCat();
-    sleep(1000);
-    park();
+    waitForStart();
+    //Actual Autonomous
+    //perfect sampling and drop 55 points
+    gyroTurn(90, 0.3);
+    telemetry.addData("range: ", rangeLeft.getDistance(DistanceUnit.INCH));
+    telemetry.update();
+    sleep(10000);
+    drivebyRange(15, 0.7, rangeLeft);
+    // drop cat
+    driveByEncoder(20, -1);
     }
     //turns without gyro
     private void setRotationPower(boolean isRight, double power){
@@ -243,16 +229,20 @@ public class AutonomousTest extends LinearOpMode {
         //determines whether the robot is travelling towards or away from the target.
         if(power > 0) {
             //if driving towards target, keeps driving until the actual range is less than the target range
-            while (!inRange(distance, DistanceUnit.INCH, range) && opModeIsActive()) {
+            while (!inRange(distance, DistanceUnit.INCH, range)) {
                 setPowerStraight(power);
+                telemetry.addData("driving forwards", true);
+                telemetry.update();
             }
             //turns off drive motors
             powerMotorsOff();
         }
         else{
             //if moving away from the target, drive until the actual distance is greater than the target position
-            while(inRange(distance, DistanceUnit.INCH, range) && opModeIsActive()){
+            while(inRange(distance, DistanceUnit.INCH, range)){
                 setPowerStraight(-power);
+                telemetry.addData("driving backwards: ", true);
+                telemetry.update();
             }
             //powers off drive motors
             powerMotorsOff();
@@ -261,24 +251,24 @@ public class AutonomousTest extends LinearOpMode {
     //returns true if color sensor reads within the maximum and minimum values
     private boolean withinColorRange(int max, int min, ColorSensor sensor) {
         //declares and sets a variable equal to the color sensor reading
-        int color = colorLeft.blue();
+        int color = sensor.blue();
         //returns true if the color sensor is less than or equal to the max value and less than or equal to the min value
         return (color <= max && color >= min);
     }
    //drives robot until color sensor reads within two specified values
     private void drivebyColor(double power, int max, int min, ColorSensor colorSensor){
-        while(!withinColorRange(max, min, colorSensor) && opModeIsActive()){
+        while(!withinColorRange(max, min, colorSensor)){
             setPowerStraight(power);
         }
         powerMotorsOff();
 
     }
     //drive by range for the rangeHigh relative to the lander
-   /* private void driveByLander(double target, double power){
+    private void driveByLander(double target, double power){
         //determines direction robot wants to travel
         if(power < 0){
             //if traveling backwards, drive until robot is within a range
-            //while(!inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
+            while(!inRange(target, DistanceUnit.INCH, rangeHigh)){
                 setPowerStraight(power);
             }
             powerMotorsOff();
@@ -286,12 +276,12 @@ public class AutonomousTest extends LinearOpMode {
         //if the robot wants to drive forwards
         else if(power > 0){
             //drive until the range sensor is not within a range
-          //  while(inRange(target, DistanceUnit.INCH, rangeHigh) && opModeIsActive()){
+            while(inRange(target, DistanceUnit.INCH, rangeHigh)){
                 setPowerStraight(power);
             }
             powerMotorsOff();
         }
-*/
+    }
     //sets all the motors power to the inputs
     private void setMotorPowers(double leftFPwr, double rightFPwr, double leftBPwr, double rightBPwr){
         leftF.setPower(leftFPwr);
@@ -326,7 +316,7 @@ public class AutonomousTest extends LinearOpMode {
         //the radius of the wheel in inches
         double radius = 2;
         //runs until range sensor reads a specified distance at which point the robot stops
-        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight) && opModeIsActive()){
+        while(!inRange(stoptarget, unit, rangeLeft) && !inRange(stoptarget, unit, rangeRight)){
             //sets the distance variables to the range sensor to the difference of the range sensor reading and target location
             distanceLeft = rangeLeft.getDistance(unit) - stoptarget;
             distanceRight = rangeRight.getDistance(unit) - stoptarget;
@@ -353,23 +343,23 @@ public class AutonomousTest extends LinearOpMode {
         rightRange = rangeRight.getDistance(units);
         leftRange = rangeLeft.getDistance(units);
         //runs until we are straight
-        while(rightRange != leftRange && opModeIsActive()){
+        while(rightRange != leftRange){
             //updates values of range variables
             rightRange = rangeRight.getDistance(units);
             leftRange = rangeLeft.getDistance(units);
             //turns right if the right distance is less than the left
             if(rightRange < leftRange){
                 //sets motor powers
-                setMotorPowers(-0.3, 0.3,
-                               -.3, 0.3);
+                setMotorPowers(0.25, -0.25,
+                               0.25, -0.25);
             }
             //turns off motor power
             powerMotorsOff();
             //turns left if the left range is less than the right
             if(leftRange < rightRange){
                 //sets motor power
-                setMotorPowers(0.3, -0.3,
-                               0.3, -0.3);
+                setMotorPowers(-0.25, 0.25,
+                               -0.25, 0.25);
             }
             //turns drive motor power off
             powerMotorsOff();
@@ -378,36 +368,25 @@ public class AutonomousTest extends LinearOpMode {
     //moves the robot into position to drop the team marker
     private void driveToDepot(){
         //turns towards the wall
-        gyroTurn(75, 0.4);
-        if(position == "Left"){
-            gyroTurn(-7, 0.4);
-        }
-        if(position.equals("Right")){
-            gyroTurn(13, 0.4);
-        }
-        sleep(1000);
-        driveByEncoder(2, 0.6);
-        drivebyRange(15,.6,rangeLeft);
-        sleep(1000);
+       gyroTurn(70, 0.3);
+       //drives ten inches from the wall
+       distanceToRate(10, DistanceUnit.INCH, 10);
+       //finishes straightening the robots heading to zero
+       straighten(DistanceUnit.INCH);
+       //turns to face teem depot
+       gyroTurn(90, 0.3);
+       //drives to depots
+       drivebyRange(15, 0.5, rangeLeft);
     }
     private void dropCat(){
-        sleep(2000);
-        catapult.setPosition(0);
-        sleep(2000);
+        //To Do: program robot to drop cat
     }
     //drives to and parks on crater
     private void park(){
-    gyroTurn(7, 0.4);
-    if(position.equals("Right")){
-        gyroTurn(5, 0.4);
-    }
-        driveByEncoder(-50, 1);
-        sleep(500);
-
-        //driveByEncoder(-4, 0.4);
+        setMotorPowers(-1, -1, -1, -1);
     }
     private void sampling2() {
-       // driveByLander(7, 0.3);// moves away from lander
+        driveByLander(7, 0.3);// moves away from lander
         strafe(0.5, true);// move to the right gold
         sleep(1700);// stop 1.7 seconds
         strafe(0, false);// stops
@@ -460,96 +439,6 @@ public class AutonomousTest extends LinearOpMode {
             }
         }
     }
-    private void sampling3(){
-        lineUpByColorSimple();
-       // driveByLander(rangeHigh.getDistance(DistanceUnit.INCH)+3, 0.4);
-        gyroTurn(-30, 0.4);
-        if(detector.getAligned()){
-            position="Right";
-            gyroTurn(-10, 0.4);
-            driveByEncoder(15, 0.6);
-            driveByEncoder(-10,0.6);//15............!
-            gyroTurn(30,0.4);
-        }
-        else if(position == null){
-            gyroTurn(75,.4);
-            driveByEncoder(5, 0.6);
-            if (detector.getAligned()){
-                telemetry.addData("got here", true);
-                telemetry.update();
-                sleep(1000);
-                position="Left";
-                driveByEncoder(8,.6);
-                driveByEncoder(-13,.6);
-                gyroTurn(-45,.4);
-            }
-            else{
-                driveByEncoder(-3, 0.6);
-                gyroTurn(-45, 0.4);
-                driveByEncoder(10, 0.6);
-                driveByEncoder(-10, 0.6);
-            }
-        }
-    }
-    private void sampling4(){
-    telemetry.addData("got here", true);
-    telemetry.update();
-    sleep(1000);
-       // lineUpByColorSimple();
-        driveByEncoder(5, 0.6);
-        sleep(1000);
-        if(detector.getAligned()){
-            if(detector.getAligned()) {
-                telemetry.addData("Sees center: ", true);
-                telemetry.update();
-                position = "Center";
-                sleep(300);
-                driveByEncoder(15, 0.6);
-                sleep(100);
-                driveByEncoder(-10, 0.6);
-                sleep(300);
-            }
-        }
-        else if(position == null) {
-
-            sleep(100);
-           gyroTurn(-25, 0.4);
-           sleep(500);
-           if(detector.getAligned()){
-               if(detector.getAligned()) {
-                   telemetry.addData("sees right: ", true);
-                   position = "Right";
-                   gyroTurn(-15, 0.4);
-                   driveByEncoder(20, 0.6);
-                   driveByEncoder(-15  , 0.6);//15............!
-                   gyroTurn(25, 0.4);
-               }
-
-           }
-        }
-
-        if(position == null){
-            position = "Left";
-            telemetry.addData("going left: ", true);
-            gyroTurn(60,.4);
-            driveByEncoder(15, 0.6);
-            driveByEncoder(-9 , 0.6);
-            gyroTurn(-25, 0.4);
-        }
-        detector.disable();
-    }
-
-    private void goToWall(){
-        //driveByEncoder(-2, 0.3);
-        gyroTurn(55, 0.4);
-        drivebyRange(10,.6,rangeRight);
-        if(position != "Left") {
-            driveByEncoder(2, 0.4);
-        }
-        //driveByEncoder(-1, 0.6);
-        sleep(1000);
-       // straighten(DistanceUnit.INCH);
-    }
     //returns the opposite of the state of a specified touch sensor
     private boolean isTouched (DigitalChannel touch){
         return !touch.getState();
@@ -557,7 +446,7 @@ public class AutonomousTest extends LinearOpMode {
 
     private void goToTouch ( double power, DigitalChannel sensor){
         //drives hanging motors until touch sensor is pressed
-        while (!isTouched(sensor) && opModeIsActive()) {
+        while (!isTouched(sensor)) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
@@ -568,26 +457,19 @@ public class AutonomousTest extends LinearOpMode {
     }
     //moves hangingmotor until the magnetic limit sensor on the hanging motor reads true
     private void goToMagnetLimitSensor ( double power, DigitalChannel sensor){
-        while (!foundMagnet(sensor) && opModeIsActive()) {
+        while (!foundMagnet(sensor)) {
             hangingMotor.setPower(power);
         }
         hangingMotor.setPower(powerOff);
     }
     //moves the robot off the hook
     private void deploy () {
-        telemetry.addData("made it here", true);
-        telemetry.update();
-        sleep(500);
-        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //drops
-        while(opModeIsActive() && hangingMotor.getCurrentPosition() <= 4000) {
-            hangingMotor.setPower(-1);
-        }
-        hangingMotor.setPower(powerOff);
-
+        goToTouch(1, touchUpper);
         //strafes just a tiny bit to ensure we don't catch
-        //strafeByEncoder(5, 0.3, true );
+        strafe(0.5, true);
+        sleep(2000);
+        strafe(0, false);
     }
     //drives the robot using the value of the front left wheel's encoder as a reference to the robot's position
     private void driveByEncoder ( double position, double power){
@@ -599,24 +481,21 @@ public class AutonomousTest extends LinearOpMode {
         position = position / wheelDiameter;
         position *= 1120;
         //prints target to phone
-
+        telemetry.addData("target position: ", position);
+        telemetry.update();
         //determines the direction
         if (position >= 0) {
             //if forwards, sets motor's power until the actual position is greater than the target position
-            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
-                //setPowerStraight(power);
+            while (leftF.getCurrentPosition() < position) {
                 setPowerStraight(power);
             }
             powerMotorsOff();
         } else {
             //if backwards, sets the motor to a negative power until the actual position is greater than the target position
-            while (-leftF.getCurrentPosition() > position && opModeIsActive()) {
-                //setPowerStraight(-power);
+            while (leftF.getCurrentPosition() > position) {
                 setPowerStraight(-power);
             }
         powerMotorsOff();
-            inertiaCorrection = (int) getAngles();
-            gyroTurn(inertiaCorrection, 0.4);
         }
     }
     //strafes using the front left motor's encoder as a reference point to the robot's position
@@ -631,7 +510,7 @@ public class AutonomousTest extends LinearOpMode {
         //if strafing right
         if (isRight) {
             //strafes right correcting with gyro
-            while (-leftF.getCurrentPosition() < position && opModeIsActive()) {
+            while (leftF.getCurrentPosition() < position) {
                 degrees = checkDirection();
                 altPwr = power - (degrees * 0.1);
                 setMotorPowers(power, -power,
@@ -640,7 +519,7 @@ public class AutonomousTest extends LinearOpMode {
         }
         else {
             //drives until the negative of the left encoder's value is less than the position correcting with the gyro
-            while (leftF.getCurrentPosition() < position && opModeIsActive()) {
+            while (-leftF.getCurrentPosition() < position) {
                 degrees = checkDirection();
                 altPwr = power + (degrees * 0.1);
                 setMotorPowers(-power, power,
@@ -652,9 +531,9 @@ public class AutonomousTest extends LinearOpMode {
     //straightens the robot using the two color sensors
     private void lineUpByColorSimple() {
         //while both color sensors are within a certain range, the following process continues to happen
-        while ((!withinColorRange(40, 17, colorRight) && !withinColorRange(30, 20, colorLeft) )&& opModeIsActive()) {
+        while (!withinColorRange(32, 20, colorRight) && !withinColorRange(30, 20, colorLeft)) {
             //if the right color sensor is not in the desired value, drive forwards.
-            if (!withinColorRange(40, 17, colorRight)&& opModeIsActive()){
+            if (!withinColorRange(32, 20, colorRight)) {
                 rightF.setPower(0.3);
                 rightB.setPower(0.3);
             } else { //if it is not within the specified range, it drives backwards
@@ -662,32 +541,15 @@ public class AutonomousTest extends LinearOpMode {
                 rightB.setPower(-0.3);
             }
             //if the left color sensor is not within the specified color range, the robot drives forwards
-            if (!withinColorRange(40, 17, colorLeft)&& opModeIsActive()) {
+            if (!withinColorRange(32, 20, colorLeft)) {
                 leftF.setPower(0.3);
                 leftB.setPower(0.3);
             } else { //if the left color sensor is not within the specified color range, the robot drives backwards
                 leftF.setPower(-0.3);
                 leftB.setPower(-0.3);
             }
-            telemetry.addData("left", leftF.getCurrentPosition());
-            telemetry.addData(" actual power: ", leftF.getPower());
-            telemetry.addData("rightF", rightF.getPower());
-            telemetry.update();
         }
         //turns off motors
         powerMotorsOff();
-    }
-    private void setScoringArmToPosition(double position, double power){
-    slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if(slideMotor.getCurrentPosition() < position){
-            while(slideMotor.getCurrentPosition() < position && opModeIsActive()){
-                slideMotor.setPower(power);
-            }
-        }
-        else{
-            while(slideMotor.getCurrentPosition() > position && opModeIsActive()){
-                slideMotor.setPower(-power);
-            }
-        }
     }
 }
